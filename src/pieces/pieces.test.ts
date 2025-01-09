@@ -29,31 +29,106 @@ describe('All piece types', () => {
 });
 
 describe('Movement', () => {
-    it('Inverts direction of moves', () => {
-        const moves: Move[][] = [
-            [
-                [0, 1],
-                [1, 1],
-                [2, 2],
-                [1, -2],
-            ],
-            [
-                [1, -2],
-                [3, 3],
-                [2, -4],
-            ],
-        ];
+    describe('Pawn', () => {
+        describe('White', () => {
+            it('Can move one or two squares forward if not yet moved', () => {
+                const pawn = new Pawn('w');
+                expect(pawn.getMaximumMoves()).toEqual([
+                    [0, 1],
+                    [0, 2],
+                ]);
+            });
 
-        expect(Piece.invertMovesDirection(moves[0])).toEqual([
-            [0, -1],
-            [1, -1],
-            [2, -2],
-            [1, 2],
-        ]);
-        expect(Piece.invertMovesDirection(moves[1])).toEqual([
-            [1, 2],
-            [3, -3],
-            [2, 4],
-        ]);
+            it('Can move only one square forward if already moved', () => {
+                const pawn = new Pawn('w');
+                pawn.hasMoved = true;
+                expect(pawn.getMaximumMoves()).toEqual([[0, 1]]);
+            });
+
+            it('Can also move one square diagonally left if it can capture left', () => {
+                const pawn = new Pawn('w');
+                expect(pawn.getMaximumMoves({ canCaptureLeft: true })).toEqual([
+                    [0, 1],
+                    [0, 2],
+                    [-1, 1],
+                ]);
+            });
+
+            it('Can also move one square diagonally right if it can capture right', () => {
+                const pawn = new Pawn('w');
+                expect(pawn.getMaximumMoves({ canCaptureRight: true })).toEqual(
+                    [
+                        [0, 1],
+                        [0, 2],
+                        [1, 1],
+                    ]
+                );
+            });
+
+            it('Can also move one square diagonally both ways if can capture either direction', () => {
+                const pawn = new Pawn('w');
+                expect(
+                    pawn.getMaximumMoves({
+                        canCaptureLeft: true,
+                        canCaptureRight: true,
+                    })
+                ).toEqual([
+                    [0, 1],
+                    [0, 2],
+                    [-1, 1],
+                    [1, 1],
+                ]);
+            });
+        });
+        describe('Black (inverted direction)', () => {
+            it('Can move one or two squares forward if not yet moved', () => {
+                const pawn = new Pawn('b');
+                expect(pawn.getMaximumMoves()).toEqual([
+                    [-0, -1],
+                    [-0, -2],
+                ]);
+            });
+
+            it('Can move only one square forward if already moved', () => {
+                const pawn = new Pawn('b');
+                pawn.hasMoved = true;
+                expect(pawn.getMaximumMoves()).toEqual([[-0, -1]]);
+            });
+
+            it('Can also move one square diagonally left if it can capture left', () => {
+                const pawn = new Pawn('b');
+                expect(pawn.getMaximumMoves({ canCaptureLeft: true })).toEqual([
+                    [-0, -1],
+                    [-0, -2],
+                    [1, -1],
+                ]);
+            });
+
+            it('Can also move one square diagonally right if it can capture right', () => {
+                const pawn = new Pawn('b');
+                expect(pawn.getMaximumMoves({ canCaptureRight: true })).toEqual(
+                    [
+                        [-0, -1],
+                        [-0, -2],
+                        [-1, -1],
+                    ]
+                );
+            });
+
+            it('Can also move one square diagonally both ways if can capture either direction', () => {
+                const pawn = new Pawn('b');
+                expect(
+                    pawn.getMaximumMoves({
+                        canCaptureLeft: true,
+                        canCaptureRight: true,
+                    })
+                ).toEqual([
+                    [-0, -1],
+                    [-0, -2],
+                    [1, -1],
+                    [-1, -1],
+                ]);
+            });
+        });
     });
 });
