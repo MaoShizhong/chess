@@ -59,23 +59,23 @@ describe('Board', () => {
         expect(actualBoard).toEqual(startingBoard);
     });
 
-    it.skip('Can flip board orientation', () => {
-        const board = new Chessboard().board;
-        expect(board[7][3]?.letter).toBe('Q');
-        expect(board[0][3]?.letter).toBe('q');
-        expect(board[7][4]?.letter).toBe('K');
-        expect(board[0][4]?.letter).toBe('k');
+    it('Can flip board orientation', () => {
+        const chessboard = new Chessboard();
+        expect(chessboard.board[7][3]?.letter).toBe('Q');
+        expect(chessboard.board[0][3]?.letter).toBe('q');
+        expect(chessboard.board[7][4]?.letter).toBe('K');
+        expect(chessboard.board[0][4]?.letter).toBe('k');
 
-        board.flip();
-        expect(board[7][3]?.letter).toBe('k');
-        expect(board[0][3]?.letter).toBe('K');
-        expect(board[7][4]?.letter).toBe('q');
-        expect(board[0][4]?.letter).toBe('Q');
+        chessboard.flip();
+        expect(chessboard.board[7][3]?.letter).toBe('k');
+        expect(chessboard.board[0][3]?.letter).toBe('K');
+        expect(chessboard.board[7][4]?.letter).toBe('q');
+        expect(chessboard.board[0][4]?.letter).toBe('Q');
 
-        board.flip();
-        expect(board[7][3]?.letter).toBe('Q');
-        expect(board[0][3]?.letter).toBe('q');
-        expect(board[7][4]?.letter).toBe('K');
-        expect(board[0][4]?.letter).toBe('k');
+        chessboard.flip();
+        expect(chessboard.board[7][3]?.letter).toBe('Q');
+        expect(chessboard.board[0][3]?.letter).toBe('q');
+        expect(chessboard.board[7][4]?.letter).toBe('K');
+        expect(chessboard.board[0][4]?.letter).toBe('k');
     });
 });

@@ -14,6 +14,11 @@ export class Chessboard {
         this.board = this.#createBoard();
     }
 
+    flip(): void {
+        this.board.reverse();
+        this.board.forEach((row) => row.reverse());
+    }
+
     #createBoard(): Row[] {
         return [
             [
