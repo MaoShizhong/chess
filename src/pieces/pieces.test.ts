@@ -29,6 +29,11 @@ describe('All piece types', () => {
 });
 
 describe('Movement', () => {
+    // Queen test scope needs access to these
+    // Moves defined inside respective piece test blocks
+    let rookMaximumMoves: Move[];
+    let bishopMaximumMoves: Move[];
+
     describe('Pawn', () => {
         describe('White', () => {
             it('Can move one or two squares forward if not yet moved', () => {
@@ -129,6 +134,37 @@ describe('Movement', () => {
                     [-1, -1],
                 ]);
             });
+        });
+    });
+
+    describe('Rook', () => {
+        // prettier-ignore
+        rookMaximumMoves = [
+            [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
+            [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+            [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+            [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0],
+        ];
+
+        it('Can move up to 7 squares orthogonally', () => {
+            const rook = new Rook('w');
+            expect(rook.getMaximumMoves()).toEqual(rookMaximumMoves);
+        });
+    });
+
+    describe('Bishop', () => {
+        // prettier-ignore
+        bishopMaximumMoves = [
+            [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
+            [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
+            [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
+            [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
+        ];
+
+        it('Can move up to 7 squares diagonally', () => {
+            const bishop = new Bishop('w');
+            // prettier-ignore
+            expect(bishop.getMaximumMoves()).toEqual(bishopMaximumMoves);
         });
     });
 });
