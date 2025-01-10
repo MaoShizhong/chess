@@ -10,6 +10,15 @@ export type Colour = 'w' | 'b';
 type CoordinateNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Coordinate = [CoordinateNumber, CoordinateNumber];
 
+type PlayerCastlingRights = {
+    short: boolean;
+    long: boolean;
+};
+export type CastlingRights = {
+    w: PlayerCastlingRights;
+    b: PlayerCastlingRights;
+};
+
 export type PieceLetter =
     | 'P'
     | 'N'
