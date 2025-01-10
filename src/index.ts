@@ -1,17 +1,18 @@
-import { Bishop } from './pieces/bishop';
-import { King } from './pieces/king';
-import { Knight } from './pieces/knight';
-import { Pawn } from './pieces/pawn';
-import { Queen } from './pieces/queen';
-import { Rook } from './pieces/rook';
-import { Row, Square } from './types';
+import { FEN } from './FEN/parser';
+import { Row } from './types';
 
 export class Chessboard {
     static size = 8 as const;
     board: Row[];
 
-    constructor() {
-        this.board = this.#createBoard();
+    /**
+     * @throws {TypeError} If invalid FEN given
+     */
+    constructor(
+        FENString: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq'
+    ) {
+        const [position, activePlayer, castlingRights] = FEN.split(FENString);
+        this.board = this.#createBoard(position);
     }
 
     flip(): void {
@@ -19,34 +20,8 @@ export class Chessboard {
         this.board.forEach((row) => row.reverse());
     }
 
-    #createBoard(): Row[] {
-        return [
-            [
-                new Rook('b'),
-                new Knight('b'),
-                new Bishop('b'),
-                new Queen('b'),
-                new King('b'),
-                new Bishop('b'),
-                new Knight('b'),
-                new Rook('b'),
-            ],
-            Array.from({ length: Chessboard.size }, () => new Pawn('b')),
-            Array(Chessboard.size).fill(null),
-            Array(Chessboard.size).fill(null),
-            Array(Chessboard.size).fill(null),
-            Array(Chessboard.size).fill(null),
-            Array.from({ length: Chessboard.size }, () => new Pawn('w')),
-            [
-                new Rook('w'),
-                new Knight('w'),
-                new Bishop('w'),
-                new Queen('w'),
-                new King('w'),
-                new Bishop('w'),
-                new Knight('w'),
-                new Rook('w'),
-            ],
-        ];
+    #createBoard(position: string): Row[] {
+        const FENRows = position.split('/');
+        return FENRows.map((FENRow) => FEN.toChessRow(FENRow));
     }
 }

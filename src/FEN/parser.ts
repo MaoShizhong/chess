@@ -1,6 +1,42 @@
-import { CastlingRights, Colour } from '../types';
+import { Bishop } from '../pieces/bishop';
+import { King } from '../pieces/king';
+import { Knight } from '../pieces/knight';
+import { Pawn } from '../pieces/pawn';
+import { Queen } from '../pieces/queen';
+import { Rook } from '../pieces/rook';
+import { CastlingRights, Colour, PieceLetter, Row } from '../types';
+
+const PIECES = {
+    P: Pawn,
+    p: Pawn,
+    R: Rook,
+    r: Rook,
+    N: Knight,
+    n: Knight,
+    B: Bishop,
+    b: Bishop,
+    Q: Queen,
+    q: Queen,
+    K: King,
+    k: King,
+};
+
+function isWhite(char: string): boolean {
+    return char === char.toUpperCase();
+}
 
 export class FEN {
+    static toChessRow(FENRow: string): Row {
+        const chars = FENRow.split('');
+        const row = chars.map((char) => {
+            const colour = isWhite(char) ? 'w' : 'b';
+            return Number(char)
+                ? Array(Number(char)).fill(null)
+                : new PIECES[char as PieceLetter](colour);
+        });
+        return row.flat();
+    }
+
     static split(FENString: string): [string, Colour, CastlingRights] {
         const segments = FENString.split(' ');
 
