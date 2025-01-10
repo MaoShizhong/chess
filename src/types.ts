@@ -4,13 +4,19 @@ import { Knight } from './pieces/knight';
 import { Pawn } from './pieces/pawn';
 import { Queen } from './pieces/queen';
 import { Rook } from './pieces/rook';
+import { Player } from './players/player';
+
+export type Players = {
+    w: Player;
+    b: Player;
+};
 
 export type Colour = 'w' | 'b';
 
 type CoordinateNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Coordinate = [CoordinateNumber, CoordinateNumber];
 
-type PlayerCastlingRights = {
+export type PlayerCastlingRights = {
     short: boolean;
     long: boolean;
 };
