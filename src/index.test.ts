@@ -15,7 +15,7 @@ describe('Board', () => {
         expect(chessboard.board.every((row) => row.length === 8)).toBe(true);
     });
 
-    it.skip('Starts with standard piece count', () => {
+    it('Starts with standard piece count', () => {
         const pieceCounts: {
             w: { [key: string]: number };
             b: { [key: string]: number };
@@ -41,7 +41,7 @@ describe('Board', () => {
         expect(checkPieceCount('b')).toBe(true);
     });
 
-    it.skip('Starts with standard piece placement', () => {
+    it('Starts with standard piece placement', () => {
         const startingBoard = [
             ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
