@@ -41,7 +41,7 @@ describe('Board', () => {
         expect(checkPieceCount('b')).toBe(true);
     });
 
-    it('Starts with standard piece placement', () => {
+    it('Starts with standard piece placement if no FEN passed in', () => {
         const startingBoard = [
             ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -55,8 +55,43 @@ describe('Board', () => {
         const actualBoard = new Chessboard().board.map((row) =>
             row.map((square: Square) => square && square.letter)
         );
-
         expect(actualBoard).toEqual(startingBoard);
+    });
+
+    it('Constructs board from FEN', () => {
+        const najdorf = [
+            ['r', 'n', 'b', 'q', 'k', 'b', null, 'r'],
+            [null, 'p', null, null, 'p', 'p', 'p', 'p'],
+            ['p', null, null, 'p', null, 'n', null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, 'N', 'P', null, null, null],
+            [null, null, 'N', null, null, null, null, null],
+            ['P', 'P', 'P', null, null, 'P', 'P', 'P'],
+            ['R', null, 'B', 'Q', 'K', 'B', null, 'R'],
+        ];
+        const actualBoard1 = new Chessboard(
+            'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6'
+        ).board.map((row) =>
+            row.map((square: Square) => square && square.letter)
+        );
+        expect(actualBoard1).toEqual(najdorf);
+
+        const berlinDraw = [
+            ['r', null, 'b', null, 'k', 'b', null, 'r'],
+            ['p', 'p', 'p', null, null, 'p', 'p', 'p'],
+            [null, null, null, 'q', null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            ['P', null, null, 'Q', null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, 'P', 'P', null, null, 'P', 'P', 'P'],
+            ['R', 'N', 'B', null, null, 'R', 'K', null],
+        ];
+        const actualBoard2 = new Chessboard(
+            'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 0 11'
+        ).board.map((row) =>
+            row.map((square: Square) => square && square.letter)
+        );
+        expect(actualBoard2).toEqual(berlinDraw);
     });
 
     it('Can flip board orientation', () => {
