@@ -91,6 +91,7 @@ describe('Movement', () => {
                 ]);
             });
         });
+
         describe('Black (inverted direction)', () => {
             it('Can move one or two squares forward if not yet moved', () => {
                 const pawn = new Pawn('b');
@@ -171,6 +172,34 @@ describe('Movement', () => {
             const bishop = new Bishop('w');
             // prettier-ignore
             expect(bishop.getMaximumMoves()).toEqual(bishopMaximumMoves);
+        });
+    });
+
+    describe('Knight', () => {
+        const knightMaximumMoves = [
+            [1, 2],
+            [2, 1],
+            [2, -1],
+            [1, -2],
+            [-1, -2],
+            [-2, -1],
+            [-2, 1],
+            [-1, 2],
+        ];
+
+        it('Can move to all 8 squares 2x1 L-shapes away', () => {
+            const knight = new Knight('w');
+            expect(knight.getMaximumMoves()).toEqual(knightMaximumMoves);
+        });
+    });
+
+    describe('Queen', () => {
+        it('Can move up to 7 squares orthogonally and diagonally', () => {
+            const queen = new Queen('w');
+            expect(queen.getMaximumMoves()).toEqual([
+                ...rookMaximumMoves,
+                ...bishopMaximumMoves,
+            ]);
         });
     });
 });
