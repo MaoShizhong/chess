@@ -10,7 +10,19 @@ export type Colour = 'w' | 'b';
 type CoordinateNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Coordinate = [CoordinateNumber, CoordinateNumber];
 
-export type PieceLetter = 'P' | 'N' | 'B' | 'R' | 'Q' | 'K';
+export type PieceLetter =
+    | 'P'
+    | 'N'
+    | 'B'
+    | 'R'
+    | 'Q'
+    | 'K'
+    | 'p'
+    | 'n'
+    | 'b'
+    | 'r'
+    | 'q'
+    | 'k';
 type Piece = Pawn | Knight | Bishop | Rook | Queen | King;
 export type Square = Piece | null;
 export type Row = Square[];

@@ -18,13 +18,19 @@ describe('All piece types', () => {
         expect(new King('w') instanceof Piece).toBe(true);
     });
 
-    it('Reports piece information', () => {
-        expect(new Pawn('w').info).toBe('P-w');
-        expect(new Rook('b').info).toBe('R-b');
-        expect(new Knight('w').info).toBe('N-w');
-        expect(new Bishop('w').info).toBe('B-w');
-        expect(new Queen('b').info).toBe('Q-b');
-        expect(new King('w').info).toBe('K-w');
+    it('Reports colour-based piece letter', () => {
+        expect(new Pawn('w').letter).toBe('P');
+        expect(new Pawn('b').letter).toBe('p');
+        expect(new Rook('w').letter).toBe('R');
+        expect(new Rook('b').letter).toBe('r');
+        expect(new Knight('w').letter).toBe('N');
+        expect(new Knight('b').letter).toBe('n');
+        expect(new Bishop('w').letter).toBe('B');
+        expect(new Bishop('b').letter).toBe('b');
+        expect(new Queen('w').letter).toBe('Q');
+        expect(new Queen('b').letter).toBe('q');
+        expect(new King('w').letter).toBe('K');
+        expect(new King('b').letter).toBe('k');
     });
 });
 
