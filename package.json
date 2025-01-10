@@ -1,11 +1,11 @@
 {
-    "name": "",
+    "name": "chessboard-ts",
     "version": "1.0.0",
     "author": "MaoShizhong",
-    "description": "",
+    "description": "Simple code-only Chessboard written in TypeScript. Handles FEN.",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "git+https://github.com/MaoShizhong/chessboard-ts"
     },
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -15,7 +15,11 @@
     "engines": {
         "node": ">=18"
     },
-    "keywords": [],
+    "keywords": [
+        "chess",
+        "chessboard",
+        "FEN"
+    ],
     "scripts": {
         "build": "tsc -p tsconfig.prod.json && vite build",
         "dev": "vite-node ./src/index.ts",
