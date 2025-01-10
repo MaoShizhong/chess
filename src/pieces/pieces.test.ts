@@ -170,7 +170,6 @@ describe('Movement', () => {
 
         it('Can move up to 7 squares diagonally', () => {
             const bishop = new Bishop('w');
-            // prettier-ignore
             expect(bishop.getMaximumMoves()).toEqual(bishopMaximumMoves);
         });
     });
@@ -200,6 +199,50 @@ describe('Movement', () => {
                 ...rookMaximumMoves,
                 ...bishopMaximumMoves,
             ]);
+        });
+    });
+
+    describe('King', () => {
+        const baseKingMovements = [
+            [0, 1],
+            [1, 1],
+            [1, 0],
+            [1, -1],
+            [0, -1],
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+        ];
+
+        it('Can move one square orthogonally and diagonally if it cannot castle', () => {
+            const king = new King('w');
+            expect(king.getMaximumMoves()).toEqual(baseKingMovements);
+        });
+
+        it('Can also move two squares towards the h-file if it can castle short', () => {
+            const king = new King('w');
+            expect(king.getMaximumMoves({ canCastleShort: true })).toEqual([
+                ...baseKingMovements,
+                [2, 0],
+            ]);
+        });
+
+        it('Can also move three squares towards the a-file if it can castle long', () => {
+            const king = new King('w');
+            expect(king.getMaximumMoves({ canCastleLong: true })).toEqual([
+                ...baseKingMovements,
+                [-3, 0],
+            ]);
+        });
+
+        it('Can make both castling movements if it can castle both ways', () => {
+            const king = new King('w');
+            expect(
+                king.getMaximumMoves({
+                    canCastleShort: true,
+                    canCastleLong: true,
+                })
+            ).toEqual([...baseKingMovements, [2, 0], [-3, 0]]);
         });
     });
 });
