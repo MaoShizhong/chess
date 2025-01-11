@@ -1,7 +1,7 @@
 import { Player } from './players/player';
 import { Players } from './types';
 import { Chessboard } from './board/board';
-import * as FEN from './FEN/parser';
+import * as FEN from './parsers/FEN';
 
 export class Chess {
     board: Chessboard;

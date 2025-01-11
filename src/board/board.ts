@@ -1,5 +1,5 @@
 import { Row } from '../types';
-import * as FEN from '../FEN/parser';
+import * as FEN from '../parsers/FEN';
 
 export class Chessboard {
     board: Row[];
