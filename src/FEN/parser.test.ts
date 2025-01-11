@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { FEN } from './parser';
+import { Rook } from '../pieces/rook';
+import { Bishop } from '../pieces/bishop';
+import { Knight } from '../pieces/knight';
+import { Queen } from '../pieces/queen';
+import { King } from '../pieces/king';
+import { Pawn } from '../pieces/pawn';
 
 describe('Parsing FEN', () => {
     describe('Split', () => {
@@ -98,5 +104,47 @@ describe('Parsing FEN', () => {
                 ).toThrow(ERROR_MESSAGE);
             });
         });
+    });
+});
+
+describe('Serialising to FEN', () => {
+    it('Serialises board state to FEN', () => {
+        // prettier-ignore
+        const najdorf = [
+            [new Rook('b'), new Knight('b'), new Bishop('b'), new Queen('b'), new King('b'), new Bishop('b'), null, new Rook('b')],
+            [null, new Pawn('b'), null, null, new Pawn('b'), new Pawn('b'), new Pawn('b'), new Pawn('b')],
+            [new Pawn('b'), null, null, new Pawn('b'), null, new Knight('b'), null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, new Knight('w'), new Pawn('w'), null, null, null],
+            [null, null, new Knight('w'), null, null, null, null, null],
+            [new Pawn('w'), new Pawn('w'), new Pawn('w'), null, null, new Pawn('w'), new Pawn('w'), new Pawn('w')],
+            [new Rook('w'), null, new Bishop('w'), new Queen('w'), new King('w'), new Bishop('w'), null, new Rook('w')],
+        ];
+        const castlingRights = {
+            w: { short: true, long: true },
+            b: { short: true, long: true },
+        };
+        expect(FEN.serialise(najdorf, 'w', castlingRights)).toBe(
+            'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 1'
+        );
+
+        // prettier-ignore
+        const berlinDraw = [
+            [new Rook('b'), null, new Bishop('b'), null, new King('b'), new Bishop('b'), null, new Rook('b')],
+            [new Pawn('b'), new Pawn('b'), new Pawn('b'), null, null, new Pawn('b'), new Pawn('b'), new Pawn('b')],
+            [null, null, null, new Queen('b'), null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [new Pawn('w'), null, null, new Queen('w'), null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, new Pawn('w'), new Pawn('w'), null, null, new Pawn('w'), new Pawn('w'), new Pawn('w')],
+            [new Rook('w'), new Knight('w'), new Bishop('w'), null, null, new Rook('w'), new King('w'), null],
+        ];
+        const berlinCastlingRights = {
+            w: { short: false, long: false },
+            b: { short: true, long: true },
+        };
+        expect(FEN.serialise(berlinDraw, 'w', berlinCastlingRights)).toEqual(
+            'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 0 1'
+        );
     });
 });
