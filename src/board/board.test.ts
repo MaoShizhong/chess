@@ -2,15 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { Chessboard } from './board';
 import { Colour, Square } from '../types';
 
-describe('Chessboard instance', () => {
-    it('Instantiates', () => {
-        expect(typeof new Chessboard()).toBe('object');
-    });
-});
+const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
 describe('Board', () => {
     it('Is 8x8', () => {
-        const chessboard = new Chessboard();
+        const chessboard = new Chessboard(STARTING_POSITION);
         expect(chessboard.board.length).toBe(8);
         expect(chessboard.board.every((row) => row.length === 8)).toBe(true);
     });
@@ -24,7 +20,7 @@ describe('Board', () => {
             b: { p: 8, n: 2, b: 2, r: 2, q: 1, k: 1 },
         };
 
-        const board = new Chessboard().board;
+        const board = new Chessboard(STARTING_POSITION).board;
         board.forEach((row) => {
             row.forEach((square: Square) => {
                 if (square === null) return;
@@ -52,7 +48,7 @@ describe('Board', () => {
             ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
         ];
-        const actualBoard = new Chessboard().board.map((row) =>
+        const actualBoard = new Chessboard(STARTING_POSITION).board.map((row) =>
             row.map((square: Square) => square && square.letter)
         );
         expect(actualBoard).toEqual(startingBoard);
@@ -70,7 +66,7 @@ describe('Board', () => {
             ['R', null, 'B', 'Q', 'K', 'B', null, 'R'],
         ];
         const actualBoard1 = new Chessboard(
-            'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6'
+            'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R'
         ).board.map((row) =>
             row.map((square: Square) => square && square.letter)
         );
@@ -87,7 +83,7 @@ describe('Board', () => {
             ['R', 'N', 'B', null, null, 'R', 'K', null],
         ];
         const actualBoard2 = new Chessboard(
-            'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 0 11'
+            'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1'
         ).board.map((row) =>
             row.map((square: Square) => square && square.letter)
         );
@@ -95,7 +91,7 @@ describe('Board', () => {
     });
 
     it('Can flip board orientation', () => {
-        const chessboard = new Chessboard();
+        const chessboard = new Chessboard(STARTING_POSITION);
         expect(chessboard.board[7][3]?.letter).toBe('Q');
         expect(chessboard.board[0][3]?.letter).toBe('q');
         expect(chessboard.board[7][4]?.letter).toBe('K');
@@ -112,31 +108,5 @@ describe('Board', () => {
         expect(chessboard.board[0][3]?.letter).toBe('q');
         expect(chessboard.board[7][4]?.letter).toBe('K');
         expect(chessboard.board[0][4]?.letter).toBe('k');
-    });
-});
-
-describe('Players', () => {
-    it('Starts with 1 white and 1 black player', () => {
-        const chessboard = new Chessboard();
-        expect(Object.values(chessboard.players).length).toBe(2);
-        expect(chessboard.players.w.colour).toBe('w');
-        expect(chessboard.players.b.colour).toBe('b');
-    });
-
-    it("Starts on white's turn if no FEN passed in", () => {
-        const chessboard = new Chessboard();
-        expect(chessboard.activePlayer).toBe(chessboard.players.w);
-    });
-
-    it('Uses FEN to determine active player', () => {
-        const chessboard = new Chessboard(
-            'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 0 11'
-        );
-        expect(chessboard.activePlayer).toBe(chessboard.players.w);
-
-        const chessboard2 = new Chessboard(
-            'r1b1k1nr/pppp1ppp/2n5/2bNp3/2B1P1Q1/8/PPPP1qPP/R1BK2NR b kq - 1 6'
-        );
-        expect(chessboard2.activePlayer).toBe(chessboard2.players.b);
     });
 });

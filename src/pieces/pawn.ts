@@ -2,14 +2,17 @@ import { Colour, Move } from '../types';
 import { Piece } from './piece';
 
 export class Pawn extends Piece {
-    hasMoved: Boolean;
+    hasMoved: boolean;
 
     constructor(colour: Colour) {
         super('P', colour);
         this.hasMoved = false;
     }
 
-    getMaximumMoves({ canCaptureLeft = false, canCaptureRight = false } = {}): Move[] {
+    getMaximumMoves({
+        canCaptureLeft = false,
+        canCaptureRight = false,
+    } = {}): Move[] {
         const moves: Move[] = [[0, 1]];
 
         if (!this.hasMoved) moves.push([0, 2]);
