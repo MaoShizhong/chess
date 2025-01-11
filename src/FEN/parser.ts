@@ -5,6 +5,7 @@ import { Pawn } from '../pieces/pawn';
 import { Queen } from '../pieces/queen';
 import { Rook } from '../pieces/rook';
 import { CastlingRights, Colour, PieceLetter, Row } from '../types';
+import { Piece } from '../pieces/piece';
 
 const PIECES = {
     P: Pawn,
@@ -35,6 +36,44 @@ export class FEN {
                 : new PIECES[char as PieceLetter](colour);
         });
         return row.flat();
+    }
+
+    static serialise(
+        chessBoard: Row[],
+        activePlayer: Colour,
+        castlingRights: CastlingRights
+    ): string {
+        const FENPosition = chessBoard
+            .map((row) => {
+                let FENRow = '';
+                let emptyCounter = 0;
+                for (const square of row) {
+                    if (square instanceof Piece) {
+                        FENRow += emptyCounter;
+                        emptyCounter = 0;
+                        FENRow += square.letter;
+                    } else {
+                        emptyCounter++;
+                    }
+                }
+                FENRow += emptyCounter;
+                FENRow = FENRow.replaceAll('0', '');
+
+                return FENRow;
+            })
+            .join('/');
+
+        let FENCastling = '';
+        if (castlingRights.w.short) FENCastling += 'K';
+        if (castlingRights.w.long) FENCastling += 'Q';
+        if (castlingRights.b.short) FENCastling += 'k';
+        if (castlingRights.b.long) FENCastling += 'q';
+        if (!FENCastling) FENCastling = '-';
+
+        const FENSegments = [FENPosition, activePlayer, FENCastling];
+
+        // TODO: Handle EP and moves segments later
+        return `${FENSegments.join(' ')} - 0 1`;
     }
 
     static split(FENString: string): [string, Colour, CastlingRights] {
