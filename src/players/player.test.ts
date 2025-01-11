@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { Chess } from '..';
-
-const RANK = [null, 7, 6, 5, 4, 3, 2, 1, 0];
-const FILE = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 };
+import { RANK, FILE } from '../board/board';
 
 beforeEach(vi.clearAllMocks);
 
@@ -37,7 +35,7 @@ describe('Move', () => {
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'P' },
                 colour: 'w',
-                destination: [RANK[3], FILE.A],
+                destination: [RANK[3], FILE.a],
             });
         });
 
@@ -46,25 +44,25 @@ describe('Move', () => {
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'B' },
                 colour: 'w',
-                destination: [RANK[4], FILE.C],
+                destination: [RANK[4], FILE.c],
             });
         });
 
         test('Nge2 tells board to move a g-file knight to e2', () => {
             chess.players.w.move('Nge2');
             expect(chess.board.move).toHaveBeenCalledWith({
-                piece: { letter: 'N', file: FILE.G },
+                piece: { letter: 'N', file: FILE.g },
                 colour: 'w',
-                destination: [RANK[2], FILE.E],
+                destination: [RANK[2], FILE.e],
             });
         });
 
         test('Qh4e1 tells board to move an h-file 4th rank queen to e1', () => {
             chess.players.w.move('Qh4e1');
             expect(chess.board.move).toHaveBeenCalledWith({
-                piece: { letter: 'Q', file: FILE.H, rank: RANK[1] },
+                piece: { letter: 'Q', file: FILE.h, rank: RANK[1] },
                 colour: 'w',
-                destination: [RANK[1], FILE.E],
+                destination: [RANK[1], FILE.e],
             });
         });
     });
@@ -75,7 +73,7 @@ describe('Move', () => {
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'P' },
                 colour: 'b',
-                destination: [RANK[5], FILE.D],
+                destination: [RANK[5], FILE.d],
             });
         });
 
@@ -84,12 +82,12 @@ describe('Move', () => {
             expect(chess.board.move).toHaveBeenNthCalledWith(1, {
                 piece: { letter: 'K' },
                 colour: 'b',
-                destination: [RANK[8], FILE.G],
+                destination: [RANK[8], FILE.g],
             });
             expect(chess.board.move).toHaveBeenNthCalledWith(2, {
-                piece: { letter: 'R', file: FILE.H },
+                piece: { letter: 'R', file: FILE.h },
                 colour: 'b',
-                destination: [RANK[8], FILE.F],
+                destination: [RANK[8], FILE.f],
             });
         });
 
@@ -98,12 +96,12 @@ describe('Move', () => {
             expect(chess.board.move).toHaveBeenNthCalledWith(2, {
                 piece: { letter: 'K' },
                 colour: 'b',
-                destination: [RANK[8], FILE.C],
+                destination: [RANK[8], FILE.c],
             });
             expect(chess.board.move).toHaveBeenNthCalledWith(1, {
-                piece: { letter: 'R', file: FILE.A },
+                piece: { letter: 'R', file: FILE.a },
                 colour: 'b',
-                destination: [RANK[8], FILE.D],
+                destination: [RANK[8], FILE.d],
             });
         });
     });

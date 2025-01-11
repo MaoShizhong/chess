@@ -43,3 +43,13 @@ export type Square = Piece | null;
 export type Row = Square[];
 
 export type Move = [number, number];
+
+export type MoveInfo = {
+    piece: {
+        letter: PieceLetter;
+        file?: number;
+        rank?: number;
+    };
+    destination: Move;
+};
+export type PlayerMoveInfo = MoveInfo & { colour: Colour };
