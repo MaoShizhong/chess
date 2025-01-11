@@ -18,8 +18,8 @@ export class Chess {
 
         this.board = new Chessboard(position);
         this.players = {
-            w: new Player('w', castlingRights['w']),
-            b: new Player('b', castlingRights['b']),
+            w: new Player('w', castlingRights['w'], this.board),
+            b: new Player('b', castlingRights['b'], this.board),
         };
         this.activePlayer = this.players[activePlayer];
     }

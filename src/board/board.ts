@@ -14,6 +14,8 @@ export class Chessboard {
         this.board = this.#createBoard(FENPosition);
     }
 
+    move(): void {}
+
     flip(): void {
         this.board.reverse();
         this.board.forEach((row) => row.reverse());
