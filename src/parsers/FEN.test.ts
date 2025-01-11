@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import * as FEN from './parser';
+import * as FEN from './FEN';
 import { Rook } from '../pieces/rook';
 import { Bishop } from '../pieces/bishop';
 import { Knight } from '../pieces/knight';
