@@ -1,13 +1,49 @@
 import { MoveInfo, PieceLetter } from '../types';
 import { RANK, FILE } from '../board/board';
 
-export function parse(move: string): MoveInfo {
+const CASTLE = { SHORT: 'O-O', LONG: 'O-O-O' };
+
+export function parse(move: string): MoveInfo[] {
+    const moves: MoveInfo[] = [];
+
+    if (move === CASTLE.SHORT || move === CASTLE.LONG) {
+        moves.push(...parseCastling(move));
+    } else {
+        moves.push(parseSimple(move.split('')));
+    }
+
+    return moves;
+}
+
+function parseCastling(move: string): [MoveInfo, MoveInfo] {
+    const kingMove: MoveInfo = {
+        piece: { letter: 'K' },
+        destination: [0, 0],
+    };
+    const rookMove: MoveInfo = {
+        piece: { letter: 'R' },
+        destination: [0, 0],
+    };
+
+    if (move === CASTLE.SHORT) {
+        kingMove.destination[1] = FILE.g;
+        rookMove.destination[1] = FILE.f;
+        rookMove.piece.file = FILE.h;
+    } else {
+        kingMove.destination[1] = FILE.c;
+        rookMove.destination[1] = FILE.d;
+        rookMove.piece.file = FILE.a;
+    }
+
+    return [kingMove, rookMove];
+}
+
+function parseSimple(notationParts: string[]): MoveInfo {
     const moveInfo: MoveInfo = {
         piece: { letter: 'P' },
         destination: [0, 0],
     };
 
-    const notationParts = move.split('');
     switch (notationParts.length) {
         case 2: {
             const [toFile, toRank] = notationParts;
