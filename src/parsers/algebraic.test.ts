@@ -51,4 +51,29 @@ describe('Parsing algebraic notation', () => {
             });
         });
     });
+
+    describe('Castling', () => {
+        it('Parses castling as moving 2 pieces', () => {
+            expect(algebraic.parse('O-O')).toEqual([
+                {
+                    piece: { letter: 'K' },
+                    destination: [null, FILE.G],
+                },
+                {
+                    piece: { letter: 'R', file: FILE.H },
+                    destination: [null, FILE.F],
+                },
+            ]);
+            expect(algebraic.parse('O-O-O')).toEqual([
+                {
+                    piece: { letter: 'K' },
+                    destination: [null, FILE.G],
+                },
+                {
+                    piece: { letter: 'R', file: FILE.A },
+                    destination: [null, FILE.F],
+                },
+            ]);
+        });
+    });
 });
