@@ -2,9 +2,7 @@
     "compilerOptions": {
         "target": "ES2015",
         "useDefineForClassFields": true,
-        "lib": [
-            "ES2023"
-        ],
+        "lib": ["ES2023"],
         "module": "NodeNext",
         "skipLibCheck": true,
         /* Bundler mode */
@@ -22,7 +20,5 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": [
-        "src"
-    ]
+    "include": ["src"]
 }
