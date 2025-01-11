@@ -1,4 +1,4 @@
-import { Colour, Move, PieceLetter } from '../types';
+import { Colour, PieceLetter } from '../types';
 
 export class Piece {
     letter: PieceLetter;

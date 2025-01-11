@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { Chessboard } from './index';
-import { Colour, Square } from './types';
+import { Chessboard } from './board';
+import { Colour, Square } from '../types';
 
 describe('Chessboard instance', () => {
     it('Instantiates', () => {
