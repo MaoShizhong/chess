@@ -57,9 +57,7 @@ export class FEN {
                     }
                 }
                 FENRow += emptyCounter;
-                FENRow = FENRow.replaceAll('0', '');
-
-                return FENRow;
+                return FENRow.replaceAll('0', '');
             })
             .join('/');
 
