@@ -1,4 +1,4 @@
-import { FEN } from './FEN/parser';
+import * as FEN from './FEN/parser';
 import { Row } from './types';
 
 export class Chessboard {
