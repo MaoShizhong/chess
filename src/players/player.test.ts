@@ -53,16 +53,16 @@ describe('Move', () => {
         test('Nge2 tells board to move a g-file knight to e2', () => {
             chess.players.w.move('Nge2');
             expect(chess.board.move).toHaveBeenCalledWith({
-                piece: { letter: 'N', file: 6 },
+                piece: { letter: 'N', file: FILE.G },
                 colour: 'w',
                 destination: [RANK[2], FILE.E],
             });
         });
 
         test('Qh4e1 tells board to move an h-file 4th rank queen to e1', () => {
-            chess.players.w.move('Nge2');
+            chess.players.w.move('Qh4e1');
             expect(chess.board.move).toHaveBeenCalledWith({
-                piece: { letter: 'Q', file: 7, rank: 3 },
+                piece: { letter: 'Q', file: FILE.H, rank: RANK[1] },
                 colour: 'w',
                 destination: [RANK[1], FILE.E],
             });
