@@ -12,10 +12,10 @@ export class Pawn extends Piece {
         // Captures are in separate directions - no blocking pieces interfering with others
         const maxMoves: Moves = [
             [
-                [0, 1],
-                [0, 2],
+                [1, 0],
+                [2, 0],
             ],
-            [[-1, 1]],
+            [[1, -1]],
             [[1, 1]],
         ];
 

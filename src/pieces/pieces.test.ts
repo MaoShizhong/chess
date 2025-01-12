@@ -46,10 +46,10 @@ describe('Movement', () => {
                 const pawn = new Pawn('w');
                 expect(pawn.maximumMoves).toEqual([
                     [
-                        [0, 1],
-                        [0, 2],
+                        [1, 0],
+                        [2, 0],
                     ],
-                    [[-1, 1]],
+                    [[1, -1]],
                     [[1, 1]],
                 ]);
             });
@@ -58,8 +58,8 @@ describe('Movement', () => {
                 const pawn = new Pawn('w');
                 pawn.hasMoved = true;
                 expect(pawn.maximumMoves).toEqual([
-                    [[0, 1]],
-                    [[-1, 1]],
+                    [[1, 0]],
+                    [[1, -1]],
                     [[1, 1]],
                 ]);
             });
@@ -70,10 +70,10 @@ describe('Movement', () => {
                 const pawn = new Pawn('b');
                 expect(pawn.maximumMoves).toEqual([
                     [
-                        [-0, -1],
-                        [-0, -2],
+                        [-1, -0],
+                        [-2, -0],
                     ],
-                    [[1, -1]],
+                    [[-1, 1]],
                     [[-1, -1]],
                 ]);
             });
@@ -82,8 +82,8 @@ describe('Movement', () => {
                 const pawn = new Pawn('b');
                 pawn.hasMoved = true;
                 expect(pawn.maximumMoves).toEqual([
-                    [[-0, -1]],
-                    [[1, -1]],
+                    [[-1, -0]],
+                    [[-1, 1]],
                     [[-1, -1]],
                 ]);
             });
@@ -93,10 +93,10 @@ describe('Movement', () => {
     describe('Rook', () => {
         // prettier-ignore
         rookMaximumMoves = [
-            [ [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7] ], // forwards as white
-            [ [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0] ], // right as white
-            [ [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7] ], // left as white
+            [ [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0] ], // forwards as white
+            [ [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7] ], // right as white
             [ [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0] ], // backwards as white
+            [ [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7] ], // left as white
         ];
 
         it('Can move up to 7 squares orthogonally, each direction sorted by increasing distance', () => {
@@ -109,8 +109,8 @@ describe('Movement', () => {
         // prettier-ignore
         bishopMaximumMoves = [
             [ [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7] ], // a1-h8 diagonal as white
-            [ [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7] ], // a8-h1 diagonal as white
-            [ [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7] ], // h1-a8 diagonal as white
+            [ [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7] ], // h1-a8 diagonal as white
+            [ [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7] ], // a8-h1 diagonal as white
             [ [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7] ], // h8-a1 diagonal as white
         ];
 
@@ -158,8 +158,8 @@ describe('Movement', () => {
             [[-1, -1]],
             [[-1, 0]],
             [[-1, 1]],
-            [[2, 0]],
-            [[-3, 0]],
+            [[0, 2]],
+            [[0, -3]],
         ];
 
         it('Can move one square orthogonally and diagonally and castle both ways if not yet moved', () => {
