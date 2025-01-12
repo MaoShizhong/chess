@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Chessboard, FILE, RANK } from './board';
 import { Colour, Square } from '../types';
 import { King } from '../pieces/king';
+import { Rook } from '../pieces/rook';
 
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
@@ -221,14 +222,14 @@ describe('Valid moves', () => {
 
             // long castling only
             const chessboard2 = new Chessboard(
-                'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
+                'r1bqk2r/ppp2ppp/2np1n2/2b1p3/4P3/2NP4/PPPBQPPP/R3KBNR'
             );
 
             const kingMoves2 = chessboard2.getValidMoves(RANK[1], FILE.e);
             expect(kingMoves2).toContainEqual([RANK[1], FILE.c]);
 
             const chessboard3 = new Chessboard(
-                'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
+                'r3k2r/pppq1ppp/2np1n2/2b1p3/2B1P1b1/2NP1N1P/PPPB1PP1/R2Q1RK1'
             );
 
             // castling both ways
@@ -241,7 +242,7 @@ describe('Valid moves', () => {
             });
         });
 
-        it.skip('Filters out castling if movement blocked', () => {
+        it('Filters out castling if movement blocked', () => {
             const chessboard = new Chessboard(
                 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R'
             );
@@ -250,7 +251,7 @@ describe('Valid moves', () => {
             expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
         });
 
-        it.skip('Filters out castling if king has already moved', () => {
+        it('Filters out castling if king has already moved', () => {
             const chessboard = new Chessboard(
                 'r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R'
             );
@@ -259,6 +260,26 @@ describe('Valid moves', () => {
 
             const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
             expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
+        });
+
+        it('Filters out castling if paired rook has already moved', () => {
+            // Rook moved but back in right square
+            const chessboard = new Chessboard(
+                'rnbqk2r/pp2ppbp/5np1/2pp4/8/5NP1/PPPPPPBP/RNBQK2R'
+            );
+            const rook = chessboard.board[RANK[1]][FILE.h] as Rook;
+            rook.hasMoved = true;
+
+            const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
+
+            // Rook not in right square
+            const chessboard2 = new Chessboard(
+                'r2qkb1r/1pp1ppp1/p1n2n1p/3p4/3P1Bb1/P1NQ4/RPP1PPPP/4KBNR'
+            );
+
+            const kingMoves2 = chessboard2.getValidMoves(RANK[1], FILE.e);
+            expect(kingMoves2).not.toContainEqual([RANK[1], FILE.c]);
         });
 
         it.skip('Filters out castling if king is in or will pass through check', () => {
