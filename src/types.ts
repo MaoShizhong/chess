@@ -42,7 +42,11 @@ type Piece = Pawn | Knight | Bishop | Rook | Queen | King;
 export type Square = Piece | null;
 export type Row = Square[];
 
+// Number relative to current position, not the same as CoordinateNumber
 export type Move = [number, number];
+// Moves organised by blockable direction to facilitate valid move filtering
+export type SameDirectionMoves = Move[];
+export type Moves = SameDirectionMoves[];
 
 export type MoveInfo = {
     piece: {

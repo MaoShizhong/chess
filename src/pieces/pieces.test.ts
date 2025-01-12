@@ -6,7 +6,7 @@ import { Knight } from './knight';
 import { Bishop } from './bishop';
 import { Queen } from './queen';
 import { King } from './king';
-import { Move } from '../types';
+import { Moves } from '../types';
 
 describe('All piece types', () => {
     it('Extends Piece', () => {
@@ -32,122 +32,59 @@ describe('All piece types', () => {
         expect(new King('w').letter).toBe('K');
         expect(new King('b').letter).toBe('k');
     });
-
-    it('Reports if movement is blockable', () => {
-        expect(new Pawn('w').canBeBlocked).toBe(true);
-        expect(new Rook('w').canBeBlocked).toBe(true);
-        expect(new Knight('w').canBeBlocked).toBe(false);
-        expect(new Bishop('w').canBeBlocked).toBe(true);
-        expect(new Queen('w').canBeBlocked).toBe(true);
-        expect(new King('w').canBeBlocked).toBe(true);
-    });
 });
 
 describe('Movement', () => {
     // Queen test scope needs access to these
     // Moves defined inside respective piece test blocks
-    let rookMaximumMoves: Move[];
-    let bishopMaximumMoves: Move[];
+    let rookMaximumMoves: Moves;
+    let bishopMaximumMoves: Moves;
 
     describe('Pawn', () => {
         describe('White', () => {
-            it('Can move one or two squares forward if not yet moved', () => {
+            it('If not yet moved, all pawn moves possible (inc. captures and double move)', () => {
                 const pawn = new Pawn('w');
-                expect(pawn.getMaximumMoves()).toEqual([
-                    [0, 1],
-                    [0, 2],
+                expect(pawn.maximumMoves).toEqual([
+                    [
+                        [0, 1],
+                        [0, 2],
+                    ],
+                    [[-1, 1]],
+                    [[1, 1]],
                 ]);
             });
 
             it('Can move only one square forward if already moved', () => {
                 const pawn = new Pawn('w');
                 pawn.hasMoved = true;
-                expect(pawn.getMaximumMoves()).toEqual([[0, 1]]);
-            });
-
-            it('Can also move one square diagonally left if it can capture left', () => {
-                const pawn = new Pawn('w');
-                expect(pawn.getMaximumMoves({ canCaptureLeft: true })).toEqual([
-                    [0, 1],
-                    [0, 2],
-                    [-1, 1],
-                ]);
-            });
-
-            it('Can also move one square diagonally right if it can capture right', () => {
-                const pawn = new Pawn('w');
-                expect(pawn.getMaximumMoves({ canCaptureRight: true })).toEqual(
-                    [
-                        [0, 1],
-                        [0, 2],
-                        [1, 1],
-                    ]
-                );
-            });
-
-            it('Can also move one square diagonally both ways if can capture either direction', () => {
-                const pawn = new Pawn('w');
-                expect(
-                    pawn.getMaximumMoves({
-                        canCaptureLeft: true,
-                        canCaptureRight: true,
-                    })
-                ).toEqual([
-                    [0, 1],
-                    [0, 2],
-                    [-1, 1],
-                    [1, 1],
+                expect(pawn.maximumMoves).toEqual([
+                    [[0, 1]],
+                    [[-1, 1]],
+                    [[1, 1]],
                 ]);
             });
         });
 
         describe('Black (inverted direction)', () => {
-            it('Can move one or two squares forward if not yet moved', () => {
+            it('If not yet moved, all pawn moves possible (inc. captures and double move)', () => {
                 const pawn = new Pawn('b');
-                expect(pawn.getMaximumMoves()).toEqual([
-                    [-0, -1],
-                    [-0, -2],
+                expect(pawn.maximumMoves).toEqual([
+                    [
+                        [-0, -1],
+                        [-0, -2],
+                    ],
+                    [[1, -1]],
+                    [[-1, -1]],
                 ]);
             });
 
             it('Can move only one square forward if already moved', () => {
                 const pawn = new Pawn('b');
                 pawn.hasMoved = true;
-                expect(pawn.getMaximumMoves()).toEqual([[-0, -1]]);
-            });
-
-            it('Can also move one square diagonally left if it can capture left', () => {
-                const pawn = new Pawn('b');
-                expect(pawn.getMaximumMoves({ canCaptureLeft: true })).toEqual([
-                    [-0, -1],
-                    [-0, -2],
-                    [1, -1],
-                ]);
-            });
-
-            it('Can also move one square diagonally right if it can capture right', () => {
-                const pawn = new Pawn('b');
-                expect(pawn.getMaximumMoves({ canCaptureRight: true })).toEqual(
-                    [
-                        [-0, -1],
-                        [-0, -2],
-                        [-1, -1],
-                    ]
-                );
-            });
-
-            it('Can also move one square diagonally both ways if can capture either direction', () => {
-                const pawn = new Pawn('b');
-                expect(
-                    pawn.getMaximumMoves({
-                        canCaptureLeft: true,
-                        canCaptureRight: true,
-                    })
-                ).toEqual([
-                    [-0, -1],
-                    [-0, -2],
-                    [1, -1],
-                    [-1, -1],
+                expect(pawn.maximumMoves).toEqual([
+                    [[-0, -1]],
+                    [[1, -1]],
+                    [[-1, -1]],
                 ]);
             });
         });
@@ -156,55 +93,55 @@ describe('Movement', () => {
     describe('Rook', () => {
         // prettier-ignore
         rookMaximumMoves = [
-            [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
-            [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
-            [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
-            [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0],
+            [ [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7] ], // forwards as white
+            [ [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0] ], // right as white
+            [ [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7] ], // left as white
+            [ [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0] ], // backwards as white
         ];
 
-        it('Can move up to 7 squares orthogonally', () => {
+        it('Can move up to 7 squares orthogonally, each direction sorted by increasing distance', () => {
             const rook = new Rook('w');
-            expect(rook.getMaximumMoves()).toEqual(rookMaximumMoves);
+            expect(rook.maximumMoves).toEqual(rookMaximumMoves);
         });
     });
 
     describe('Bishop', () => {
         // prettier-ignore
         bishopMaximumMoves = [
-            [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
-            [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
-            [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
-            [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
+            [ [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7] ], // a1-h8 diagonal as white
+            [ [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7] ], // a8-h1 diagonal as white
+            [ [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7] ], // h1-a8 diagonal as white
+            [ [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7] ], // h8-a1 diagonal as white
         ];
 
-        it('Can move up to 7 squares diagonally', () => {
+        it('Can move up to 7 squares diagonally, each direction sorted by increasing distance', () => {
             const bishop = new Bishop('w');
-            expect(bishop.getMaximumMoves()).toEqual(bishopMaximumMoves);
+            expect(bishop.maximumMoves).toEqual(bishopMaximumMoves);
         });
     });
 
     describe('Knight', () => {
         const knightMaximumMoves = [
-            [1, 2],
-            [2, 1],
-            [2, -1],
-            [1, -2],
-            [-1, -2],
-            [-2, -1],
-            [-2, 1],
-            [-1, 2],
+            [[1, 2]],
+            [[2, 1]],
+            [[2, -1]],
+            [[1, -2]],
+            [[-1, -2]],
+            [[-2, -1]],
+            [[-2, 1]],
+            [[-1, 2]],
         ];
 
         it('Can move to all 8 squares 2x1 L-shapes away', () => {
             const knight = new Knight('w');
-            expect(knight.getMaximumMoves()).toEqual(knightMaximumMoves);
+            expect(knight.maximumMoves).toEqual(knightMaximumMoves);
         });
     });
 
     describe('Queen', () => {
-        it('Can move up to 7 squares orthogonally and diagonally', () => {
+        it('Can move up to 7 squares orthogonally and diagonally, each direction sorted by increasing distance', () => {
             const queen = new Queen('w');
-            expect(queen.getMaximumMoves()).toEqual([
+            expect(queen.maximumMoves).toEqual([
                 ...rookMaximumMoves,
                 ...bishopMaximumMoves,
             ]);
@@ -213,45 +150,27 @@ describe('Movement', () => {
 
     describe('King', () => {
         const baseKingMovements = [
-            [0, 1],
-            [1, 1],
-            [1, 0],
-            [1, -1],
-            [0, -1],
-            [-1, -1],
-            [-1, 0],
-            [-1, 1],
+            [[0, 1]],
+            [[1, 1]],
+            [[1, 0]],
+            [[1, -1]],
+            [[0, -1]],
+            [[-1, -1]],
+            [[-1, 0]],
+            [[-1, 1]],
+            [[2, 0]],
+            [[-3, 0]],
         ];
 
-        it('Can move one square orthogonally and diagonally if it cannot castle', () => {
+        it('Can move one square orthogonally and diagonally and castle both ways if not yet moved', () => {
             const king = new King('w');
-            expect(king.getMaximumMoves()).toEqual(baseKingMovements);
+            expect(king.maximumMoves).toEqual(baseKingMovements);
         });
 
-        it('Can also move two squares towards the h-file if it can castle short', () => {
+        it('Cannot make castling movement if already moved', () => {
             const king = new King('w');
-            expect(king.getMaximumMoves({ canCastleShort: true })).toEqual([
-                ...baseKingMovements,
-                [2, 0],
-            ]);
-        });
-
-        it('Can also move three squares towards the a-file if it can castle long', () => {
-            const king = new King('w');
-            expect(king.getMaximumMoves({ canCastleLong: true })).toEqual([
-                ...baseKingMovements,
-                [-3, 0],
-            ]);
-        });
-
-        it('Can make both castling movements if it can castle both ways', () => {
-            const king = new King('w');
-            expect(
-                king.getMaximumMoves({
-                    canCastleShort: true,
-                    canCastleLong: true,
-                })
-            ).toEqual([...baseKingMovements, [2, 0], [-3, 0]]);
+            king.hasMoved = true;
+            expect(king.maximumMoves).toEqual(baseKingMovements.slice(0, -2));
         });
     });
 });
