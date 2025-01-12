@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Chessboard, FILE, RANK } from './board';
 import { Colour, Square } from '../types';
+import { King } from '../pieces/king';
 
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
@@ -112,95 +113,170 @@ describe('Board', () => {
 });
 
 describe('Valid moves', () => {
-    it('Returns null if no piece on target square', () => {
-        const chessboard = new Chessboard(STARTING_POSITION);
-        expect(chessboard.getValidMoves(RANK[4], FILE.b)).toBe(null);
-        expect(chessboard.getValidMoves(RANK[6], FILE.c)).toBe(null);
+    describe('Non-castling', () => {
+        it('Returns null if no piece on target square', () => {
+            const chessboard = new Chessboard(STARTING_POSITION);
+            expect(chessboard.getValidMoves(RANK[4], FILE.b)).toBe(null);
+            expect(chessboard.getValidMoves(RANK[6], FILE.c)).toBe(null);
+        });
+
+        it('Reports valid moves for piece if not blocked by anything', () => {
+            const chessboard = new Chessboard('k7/8/8/8/4N3/8/P7/K7');
+
+            const pawnMoves = chessboard.getValidMoves(RANK[2], FILE.a);
+            expect(pawnMoves).toEqual([
+                [RANK[3], FILE.a],
+                [RANK[4], FILE.a],
+            ]);
+
+            const knightMoves = chessboard.getValidMoves(RANK[4], FILE.e);
+            expect(knightMoves).toEqual([
+                [RANK[5], FILE.c],
+                [RANK[6], FILE.d],
+                [RANK[6], FILE.f],
+                [RANK[5], FILE.g],
+                [RANK[3], FILE.g],
+                [RANK[2], FILE.f],
+                [RANK[2], FILE.d],
+                [RANK[3], FILE.c],
+            ]);
+        });
+
+        it('Filters out squares off the board', () => {
+            const chessboard = new Chessboard(STARTING_POSITION);
+
+            const e1KingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            [
+                [8, FILE.d],
+                [8, FILE.e],
+                [8, FILE.f],
+            ].forEach((square) => {
+                expect(e1KingMoves).not.toContainEqual(square);
+            });
+
+            const g1KnightMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            [
+                [9, FILE.f], // f-1
+                [9, FILE.h], // h-1
+                [8, FILE.e], // e0
+                [8, 8], // i0
+                [RANK[2], 8], // i2
+            ].forEach((square) => {
+                expect(g1KnightMoves).not.toContainEqual(square);
+            });
+        });
+
+        it('Filters out squares occupied by piece of same colour', () => {
+            const chessboard = new Chessboard(
+                '2b1k3/1p1p4/8/8/8/4P3/3P3P/4K1NR'
+            );
+
+            const c8BishopMoves = chessboard.getValidMoves(RANK[8], FILE.c);
+            [
+                [RANK[7], FILE.b],
+                [RANK[7], FILE.d],
+            ].forEach((square) => {
+                expect(c8BishopMoves).not.toContainEqual(square);
+            });
+
+            const h1RookMoves = chessboard.getValidMoves(RANK[1], FILE.h);
+            [
+                [RANK[1], FILE.g],
+                [RANK[2], FILE.h],
+            ].forEach((square) => {
+                expect(h1RookMoves).not.toContainEqual(square);
+            });
+
+            const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
+            expect(d2PawnMoves).not.toContainEqual([RANK[3], FILE.e]);
+        });
+
+        it('Does not filter out squares occupied by piece of opposite colour (capture available)', () => {
+            const chessboard = new Chessboard(
+                'rnbqkbnr/1ppp1ppR/p7/6N1/8/4p3/PPPPPP2/RNBQKB2'
+            );
+
+            const rookMoves = chessboard.getValidMoves(RANK[7], FILE.h);
+            [
+                [RANK[7], FILE.g], // black g7 pawn
+                [RANK[8], FILE.h], // black h8 rook
+            ].forEach((square) => {
+                expect(rookMoves).toContainEqual(square);
+            });
+
+            const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
+            expect(d2PawnMoves).toContainEqual([RANK[3], FILE.e]);
+        });
     });
 
-    it('Reports valid moves for piece if not blocked by anything', () => {
-        const chessboard = new Chessboard('k7/8/8/8/4N3/8/P7/K7');
+    describe('Castling', () => {
+        it('Includes any available castling move if allowed', () => {
+            // short castling only
+            const chessboard = new Chessboard(
+                'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
+            );
 
-        const pawnMoves = chessboard.getValidMoves(RANK[2], FILE.a);
-        expect(pawnMoves).toEqual([
-            [RANK[3], FILE.a],
-            [RANK[4], FILE.a],
-        ]);
+            const kingMoves1 = chessboard.getValidMoves(RANK[1], FILE.e);
+            expect(kingMoves1).toContainEqual([RANK[1], FILE.g]);
 
-        const knightMoves = chessboard.getValidMoves(RANK[4], FILE.e);
-        expect(knightMoves).toEqual([
-            [RANK[5], FILE.c],
-            [RANK[6], FILE.d],
-            [RANK[6], FILE.f],
-            [RANK[5], FILE.g],
-            [RANK[3], FILE.g],
-            [RANK[2], FILE.f],
-            [RANK[2], FILE.d],
-            [RANK[3], FILE.c],
-        ]);
-    });
+            // long castling only
+            const chessboard2 = new Chessboard(
+                'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
+            );
 
-    it('Filters out squares off the board', () => {
-        const chessboard = new Chessboard(STARTING_POSITION);
+            const kingMoves2 = chessboard2.getValidMoves(RANK[1], FILE.e);
+            expect(kingMoves2).toContainEqual([RANK[1], FILE.c]);
 
-        const e1KingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
-        [
-            [8, FILE.d],
-            [8, FILE.e],
-            [8, FILE.f],
-        ].forEach((square) => {
-            expect(e1KingMoves).not.toContainEqual(square);
+            const chessboard3 = new Chessboard(
+                'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
+            );
+
+            // castling both ways
+            const kingMoves3 = chessboard3.getValidMoves(RANK[8], FILE.e);
+            [
+                [RANK[8], FILE.c],
+                [RANK[8], FILE.g],
+            ].forEach((square) => {
+                expect(kingMoves3).toContainEqual(square);
+            });
         });
 
-        const g1KnightMoves = chessboard.getValidMoves(RANK[1], FILE.e);
-        [
-            [9, FILE.f], // f-1
-            [9, FILE.h], // h-1
-            [8, FILE.e], // e0
-            [8, 8], // i0
-            [RANK[2], 8], // i2
-        ].forEach((square) => {
-            expect(g1KnightMoves).not.toContainEqual(square);
-        });
-    });
+        it.skip('Filters out castling if movement blocked', () => {
+            const chessboard = new Chessboard(
+                'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R'
+            );
 
-    it('Filters out squares occupied by piece of same colour', () => {
-        const chessboard = new Chessboard('2b1k3/1p1p4/8/8/8/4P3/3P3P/4K1NR');
-
-        const c8BishopMoves = chessboard.getValidMoves(RANK[8], FILE.c);
-        [
-            [RANK[7], FILE.b],
-            [RANK[7], FILE.d],
-        ].forEach((square) => {
-            expect(c8BishopMoves).not.toContainEqual(square);
+            const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
         });
 
-        const h1RookMoves = chessboard.getValidMoves(RANK[1], FILE.h);
-        [
-            [RANK[1], FILE.g],
-            [RANK[2], FILE.h],
-        ].forEach((square) => {
-            expect(h1RookMoves).not.toContainEqual(square);
+        it.skip('Filters out castling if king has already moved', () => {
+            const chessboard = new Chessboard(
+                'r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R'
+            );
+            const king = chessboard.board[RANK[1]][FILE.e] as King;
+            king.hasMoved = true;
+
+            const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
         });
 
-        const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
-        expect(d2PawnMoves).not.toContainEqual([RANK[3], FILE.e]);
-    });
+        it.skip('Filters out castling if king is in or will pass through check', () => {
+            // is in check
+            const chessboard = new Chessboard(
+                'r3kbnr/1pp1ppp1/p1B4p/q7/3P2Q1/2N5/PPP2PPP/R1B1K1NR'
+            );
 
-    it('Does not filter out squares occupied by piece of opposite colour (capture available)', () => {
-        const chessboard = new Chessboard(
-            'rnbqkbnr/1ppp1ppR/p7/6N1/8/4p3/PPPPPP2/RNBQKB2'
-        );
+            const blackKingMoves = chessboard.getValidMoves(RANK[8], FILE.e);
+            expect(blackKingMoves).not.toContainEqual([RANK[8], FILE.c]);
 
-        const rookMoves = chessboard.getValidMoves(RANK[7], FILE.h);
-        [
-            [RANK[7], FILE.g], // black g7 pawn
-            [RANK[8], FILE.h], // black h8 rook
-        ].forEach((square) => {
-            expect(rookMoves).toContainEqual(square);
+            // passing through check
+            const chessboard2 = new Chessboard(
+                'r3kbnr/ppp1pppp/2n5/q7/3P2Q1/2N5/PPP2PPP/R1B1KBNR'
+            );
+
+            const blackKingMoves2 = chessboard2.getValidMoves(RANK[8], FILE.e);
+            expect(blackKingMoves2).not.toContainEqual([RANK[8], FILE.c]);
         });
-
-        const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
-        expect(d2PawnMoves).toContainEqual([RANK[3], FILE.e]);
     });
 });
