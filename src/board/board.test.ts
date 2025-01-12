@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Chessboard } from './board';
+import { Chessboard, FILE, RANK } from './board';
 import { Colour, Square } from '../types';
 
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
@@ -108,5 +108,92 @@ describe('Board', () => {
         expect(chessboard.board[0][3]?.letter).toBe('q');
         expect(chessboard.board[7][4]?.letter).toBe('K');
         expect(chessboard.board[0][4]?.letter).toBe('k');
+    });
+});
+
+describe.skip('Valid moves', () => {
+    it('Reports valid moves for piece if not blocked by anything', () => {
+        const chessboard = new Chessboard(STARTING_POSITION);
+
+        const a2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.a);
+        expect(a2PawnMoves).toEqual([
+            [RANK[3], FILE.a],
+            [RANK[4], FILE.a],
+        ]);
+
+        const f7PawnMoves = chessboard.getValidMoves(RANK[7], FILE.f);
+        expect(f7PawnMoves).toEqual([
+            [RANK[6], FILE.f],
+            [RANK[5], FILE.f],
+        ]);
+    });
+
+    it('Filters out squares off the board', () => {
+        const chessboard = new Chessboard(STARTING_POSITION);
+
+        const e1KingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+        [
+            [8, FILE.d],
+            [8, FILE.e],
+            [8, FILE.f],
+        ].forEach((square) => {
+            expect(e1KingMoves).not.toContainEqual(square);
+        });
+
+        const g1KnightMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+        [
+            [9, FILE.f], // f-1
+            [9, FILE.h], // h-1
+            [8, FILE.e], // e0
+            [8, 8], // i0
+            [RANK[2], 8], // i2
+        ].forEach((square) => {
+            expect(g1KnightMoves).not.toContainEqual(square);
+        });
+    });
+
+    it('Filters out squares occupied by piece of same colour', () => {
+        const chessboard = new Chessboard(STARTING_POSITION);
+
+        const c8BishopMoves = chessboard.getValidMoves(RANK[8], FILE.c);
+        [
+            [RANK[7], FILE.b],
+            [RANK[7], FILE.d],
+        ].forEach((square) => {
+            expect(c8BishopMoves).not.toContainEqual(square);
+        });
+
+        const h1RookMoves = chessboard.getValidMoves(RANK[1], FILE.h);
+        [
+            [RANK[1], FILE.g],
+            [RANK[2], FILE.h],
+        ].forEach((square) => {
+            expect(h1RookMoves).not.toContainEqual(square);
+        });
+
+        // Put white pawn on e3 - should not be capturable by white d2 pawn
+        chessboard.board[RANK[3]][FILE.e] = chessboard.board[RANK[2]][FILE.e];
+        const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
+        expect(d2PawnMoves).not.toContainEqual([RANK[3], FILE.e]);
+    });
+
+    it('Does not filter out squares occupied by piece of opposite colour (capture available)', () => {
+        const chessboard = new Chessboard(STARTING_POSITION);
+
+        // Put white rook on h7 attacking black's g7 pawn and h8 rook
+        chessboard.board[RANK[7]][FILE.h] = chessboard.board[RANK[1]][FILE.h];
+        // Put black pawn on e3 - capturable by white d2 pawn
+        chessboard.board[RANK[3]][FILE.e] = chessboard.board[RANK[7]][FILE.e];
+
+        const rookMoves = chessboard.getValidMoves(RANK[8], FILE.c);
+        [
+            [RANK[7], FILE.g], // black g7 pawn
+            [RANK[8], FILE.h], // black h8 rook
+        ].forEach((square) => {
+            expect(rookMoves).toContainEqual(square);
+        });
+
+        const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
+        expect(d2PawnMoves).toContainEqual([RANK[3], FILE.e]);
     });
 });
