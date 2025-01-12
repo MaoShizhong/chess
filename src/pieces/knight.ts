@@ -3,7 +3,7 @@ import { Piece } from './piece';
 
 export class Knight extends Piece {
     constructor(colour: Colour) {
-        super('N', colour);
+        super('N', colour, false);
     }
 
     getMaximumMoves(): Move[] {

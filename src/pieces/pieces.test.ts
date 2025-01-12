@@ -9,7 +9,7 @@ import { King } from './king';
 import { Move } from '../types';
 
 describe('All piece types', () => {
-    it('extends Piece', () => {
+    it('Extends Piece', () => {
         expect(new Pawn('w') instanceof Piece).toBe(true);
         expect(new Rook('w') instanceof Piece).toBe(true);
         expect(new Knight('w') instanceof Piece).toBe(true);
@@ -31,6 +31,15 @@ describe('All piece types', () => {
         expect(new Queen('b').letter).toBe('q');
         expect(new King('w').letter).toBe('K');
         expect(new King('b').letter).toBe('k');
+    });
+
+    it('Reports if movement is blockable', () => {
+        expect(new Pawn('w').canBeBlocked).toBe(true);
+        expect(new Rook('w').canBeBlocked).toBe(true);
+        expect(new Knight('w').canBeBlocked).toBe(false);
+        expect(new Bishop('w').canBeBlocked).toBe(true);
+        expect(new Queen('w').canBeBlocked).toBe(true);
+        expect(new King('w').canBeBlocked).toBe(true);
     });
 });
 
