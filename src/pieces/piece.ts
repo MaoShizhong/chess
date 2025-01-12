@@ -1,25 +1,19 @@
-import { Colour, Move, PieceLetter } from '../types';
+import { Colour, Moves, PieceLetter } from '../types';
 
+/**
+ * Abstract class instead of interface
+ * `instanceof Piece` required in Board valid move checks
+ */
 export abstract class Piece {
     letter: PieceLetter;
     colour: Colour;
-    #canBeBlocked: boolean;
 
-    constructor(
-        letter: PieceLetter,
-        colour: Colour,
-        canBeBlocked: boolean = true
-    ) {
+    constructor(letter: PieceLetter, colour: Colour) {
         // FEN has lowercase signifying black
         this.letter =
-            colour === 'w' ? letter : (letter.toLowerCase() as PieceLetter);
+            colour === 'w' ? letter : <PieceLetter>letter.toLowerCase();
         this.colour = colour;
-        this.#canBeBlocked = canBeBlocked;
     }
 
-    abstract getMaximumMoves(): Move[];
-
-    get canBeBlocked(): boolean {
-        return this.#canBeBlocked;
-    }
+    abstract get maximumMoves(): Moves;
 }

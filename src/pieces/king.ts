@@ -1,29 +1,28 @@
-import { Colour, Move } from '../types';
+import { Colour, Moves } from '../types';
 import { Piece } from './piece';
 
 export class King extends Piece {
+    hasMoved = false;
+
     constructor(colour: Colour) {
         super('K', colour);
     }
 
-    getMaximumMoves({
-        canCastleShort = false,
-        canCastleLong = false,
-    } = {}): Move[] {
-        const moves: Move[] = [
-            [0, 1],
-            [1, 1],
-            [1, 0],
-            [1, -1],
-            [0, -1],
-            [-1, -1],
-            [-1, 0],
-            [-1, 1],
+    get maximumMoves(): Moves {
+        const moves: Moves = [
+            [[0, 1]],
+            [[1, 1]],
+            [[1, 0]],
+            [[1, -1]],
+            [[0, -1]],
+            [[-1, -1]],
+            [[-1, 0]],
+            [[-1, 1]],
+            [[2, 0]],
+            [[-3, 0]],
         ];
-
-        if (canCastleShort) moves.push([2, 0]);
-        if (canCastleLong) moves.push([-3, 0]);
-
-        return moves;
+        return this.hasMoved
+            ? moves.slice(0, -2) // can't castle
+            : moves;
     }
 }
