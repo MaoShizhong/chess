@@ -159,7 +159,7 @@ describe('Movement', () => {
             [[-1, 0]],
             [[-1, 1]],
             [[0, 2]],
-            [[0, -3]],
+            [[0, -2]],
         ];
 
         it('Can move one square orthogonally and diagonally and castle both ways if not yet moved', () => {

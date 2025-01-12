@@ -19,7 +19,7 @@ export class King extends Piece {
             [[-1, 0]],
             [[-1, 1]],
             [[0, 2]],
-            [[0, -3]],
+            [[0, -2]],
         ];
         return this.hasMoved
             ? moves.slice(0, -2) // can't castle
