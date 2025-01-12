@@ -1,7 +1,8 @@
-import { Move, Row } from '../types';
+import { Move, Row, SameDirectionMoves, Square } from '../types';
 import * as FEN from '../parsers/FEN';
 import { Piece } from '../pieces/piece';
 import { Pawn } from '../pieces/pawn';
+import { King } from '../pieces/king';
 
 // Infinity to make ranks 1-indexed
 export const RANK = [Infinity, 7, 6, 5, 4, 3, 2, 1, 0];
@@ -21,45 +22,21 @@ export class Chessboard {
         if (!piece) {
             return null;
         }
+        const movingKing = piece instanceof King;
+        const canCastle = movingKing && !piece.hasMoved;
 
         const validMoves: Move[] = [];
-        for (const direction of piece.maximumMoves) {
-            for (const [rankShift, fileShift] of direction) {
-                const destinationRank = rank - rankShift;
-                const destinationFile = file - fileShift;
-                const square = this.board[destinationRank]?.[destinationFile];
+        piece.maximumMoves.forEach((direction, i, arr) => {
+            const isCastlingMoves = canCastle && i >= arr.length - 2;
 
-                const movingPawn = piece instanceof Pawn;
-                const movingPiece =
-                    piece instanceof Piece && !(piece instanceof Pawn);
-
-                const isOwnPieceBlocking =
-                    square instanceof Piece && square.colour === piece.colour;
-                const isEnemyPieceBlocking =
-                    square instanceof Piece && square.colour !== piece.colour;
-
-                const isCapture =
-                    (movingPiece && isEnemyPieceBlocking) ||
-                    (movingPawn &&
-                        destinationFile !== file &&
-                        isEnemyPieceBlocking);
-                const isJustMovement =
-                    (movingPiece && square === null) ||
-                    (movingPawn && destinationFile === file && square === null);
-
-                // discard square and those behind in same direction
-                if (isOwnPieceBlocking) {
-                    break;
-                } else if (isJustMovement || isCapture) {
-                    validMoves.push([destinationRank, destinationFile]);
-                }
-
-                // piece blocking so disscard behind but still include capturable square
-                if (isCapture) {
-                    break;
-                }
+            if (isCastlingMoves) {
+                // validMoves.push(...this.#getValidCastlingMoves(direction));
+            } else {
+                validMoves.push(
+                    ...this.#getValidNormalMoves(piece, rank, file, direction)
+                );
             }
-        }
+        });
         return validMoves;
     }
 
@@ -74,4 +51,52 @@ export class Chessboard {
         const FENRows = position.split('/');
         return FENRows.map((FENRow) => FEN.toChessRow(FENRow));
     }
+
+    #getValidNormalMoves(
+        piece: Piece,
+        rank: number,
+        file: number,
+        direction: SameDirectionMoves
+    ): Move[] {
+        const movingPawn = piece instanceof Pawn;
+        const movingPiece = piece instanceof Piece && !(piece instanceof Pawn);
+
+        const validMoves: Move[] = [];
+
+        for (const [rankShift, fileShift] of direction) {
+            const destinationRank = rank - rankShift;
+            const destinationFile = file - fileShift;
+            const square = this.board[destinationRank]?.[destinationFile];
+
+            const isOwnPieceBlocking =
+                square instanceof Piece && square.colour === piece.colour;
+            const isEnemyPieceBlocking =
+                square instanceof Piece && square.colour !== piece.colour;
+
+            const isCapture =
+                (movingPiece && isEnemyPieceBlocking) ||
+                (movingPawn &&
+                    destinationFile !== file &&
+                    isEnemyPieceBlocking);
+            const isJustMovement =
+                (movingPiece && square === null) ||
+                (movingPawn && destinationFile === file && square === null);
+
+            // discard square and those behind in same direction
+            if (isOwnPieceBlocking) {
+                break;
+            } else if (isJustMovement || isCapture) {
+                validMoves.push([destinationRank, destinationFile]);
+            }
+
+            // piece blocking so disscard behind but still include capturable square
+            if (isCapture) {
+                break;
+            }
+        }
+
+        return validMoves;
+    }
+
+    #getValidCastlingMoves(direction: SameDirectionMoves): Move[] {}
 }
