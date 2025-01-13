@@ -2,6 +2,8 @@ import { Colour, Moves } from '../types';
 import { Piece } from './piece';
 
 export class Rook extends Piece {
+    hasMoved = false;
+
     constructor(colour: Colour) {
         super('R', colour);
     }

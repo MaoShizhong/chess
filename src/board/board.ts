@@ -3,6 +3,7 @@ import * as FEN from '../parsers/FEN';
 import { Piece } from '../pieces/piece';
 import { Pawn } from '../pieces/pawn';
 import { King } from '../pieces/king';
+import { Rook } from '../pieces/rook';
 
 // Infinity to make ranks 1-indexed
 export const RANK = [Infinity, 7, 6, 5, 4, 3, 2, 1, 0];
@@ -27,11 +28,15 @@ export class Chessboard {
 
         const validMoves: Move[] = [];
         piece.maximumMoves.forEach((direction, i, arr) => {
-            const isCastlingMoves = canCastle && i >= arr.length - 2;
+            const isCastlingMove = canCastle && i >= arr.length - 2;
 
-            if (isCastlingMoves) {
-                // validMoves.push(...this.#getValidCastlingMoves(direction));
-            } else {
+            if (
+                isCastlingMove &&
+                this.#isValidCastlingMove(rank, file, direction[0])
+            ) {
+                const fileShift = direction[0][1];
+                validMoves.push([rank, file + fileShift]);
+            } else if (!isCastlingMove) {
                 validMoves.push(
                     ...this.#getValidNormalMoves(piece, rank, file, direction)
                 );
@@ -98,5 +103,21 @@ export class Chessboard {
         return validMoves;
     }
 
-    #getValidCastlingMoves(direction: SameDirectionMoves): Move[] {}
+    #isValidCastlingMove(rank: number, file: number, move: Move): boolean {
+        const castlingRank = this.board[rank];
+        const isShort = move[1] > 0;
+        const pairedRook = isShort
+            ? castlingRank[FILE.h]
+            : castlingRank[FILE.a];
+
+        if (!pairedRook) {
+            return false;
+        }
+
+        const isBlocked =
+            castlingRank[file + move[1] / 2] instanceof Piece ||
+            castlingRank[file + move[1]] instanceof Piece;
+
+        return !(pairedRook as Rook).hasMoved && !isBlocked;
+    }
 }
