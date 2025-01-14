@@ -113,6 +113,28 @@ describe('Board', () => {
     });
 });
 
+describe('Checks', () => {
+    it('Reports number of black pieces that can see a square when playing as white', () => {
+        const chessboard = new Chessboard(
+            'rnb1kbnr/pppp1ppp/8/4P3/5p1q/1PN5/P1PP2PP/R1BQKBNR'
+        );
+
+        expect(chessboard.countChecks('w', RANK[4], FILE.a)).toBe(0);
+        expect(chessboard.countChecks('w', RANK[1], FILE.e)).toBe(1);
+        expect(chessboard.countChecks('w', RANK[3], FILE.g)).toBe(2);
+    });
+
+    it('Reports number of white pieces that can see a square when playing as black', () => {
+        const chessboard = new Chessboard(
+            'r1bqk1nr/pppp2pp/2n5/2b1pp1Q/2B1P3/2N5/PPPP1PPP/R1B1K1NR'
+        );
+
+        expect(chessboard.countChecks('b', RANK[8], FILE.f)).toBe(0);
+        expect(chessboard.countChecks('b', RANK[8], FILE.e)).toBe(1);
+        expect(chessboard.countChecks('b', RANK[7], FILE.f)).toBe(2);
+    });
+});
+
 describe('Valid moves', () => {
     describe('Non-castling', () => {
         it('Returns null if no piece on target square', () => {
