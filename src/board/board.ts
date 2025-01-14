@@ -32,7 +32,9 @@ export class Chessboard {
 
         const validMoves: Move[] = [];
         piece.maximumMoves.forEach((direction, i, arr) => {
-            const isCastlingMove = canCastle && i >= arr.length - 2;
+            // Castling moves not necessary to check for counting current checks
+            // Including these leads to maximum call stack error
+            const isCastlingMove = canCastle && i >= arr.length - 2 && !isForCheckCount;
             const isValidCastling =
                 isCastlingMove &&
                 this.#isValidCastlingMove(rank, file, direction[0]);
@@ -144,21 +146,39 @@ export class Chessboard {
         return validMoves;
     }
 
-    #isValidCastlingMove(rank: number, file: number, move: Move): boolean {
+    #isValidCastlingMove(
+        rank: number,
+        file: number,
+        [_, fileShift]: Move
+    ): boolean {
         const castlingRank = this.board[rank];
-        const isShort = move[1] > 0;
+        const isShort = fileShift > 0;
         const pairedRook = isShort
             ? castlingRank[FILE.h]
             : castlingRank[FILE.a];
 
-        if (!pairedRook) {
+        if (!pairedRook || !(pairedRook instanceof Rook)) {
             return false;
         }
 
-        const isBlocked =
-            castlingRank[file + move[1] / 2] instanceof Piece ||
-            castlingRank[file + move[1]] instanceof Piece;
+        const castlingSquaresCoordinates = [
+            [rank, file],
+            [rank, file + fileShift / 2],
+            [rank, file + fileShift],
+        ];
+        const blockableSquares = [
+            castlingRank[castlingSquaresCoordinates[1][1]],
+            castlingRank[castlingSquaresCoordinates[2][1]],
+        ];
 
-        return !(pairedRook as Rook).hasMoved && !isBlocked;
+        const isBlocked = blockableSquares.some(
+            (square) => square instanceof Piece
+        );
+        const isCastlingThroughCheck = castlingSquaresCoordinates.some(
+            ([squareRank, squareFile]) =>
+                this.countChecks(pairedRook.colour, squareRank, squareFile) > 0
+        );
+
+        return !pairedRook.hasMoved && !isBlocked && !isCastlingThroughCheck;
     }
 }

@@ -302,7 +302,7 @@ describe('Valid moves', () => {
             expect(kingMoves2).not.toContainEqual([RANK[1], FILE.c]);
         });
 
-        it.skip('Filters out castling if king is in or will pass through check', () => {
+        it('Filters out castling if king is in or will pass through check', () => {
             // is in check
             // https://lichess.org/analysis/fromPosition/r3kbnr/1pp1ppp1/p1B4p/q7/3P2Q1/2N5/PPP2PPP/R1B1K1NR
             const chessboard = new Chessboard(
