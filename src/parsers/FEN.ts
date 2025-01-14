@@ -77,14 +77,9 @@ export function split(FENString: string): [string, Colour, CastlingRights] {
 
     const [position, activePlayer, castling] = segments;
     const castlingRights = {
-        w: { short: false, long: false },
-        b: { short: false, long: false },
+        w: { short: castling.includes('K'), long: castling.includes('Q') },
+        b: { short: castling.includes('k'), long: castling.includes('q') },
     };
-
-    if (castling.includes('K')) castlingRights.w.short = true;
-    if (castling.includes('Q')) castlingRights.w.long = true;
-    if (castling.includes('k')) castlingRights.b.short = true;
-    if (castling.includes('q')) castlingRights.b.long = true;
 
     return [position, activePlayer as Colour, castlingRights];
 }
