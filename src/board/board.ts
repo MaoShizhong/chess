@@ -1,4 +1,4 @@
-import { Move, Row, SameDirectionMoves, Square } from '../types';
+import { Colour, Move, Row, SameDirectionMoves } from '../types';
 import * as FEN from '../parsers/FEN';
 import { Piece } from '../pieces/piece';
 import { Pawn } from '../pieces/pawn';
@@ -18,7 +18,11 @@ export class Chessboard {
         this.board = this.#createBoard(FENPosition);
     }
 
-    getValidMoves(rank: number, file: number): Move[] | null {
+    getValidMoves(
+        rank: number,
+        file: number,
+        isForCheckCount: boolean = false
+    ): Move[] | null {
         const piece = this.board[rank][file];
         if (!piece) {
             return null;
@@ -29,20 +33,53 @@ export class Chessboard {
         const validMoves: Move[] = [];
         piece.maximumMoves.forEach((direction, i, arr) => {
             const isCastlingMove = canCastle && i >= arr.length - 2;
-
-            if (
+            const isValidCastling =
                 isCastlingMove &&
-                this.#isValidCastlingMove(rank, file, direction[0])
-            ) {
+                this.#isValidCastlingMove(rank, file, direction[0]);
+
+            if (isValidCastling) {
                 const fileShift = direction[0][1];
                 validMoves.push([rank, file + fileShift]);
             } else if (!isCastlingMove) {
                 validMoves.push(
-                    ...this.#getValidNormalMoves(piece, rank, file, direction)
+                    ...this.#getValidNormalMoves(
+                        piece,
+                        rank,
+                        file,
+                        direction,
+                        isForCheckCount
+                    )
                 );
             }
         });
         return validMoves;
+    }
+
+    countChecks(
+        activeColour: Colour,
+        targetRank: number,
+        targetFile: number
+    ): number {
+        let checks = 0;
+
+        this.board.forEach((row, rank) => {
+            row.forEach((square, file) => {
+                if (square === null || square.colour === activeColour) {
+                    return;
+                }
+
+                const enemyValidMoves = this.getValidMoves(rank, file, true);
+                const targetSquareSeen = enemyValidMoves?.find(
+                    (move) => move[0] === targetRank && move[1] === targetFile
+                );
+
+                if (targetSquareSeen) {
+                    checks++;
+                }
+            });
+        });
+
+        return checks;
     }
 
     move(): void {}
@@ -61,7 +98,8 @@ export class Chessboard {
         piece: Piece,
         rank: number,
         file: number,
-        direction: SameDirectionMoves
+        direction: SameDirectionMoves,
+        isForCheckCount: boolean
     ): Move[] {
         const movingPawn = piece instanceof Pawn;
         const movingPiece = piece instanceof Piece && !(piece instanceof Pawn);
@@ -78,11 +116,14 @@ export class Chessboard {
             const isEnemyPieceBlocking =
                 square instanceof Piece && square.colour !== piece.colour;
 
+            // Pawns normally can move diagonally only if an enemy piece is actually there to be captured.
+            // But empty capture squares must still be counted when determining if a castling king
+            // would pass through a checked square. Annoying edge cases :(
             const isCapture =
                 (movingPiece && isEnemyPieceBlocking) ||
                 (movingPawn &&
                     destinationFile !== file &&
-                    isEnemyPieceBlocking);
+                    (isEnemyPieceBlocking || isForCheckCount));
             const isJustMovement =
                 (movingPiece && square === null) ||
                 (movingPawn && destinationFile === file && square === null);
