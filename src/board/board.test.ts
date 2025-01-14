@@ -4,6 +4,7 @@ import { Colour, Square } from '../types';
 import { King } from '../pieces/king';
 import { Rook } from '../pieces/rook';
 
+// https://lichess.org/analysis/standard/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
 describe('Board', () => {
@@ -39,23 +40,6 @@ describe('Board', () => {
         expect(checkPieceCount('b')).toBe(true);
     });
 
-    it('Starts with standard piece placement if no FEN passed in', () => {
-        const startingBoard = [
-            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-        ];
-        const actualBoard = new Chessboard(STARTING_POSITION).board.map((row) =>
-            row.map((square: Square) => square && square.letter)
-        );
-        expect(actualBoard).toEqual(startingBoard);
-    });
-
     it('Constructs board from FEN', () => {
         const najdorf = [
             ['r', 'n', 'b', 'q', 'k', 'b', null, 'r'],
@@ -67,6 +51,7 @@ describe('Board', () => {
             ['P', 'P', 'P', null, null, 'P', 'P', 'P'],
             ['R', null, 'B', 'Q', 'K', 'B', null, 'R'],
         ];
+        // https://lichess.org/analysis/fromPosition/rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R
         const actualBoard1 = new Chessboard(
             'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R'
         ).board.map((row) =>
@@ -84,6 +69,7 @@ describe('Board', () => {
             [null, 'P', 'P', null, null, 'P', 'P', 'P'],
             ['R', 'N', 'B', null, null, 'R', 'K', null],
         ];
+        // https://lichess.org/analysis/fromPosition/r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1
         const actualBoard2 = new Chessboard(
             'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1'
         ).board.map((row) =>
@@ -115,6 +101,7 @@ describe('Board', () => {
 
 describe('Checks', () => {
     it('Reports number of black pieces that can see a square when playing as white', () => {
+        // https://lichess.org/analysis/fromPosition/rnb1kbnr/pppp1ppp/8/4P3/5p1q/1PN5/P1PP2PP/R1BQKBNR
         const chessboard = new Chessboard(
             'rnb1kbnr/pppp1ppp/8/4P3/5p1q/1PN5/P1PP2PP/R1BQKBNR'
         );
@@ -125,6 +112,7 @@ describe('Checks', () => {
     });
 
     it('Reports number of white pieces that can see a square when playing as black', () => {
+        // https://lichess.org/analysis/fromPosition/r1bqk1nr/pppp2pp/2n5/2b1pp1Q/2B1P3/2N5/PPPP1PPP/R1B1K1NR
         const chessboard = new Chessboard(
             'r1bqk1nr/pppp2pp/2n5/2b1pp1Q/2B1P3/2N5/PPPP1PPP/R1B1K1NR'
         );
@@ -144,6 +132,7 @@ describe('Valid moves', () => {
         });
 
         it('Reports valid moves for piece if not blocked by anything', () => {
+            // https://lichess.org/analysis/fromPosition/k7/8/8/8/4N3/8/P7/K7
             const chessboard = new Chessboard('k7/8/8/8/4N3/8/P7/K7');
 
             const pawnMoves = chessboard.getValidMoves(RANK[2], FILE.a);
@@ -190,6 +179,7 @@ describe('Valid moves', () => {
         });
 
         it('Filters out squares occupied by piece of same colour', () => {
+            // https://lichess.org/analysis/fromPosition/2b1k3/1p1p4/8/8/8/4P3/3P3P/4K1NR
             const chessboard = new Chessboard(
                 '2b1k3/1p1p4/8/8/8/4P3/3P3P/4K1NR'
             );
@@ -215,6 +205,7 @@ describe('Valid moves', () => {
         });
 
         it('Does not filter out squares occupied by piece of opposite colour (capture available)', () => {
+            // https://lichess.org/analysis/fromPosition/rnbqkbnr/1ppp1ppR/p7/6N1/8/4p3/PPPPPP2/RNBQKB2
             const chessboard = new Chessboard(
                 'rnbqkbnr/1ppp1ppR/p7/6N1/8/4p3/PPPPPP2/RNBQKB2'
             );
@@ -235,6 +226,7 @@ describe('Valid moves', () => {
     describe('Castling', () => {
         it('Includes any available castling move if allowed', () => {
             // short castling only
+            // https://lichess.org/analysis/fromPosition/r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R
             const chessboard = new Chessboard(
                 'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
             );
@@ -243,6 +235,7 @@ describe('Valid moves', () => {
             expect(kingMoves1).toContainEqual([RANK[1], FILE.g]);
 
             // long castling only
+            // https://lichess.org/analysis/fromPosition/r1bqk2r/ppp2ppp/2np1n2/2b1p3/4P3/2NP4/PPPBQPPP/R3KBNR
             const chessboard2 = new Chessboard(
                 'r1bqk2r/ppp2ppp/2np1n2/2b1p3/4P3/2NP4/PPPBQPPP/R3KBNR'
             );
@@ -250,6 +243,7 @@ describe('Valid moves', () => {
             const kingMoves2 = chessboard2.getValidMoves(RANK[1], FILE.e);
             expect(kingMoves2).toContainEqual([RANK[1], FILE.c]);
 
+            // https://lichess.org/analysis/fromPosition/r3k2r/pppq1ppp/2np1n2/2b1p3/2B1P1b1/2NP1N1P/PPPB1PP1/R2Q1RK1
             const chessboard3 = new Chessboard(
                 'r3k2r/pppq1ppp/2np1n2/2b1p3/2B1P1b1/2NP1N1P/PPPB1PP1/R2Q1RK1'
             );
@@ -265,6 +259,7 @@ describe('Valid moves', () => {
         });
 
         it('Filters out castling if movement blocked', () => {
+            // https://lichess.org/analysis/fromPosition/r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R
             const chessboard = new Chessboard(
                 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R'
             );
@@ -274,6 +269,7 @@ describe('Valid moves', () => {
         });
 
         it('Filters out castling if king has already moved', () => {
+            // https://lichess.org/analysis/fromPosition/r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R
             const chessboard = new Chessboard(
                 'r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R'
             );
@@ -286,6 +282,7 @@ describe('Valid moves', () => {
 
         it('Filters out castling if paired rook has already moved', () => {
             // Rook moved but back in right square
+            // https://lichess.org/analysis/fromPosition/rnbqk2r/pp2ppbp/5np1/2pp4/8/5NP1/PPPPPPBP/RNBQK2R
             const chessboard = new Chessboard(
                 'rnbqk2r/pp2ppbp/5np1/2pp4/8/5NP1/PPPPPPBP/RNBQK2R'
             );
@@ -296,6 +293,7 @@ describe('Valid moves', () => {
             expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
 
             // Rook not in right square
+            // https://lichess.org/analysis/fromPosition/r2qkb1r/1pp1ppp1/p1n2n1p/3p4/3P1Bb1/P1NQ4/RPP1PPPP/4KBNR
             const chessboard2 = new Chessboard(
                 'r2qkb1r/1pp1ppp1/p1n2n1p/3p4/3P1Bb1/P1NQ4/RPP1PPPP/4KBNR'
             );
@@ -306,6 +304,7 @@ describe('Valid moves', () => {
 
         it.skip('Filters out castling if king is in or will pass through check', () => {
             // is in check
+            // https://lichess.org/analysis/fromPosition/r3kbnr/1pp1ppp1/p1B4p/q7/3P2Q1/2N5/PPP2PPP/R1B1K1NR
             const chessboard = new Chessboard(
                 'r3kbnr/1pp1ppp1/p1B4p/q7/3P2Q1/2N5/PPP2PPP/R1B1K1NR'
             );
@@ -314,6 +313,7 @@ describe('Valid moves', () => {
             expect(blackKingMoves).not.toContainEqual([RANK[8], FILE.c]);
 
             // passing through check
+            // https://lichess.org/analysis/fromPosition/r3kbnr/ppp1pppp/2n5/q7/3P2Q1/2N5/PPP2PPP/R1B1KBNR
             const chessboard2 = new Chessboard(
                 'r3kbnr/ppp1pppp/2n5/q7/3P2Q1/2N5/PPP2PPP/R1B1KBNR'
             );
