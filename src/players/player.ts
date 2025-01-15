@@ -1,5 +1,5 @@
 import { Chessboard, RANK } from '../board/board';
-import { Colour, PlayerCastlingRights } from '../types';
+import { Colour, PieceLetter, PlayerCastlingRights } from '../types';
 import * as algebraic from '../parsers/algebraic';
 
 export class Player {
@@ -26,7 +26,12 @@ export class Player {
                 pieceToMove.destination[0] =
                     this.colour === 'w' ? RANK[1] : RANK[8];
             }
-            this.#board.move({ ...pieceToMove, colour: this.colour });
+            if (this.colour === 'b') {
+                pieceToMove.piece.letter = <PieceLetter>(
+                    pieceToMove.piece.letter.toLowerCase()
+                );
+            }
+            this.#board.move(pieceToMove);
         }
     }
 }

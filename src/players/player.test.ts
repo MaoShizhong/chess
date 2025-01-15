@@ -34,7 +34,6 @@ describe('Move', () => {
             chess.players.w.move('a3');
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'P' },
-                colour: 'w',
                 destination: [RANK[3], FILE.a],
             });
         });
@@ -43,7 +42,6 @@ describe('Move', () => {
             chess.players.w.move('Bc4');
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'B' },
-                colour: 'w',
                 destination: [RANK[4], FILE.c],
             });
         });
@@ -52,7 +50,6 @@ describe('Move', () => {
             chess.players.w.move('Nge2');
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'N', file: FILE.g },
-                colour: 'w',
                 destination: [RANK[2], FILE.e],
             });
         });
@@ -61,7 +58,6 @@ describe('Move', () => {
             chess.players.w.move('Qh4e1');
             expect(chess.board.move).toHaveBeenCalledWith({
                 piece: { letter: 'Q', file: FILE.h, rank: RANK[4] },
-                colour: 'w',
                 destination: [RANK[1], FILE.e],
             });
         });
@@ -71,8 +67,7 @@ describe('Move', () => {
         test('d5 tells board to move a pawn to d5', () => {
             chess.players.b.move('d5');
             expect(chess.board.move).toHaveBeenCalledWith({
-                piece: { letter: 'P' },
-                colour: 'b',
+                piece: { letter: 'p' },
                 destination: [RANK[5], FILE.d],
             });
         });
@@ -80,13 +75,11 @@ describe('Move', () => {
         test('O-O tells board to castle short', () => {
             chess.players.b.move('O-O');
             expect(chess.board.move).toHaveBeenNthCalledWith(1, {
-                piece: { letter: 'K' },
-                colour: 'b',
+                piece: { letter: 'k' },
                 destination: [RANK[8], FILE.g],
             });
             expect(chess.board.move).toHaveBeenNthCalledWith(2, {
-                piece: { letter: 'R', file: FILE.h },
-                colour: 'b',
+                piece: { letter: 'r', file: FILE.h },
                 destination: [RANK[8], FILE.f],
             });
         });
@@ -94,13 +87,11 @@ describe('Move', () => {
         test('O-O-O tells board to castle short', () => {
             chess.players.b.move('O-O-O');
             expect(chess.board.move).toHaveBeenNthCalledWith(1, {
-                piece: { letter: 'K' },
-                colour: 'b',
+                piece: { letter: 'k' },
                 destination: [RANK[8], FILE.c],
             });
             expect(chess.board.move).toHaveBeenNthCalledWith(2, {
-                piece: { letter: 'R', file: FILE.a },
-                colour: 'b',
+                piece: { letter: 'r', file: FILE.a },
                 destination: [RANK[8], FILE.d],
             });
         });
