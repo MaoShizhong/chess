@@ -128,9 +128,9 @@ describe('Move', () => {
         });
 
         describe('Invalid moves', () => {
-            // https://lichess.org/analysis/standard/rnbqk2r/1pppp1p1/4P2p/8/8/pP3p2/P1PP1PPP/R3KBNR_w_KQkq_-_0_5
+            // https://lichess.org/analysis/standard/rnbqk2r/2ppp1p1/1p2P2p/1B6/8/pP3p2/P1PP1PPP/R3K1NR_w_KQkq_-_0_6
             const chess = new Chess(
-                'rnbqk2r/1pppp1p1/4P2p/8/8/pP3p2/P1PP1PPP/R3KBNR w KQkq - 0 5'
+                'rnbqk2r/2ppp1p1/1p2P2p/1B6/8/pP3p2/P1PP1PPP/R3K1NR w KQkq - 0 6'
             );
             chess.board.move = vi.fn();
 
@@ -152,17 +152,27 @@ describe('Move', () => {
                 chess.players.w.move('f3');
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
+
+            it.skip('Does not allow a move if it would put own king in check', () => {
+                // white's pawn on e6 sees f7
+                chess.players.b.move('Kf7');
+                expect(chess.board.move).not.toHaveBeenCalled();
+
+                // d7 pawn pinned by white's b5 bishop
+                chess.players.b.move('d6');
+                expect(chess.board.move).not.toHaveBeenCalled();
+            });
         });
     });
 
     describe('Captures', () => {
-        // https://lichess.org/analysis/standard/1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R_w_KQ_-_0_1
-        const chess = new Chess(
-            '1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R w KQ - 0 1'
-        );
-        chess.board.move = vi.fn();
-
         describe('Valid captures', () => {
+            // https://lichess.org/analysis/standard/1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R_w_KQ_-_0_1
+            const chess = new Chess(
+                '1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R w KQ - 0 1'
+            );
+            chess.board.move = vi.fn();
+
             test('axb3 tells pawn on a2 to capture on b3', () => {
                 chess.players.w.move('axb3');
                 expect(chess.board.move).toHaveBeenCalledWith({
@@ -197,9 +207,15 @@ describe('Move', () => {
         });
 
         describe('Invalid captures', () => {
+            // https://lichess.org/analysis/standard/1rb2k2/p2pp1R1/B1n2n1P/2p5/N2br1N1/1p2PQ2/P4P2/4K2R_w_K_-_0_1
+            const chess = new Chess(
+                '1rb2k2/p2pp1R1/B1n2n1P/2p5/N2br1N1/1p2PQ2/P4P2/4K2R w K - 0 1'
+            );
+            chess.board.move = vi.fn();
+
             it('Does not call Board.prototype.move if capture is not valid', () => {
-                // No knight can take on h5
-                chess.players.w.move('Nxh5');
+                // No knight can take on b3
+                chess.players.w.move('Nxb3');
                 expect(chess.board.move).not.toHaveBeenCalled();
 
                 // No piece to capture on b7
@@ -208,6 +224,20 @@ describe('Move', () => {
 
                 // Can't capture own colour piece
                 chess.players.b.move('Kxe7');
+                expect(chess.board.move).not.toHaveBeenCalled();
+            });
+
+            it.skip('Does not allow a capture if it would put own king in check', () => {
+                // pawn pinned by black rook on e4
+                chess.players.w.move('exd4');
+                expect(chess.board.move).not.toHaveBeenCalled();
+
+                // knight pinned by white's queen on f3
+                chess.players.b.move('Nxg4');
+                expect(chess.board.move).not.toHaveBeenCalled();
+
+                // white h6 pawn protects g7 rook
+                chess.players.b.move('Kxg7');
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
         });
