@@ -7,6 +7,7 @@ import {
     PlayerCastlingRights,
 } from '../types';
 import * as algebraic from '../parsers/algebraic';
+import * as FEN from '../parsers/FEN';
 
 export class Player {
     colour: Colour;
@@ -47,10 +48,20 @@ export class Player {
                 return;
             }
 
-            this.#board.move({
-                from: [fromRank, fromFile],
+            const moveInfo = {
+                from: [fromRank, fromFile] as Move,
                 to: pieceToMove.destination,
-            });
+            };
+            const willPutKingInCheck = this.#simulateMove(
+                FEN.serialisePosition(this.#board.board),
+                moveInfo
+            );
+
+            if (willPutKingInCheck) {
+                return;
+            }
+
+            this.#board.move(moveInfo);
         }
     }
 
@@ -94,5 +105,14 @@ export class Player {
         });
 
         return fromSquare ? [true, ...fromSquare] : [false, 0, 0];
+    }
+
+    #simulateMove(
+        FENPosition: string,
+        moveInfo: { from: Move; to: Move }
+    ): boolean {
+        const board = new Chessboard(FENPosition);
+        board.move(moveInfo);
+        return board.isKingInCheck(this.colour);
     }
 }

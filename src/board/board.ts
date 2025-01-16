@@ -97,6 +97,19 @@ export class Chessboard {
         return checks;
     }
 
+    isKingInCheck(colour: Colour): boolean {
+        const kingRank = this.board.findIndex((row) =>
+            row.find(
+                (square) => square instanceof King && square.colour === colour
+            )
+        );
+        const kingFile = this.board[kingRank].findIndex(
+            (square) => square instanceof King && square.colour === colour
+        );
+
+        return this.countChecks(colour, kingRank, kingFile) > 0;
+    }
+
     move({ from, to }: { from: Move; to: Move }): void {
         const [fromRank, fromFile] = from;
         const [toRank, toFile] = to;

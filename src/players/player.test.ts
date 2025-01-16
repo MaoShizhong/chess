@@ -153,7 +153,7 @@ describe('Move', () => {
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
 
-            it.skip('Does not allow a move if it would put own king in check', () => {
+            it('Does not allow a move if it would put own king in check', () => {
                 // white's pawn on e6 sees f7
                 chess.players.b.move('Kf7');
                 expect(chess.board.move).not.toHaveBeenCalled();
@@ -227,7 +227,7 @@ describe('Move', () => {
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
 
-            it.skip('Does not allow a capture if it would put own king in check', () => {
+            it('Does not allow a capture if it would put own king in check', () => {
                 // pawn pinned by black rook on e4
                 chess.players.w.move('exd4');
                 expect(chess.board.move).not.toHaveBeenCalled();
