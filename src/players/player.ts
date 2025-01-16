@@ -24,10 +24,10 @@ export class Player {
     }
 
     move(destination: string): void {
-        const moves = algebraic.parse(destination);
-        const isCastling = moves.length === 2;
+        const { isCapture, piecesToMove } = algebraic.parse(destination);
+        const isCastling = piecesToMove.length === 2;
 
-        for (const pieceToMove of moves) {
+        for (const pieceToMove of piecesToMove) {
             if (isCastling) {
                 pieceToMove.destination[0] =
                     this.colour === 'w' ? RANK[1] : RANK[8];
@@ -38,8 +38,10 @@ export class Player {
                 );
             }
 
-            const [validPiece, fromRank, fromFile] =
-                this.#findFromSquare(pieceToMove);
+            const [validPiece, fromRank, fromFile] = this.#findFromSquare(
+                pieceToMove,
+                isCapture
+            );
 
             if (!validPiece) {
                 return;
@@ -52,7 +54,10 @@ export class Player {
         }
     }
 
-    #findFromSquare({ piece, destination }: MoveInfo): [boolean, ...Move] {
+    #findFromSquare(
+        { piece, destination }: MoveInfo,
+        isCapture: boolean
+    ): [boolean, ...Move] {
         const squares: Move[] = [];
         this.#board.board.forEach((row, rank) => {
             row.forEach((square, file) => {
@@ -60,7 +65,11 @@ export class Player {
                     return;
                 }
 
-                const pieceValidMoves = this.#board.getValidMoves(rank, file);
+                const pieceValidMoves = this.#board.getValidMoves({
+                    rank,
+                    file,
+                    isCapture,
+                });
                 const pieceCanSeeDestination = pieceValidMoves?.some(
                     (validMove) =>
                         validMove[0] === destination[0] &&

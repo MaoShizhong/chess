@@ -18,11 +18,17 @@ export class Chessboard {
         this.board = this.#createBoard(FENPosition);
     }
 
-    getValidMoves(
-        rank: number,
-        file: number,
-        isForCheckCount: boolean = false
-    ): Move[] | null {
+    getValidMoves({
+        rank,
+        file,
+        isCapture = true,
+        isForCheckCount = false,
+    }: {
+        rank: number;
+        file: number;
+        isCapture?: boolean;
+        isForCheckCount?: boolean;
+    }): Move[] | null {
         const piece = this.board[rank][file];
         if (!piece) {
             return null;
@@ -50,6 +56,7 @@ export class Chessboard {
                         rank,
                         file,
                         direction,
+                        isCapture,
                         isForCheckCount
                     )
                 );
@@ -71,7 +78,12 @@ export class Chessboard {
                     return;
                 }
 
-                const enemyValidMoves = this.getValidMoves(rank, file, true);
+                const enemyValidMoves = this.getValidMoves({
+                    rank,
+                    file,
+                    isCapture: true,
+                    isForCheckCount: true,
+                });
                 const targetSquareSeen = enemyValidMoves?.find(
                     (move) => move[0] === targetRank && move[1] === targetFile
                 );
@@ -85,7 +97,7 @@ export class Chessboard {
         return checks;
     }
 
-    move([fromRank, fromFile]: Move, [toRank, toFile]: Move): void {}
+    move({ from, to }: { from: Move; to: Move }): void {}
 
     flip(): void {
         this.board.reverse();
@@ -102,6 +114,7 @@ export class Chessboard {
         rank: number,
         file: number,
         direction: SameDirectionMoves,
+        isCaptureAttempt: boolean,
         isForCheckCount: boolean
     ): Move[] {
         const movingPawn = piece instanceof Pawn;
@@ -119,14 +132,17 @@ export class Chessboard {
             const isEnemyPieceBlocking =
                 square instanceof Piece && square.colour !== piece.colour;
 
+            const isNormalCapture = movingPiece && isEnemyPieceBlocking;
             // Pawns normally can move diagonally only if an enemy piece is actually there to be captured.
             // But empty capture squares must still be counted when determining if a castling king
             // would pass through a checked square. Annoying edge cases :(
-            const isCapture =
-                (movingPiece && isEnemyPieceBlocking) ||
-                (movingPawn &&
-                    destinationFile !== file &&
-                    (isEnemyPieceBlocking || isForCheckCount));
+            // They should also only be allowed to do so if a capture attempt e.g. axb3 and not just b3
+            const isPawnCapture =
+                movingPawn &&
+                destinationFile !== file &&
+                isCaptureAttempt &&
+                (isEnemyPieceBlocking || isForCheckCount);
+            const isCapture = isNormalCapture || isPawnCapture;
             const isJustMovement =
                 (movingPiece && square === null) ||
                 (movingPawn && destinationFile === file && square === null);

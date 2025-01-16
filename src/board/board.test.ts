@@ -127,21 +127,31 @@ describe('Valid moves', () => {
     describe('Non-castling', () => {
         it('Returns null if no piece on target square', () => {
             const chessboard = new Chessboard(STARTING_POSITION);
-            expect(chessboard.getValidMoves(RANK[4], FILE.b)).toBe(null);
-            expect(chessboard.getValidMoves(RANK[6], FILE.c)).toBe(null);
+            expect(
+                chessboard.getValidMoves({ rank: RANK[4], file: FILE.b })
+            ).toBe(null);
+            expect(
+                chessboard.getValidMoves({ rank: RANK[6], file: FILE.c })
+            ).toBe(null);
         });
 
         it('Reports valid moves for piece if not blocked by anything', () => {
             // https://lichess.org/analysis/fromPosition/k7/8/8/8/4N3/8/P7/K7
             const chessboard = new Chessboard('k7/8/8/8/4N3/8/P7/K7');
 
-            const pawnMoves = chessboard.getValidMoves(RANK[2], FILE.a);
+            const pawnMoves = chessboard.getValidMoves({
+                rank: RANK[2],
+                file: FILE.a,
+            });
             expect(pawnMoves).toEqual([
                 [RANK[3], FILE.a],
                 [RANK[4], FILE.a],
             ]);
 
-            const knightMoves = chessboard.getValidMoves(RANK[4], FILE.e);
+            const knightMoves = chessboard.getValidMoves({
+                rank: RANK[4],
+                file: FILE.e,
+            });
             expect(knightMoves).toEqual([
                 [RANK[5], FILE.c],
                 [RANK[6], FILE.d],
@@ -157,7 +167,10 @@ describe('Valid moves', () => {
         it('Filters out squares off the board', () => {
             const chessboard = new Chessboard(STARTING_POSITION);
 
-            const e1KingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            const e1KingMoves = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             [
                 [8, FILE.d],
                 [8, FILE.e],
@@ -166,7 +179,10 @@ describe('Valid moves', () => {
                 expect(e1KingMoves).not.toContainEqual(square);
             });
 
-            const g1KnightMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            const g1KnightMoves = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             [
                 [9, FILE.f], // f-1
                 [9, FILE.h], // h-1
@@ -184,7 +200,10 @@ describe('Valid moves', () => {
                 '2b1k3/1p1p4/8/8/8/4P3/3P3P/4K1NR'
             );
 
-            const c8BishopMoves = chessboard.getValidMoves(RANK[8], FILE.c);
+            const c8BishopMoves = chessboard.getValidMoves({
+                rank: RANK[8],
+                file: FILE.c,
+            });
             [
                 [RANK[7], FILE.b],
                 [RANK[7], FILE.d],
@@ -192,7 +211,10 @@ describe('Valid moves', () => {
                 expect(c8BishopMoves).not.toContainEqual(square);
             });
 
-            const h1RookMoves = chessboard.getValidMoves(RANK[1], FILE.h);
+            const h1RookMoves = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.h,
+            });
             [
                 [RANK[1], FILE.g],
                 [RANK[2], FILE.h],
@@ -200,7 +222,10 @@ describe('Valid moves', () => {
                 expect(h1RookMoves).not.toContainEqual(square);
             });
 
-            const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
+            const d2PawnMoves = chessboard.getValidMoves({
+                rank: RANK[2],
+                file: FILE.d,
+            });
             expect(d2PawnMoves).not.toContainEqual([RANK[3], FILE.e]);
         });
 
@@ -210,7 +235,10 @@ describe('Valid moves', () => {
                 'rnbqkbnr/1ppp1ppR/p7/6N1/8/4p3/PPPPPP2/RNBQKB2'
             );
 
-            const rookMoves = chessboard.getValidMoves(RANK[7], FILE.h);
+            const rookMoves = chessboard.getValidMoves({
+                rank: RANK[7],
+                file: FILE.h,
+            });
             [
                 [RANK[7], FILE.g], // black g7 pawn
                 [RANK[8], FILE.h], // black h8 rook
@@ -218,7 +246,10 @@ describe('Valid moves', () => {
                 expect(rookMoves).toContainEqual(square);
             });
 
-            const d2PawnMoves = chessboard.getValidMoves(RANK[2], FILE.d);
+            const d2PawnMoves = chessboard.getValidMoves({
+                rank: RANK[2],
+                file: FILE.d,
+            });
             expect(d2PawnMoves).toContainEqual([RANK[3], FILE.e]);
         });
     });
@@ -231,7 +262,10 @@ describe('Valid moves', () => {
                 'r1bqkbnr/pp2pppp/2np4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R'
             );
 
-            const kingMoves1 = chessboard.getValidMoves(RANK[1], FILE.e);
+            const kingMoves1 = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             expect(kingMoves1).toContainEqual([RANK[1], FILE.g]);
 
             // long castling only
@@ -240,7 +274,10 @@ describe('Valid moves', () => {
                 'r1bqk2r/ppp2ppp/2np1n2/2b1p3/4P3/2NP4/PPPBQPPP/R3KBNR'
             );
 
-            const kingMoves2 = chessboard2.getValidMoves(RANK[1], FILE.e);
+            const kingMoves2 = chessboard2.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             expect(kingMoves2).toContainEqual([RANK[1], FILE.c]);
 
             // https://lichess.org/analysis/fromPosition/r3k2r/pppq1ppp/2np1n2/2b1p3/2B1P1b1/2NP1N1P/PPPB1PP1/R2Q1RK1
@@ -249,7 +286,10 @@ describe('Valid moves', () => {
             );
 
             // castling both ways
-            const kingMoves3 = chessboard3.getValidMoves(RANK[8], FILE.e);
+            const kingMoves3 = chessboard3.getValidMoves({
+                rank: RANK[8],
+                file: FILE.e,
+            });
             [
                 [RANK[8], FILE.c],
                 [RANK[8], FILE.g],
@@ -264,7 +304,10 @@ describe('Valid moves', () => {
                 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R'
             );
 
-            const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            const kingMoves = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
         });
 
@@ -276,7 +319,10 @@ describe('Valid moves', () => {
             const king = chessboard.board[RANK[1]][FILE.e] as King;
             king.hasMoved = true;
 
-            const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            const kingMoves = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
         });
 
@@ -289,7 +335,10 @@ describe('Valid moves', () => {
             const rook = chessboard.board[RANK[1]][FILE.h] as Rook;
             rook.hasMoved = true;
 
-            const kingMoves = chessboard.getValidMoves(RANK[1], FILE.e);
+            const kingMoves = chessboard.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             expect(kingMoves).not.toContainEqual([RANK[1], FILE.g]);
 
             // Rook not in right square
@@ -298,7 +347,10 @@ describe('Valid moves', () => {
                 'r2qkb1r/1pp1ppp1/p1n2n1p/3p4/3P1Bb1/P1NQ4/RPP1PPPP/4KBNR'
             );
 
-            const kingMoves2 = chessboard2.getValidMoves(RANK[1], FILE.e);
+            const kingMoves2 = chessboard2.getValidMoves({
+                rank: RANK[1],
+                file: FILE.e,
+            });
             expect(kingMoves2).not.toContainEqual([RANK[1], FILE.c]);
         });
 
@@ -309,7 +361,10 @@ describe('Valid moves', () => {
                 'r3kbnr/1pp1ppp1/p1B4p/q7/3P2Q1/2N5/PPP2PPP/R1B1K1NR'
             );
 
-            const blackKingMoves = chessboard.getValidMoves(RANK[8], FILE.e);
+            const blackKingMoves = chessboard.getValidMoves({
+                rank: RANK[8],
+                file: FILE.e,
+            });
             expect(blackKingMoves).not.toContainEqual([RANK[8], FILE.c]);
 
             // passing through check
@@ -318,7 +373,10 @@ describe('Valid moves', () => {
                 'r3kbnr/ppp1pppp/2n5/q7/3P2Q1/2N5/PPP2PPP/R1B1KBNR'
             );
 
-            const blackKingMoves2 = chessboard2.getValidMoves(RANK[8], FILE.e);
+            const blackKingMoves2 = chessboard2.getValidMoves({
+                rank: RANK[8],
+                file: FILE.e,
+            });
             expect(blackKingMoves2).not.toContainEqual([RANK[8], FILE.c]);
         });
     });
