@@ -163,6 +163,22 @@ describe('Move', () => {
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
         });
+
+        describe('Under check', () => {
+            // https://lichess.org/analysis/3k4/8/4q3/8/8/8/2N5/4K3_w_-_-_0_1
+            const chess = new Chess('3k4/8/4q3/8/8/8/2N5/4K3 w - - 0 1');
+            chess.board.move = vi.fn();
+
+            it('Allows king move if it will stop check', () => {
+                chess.players.w.move('Kf1');
+                expect(chess.board.move).toHaveBeenCalled();
+            });
+
+            it('Allows non-king move if it will stop check (blocking single check)', () => {
+                chess.players.w.move('Ne3');
+                expect(chess.board.move).toHaveBeenCalled();
+            });
+        });
     });
 
     describe('Captures', () => {
@@ -238,6 +254,26 @@ describe('Move', () => {
 
                 // white h6 pawn protects g7 rook
                 chess.players.b.move('Kxg7');
+                expect(chess.board.move).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('Under check', () => {
+            it('Allows non-king capture if it will stop check (capturing single check)', () => {
+                // https://lichess.org/analysis/3k4/8/8/8/1b6/8/2N5/4K3_w_-_-_0_1
+                const chess = new Chess('3k4/8/8/8/1b6/8/2N5/4K3 w - - 0 1');
+                chess.board.move = vi.fn();
+
+                chess.players.w.move('Nxb4');
+                expect(chess.board.move).toHaveBeenCalled();
+            });
+
+            it('Prevents non-king capture if it will not stop check (under double check)', () => {
+                // https://lichess.org/analysis/3k4/8/4q3/8/8/8/2N5/4K3_w_-_-_0_1
+                const chess = new Chess('3k4/8/4q3/8/1b6/8/2N5/4K3 w - - 0 1');
+                chess.board.move = vi.fn();
+
+                chess.players.w.move('Nxb4');
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
         });
