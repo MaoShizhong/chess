@@ -38,7 +38,12 @@ export class Player {
                 );
             }
 
-            const [fromRank, fromFile] = this.#findFromSquare(pieceToMove);
+            const [validPiece, fromRank, fromFile] =
+                this.#findFromSquare(pieceToMove);
+
+            if (!validPiece) {
+                return;
+            }
 
             this.#board.move({
                 from: [fromRank, fromFile],
@@ -47,7 +52,7 @@ export class Player {
         }
     }
 
-    #findFromSquare({ piece, destination }: MoveInfo): Move {
+    #findFromSquare({ piece, destination }: MoveInfo): [boolean, ...Move] {
         const squares: Move[] = [];
         this.#board.board.forEach((row, rank) => {
             row.forEach((square, file) => {
@@ -69,14 +74,16 @@ export class Player {
         });
 
         if (squares.length === 1) {
-            return squares[0];
+            return [true, ...squares[0]];
         }
 
-        return squares.find((square) => {
+        const fromSquare = squares.find((square) => {
             if (piece.rank && piece.file) {
                 return square[0] === piece.rank && square[1] === piece.file;
             }
             return square[0] === piece?.rank || square[1] === piece?.file;
         });
+
+        return fromSquare ? [true, ...fromSquare] : [false, 0, 0];
     }
 }
