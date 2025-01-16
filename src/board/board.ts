@@ -85,7 +85,7 @@ export class Chessboard {
         return checks;
     }
 
-    move(): void {}
+    move([fromRank, fromFile]: Move, [toRank, toFile]: Move): void {}
 
     flip(): void {
         this.board.reverse();

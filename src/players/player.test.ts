@@ -63,11 +63,19 @@ describe('Move', () => {
             });
         });
 
-        test('Ncd2 tells board to move piece on c4 to d2', () => {
+        test('Ncd2 tells board to move piece on c4 to d2 (disambiguates by file)', () => {
             chess.players.w.move('Ncd2');
             expect(chess.board.move).toHaveBeenCalledWith({
                 from: [RANK[4], FILE.c],
                 to: [RANK[2], FILE.d],
+            });
+        });
+
+        test('Q4h3 tells board to move piece on h4 to h3 (disambiguates by rank)', () => {
+            chess.players.w.move('Q4h3');
+            expect(chess.board.move).toHaveBeenCalledWith({
+                from: [RANK[4], FILE.h],
+                to: [RANK[3], FILE.h],
             });
         });
 

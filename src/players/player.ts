@@ -1,5 +1,11 @@
 import { Chessboard, RANK } from '../board/board';
-import { Colour, PieceLetter, PlayerCastlingRights } from '../types';
+import {
+    Colour,
+    Move,
+    MoveInfo,
+    PieceLetter,
+    PlayerCastlingRights,
+} from '../types';
 import * as algebraic from '../parsers/algebraic';
 
 export class Player {
@@ -31,7 +37,46 @@ export class Player {
                     pieceToMove.piece.letter.toLowerCase()
                 );
             }
-            this.#board.move(pieceToMove);
+
+            const [fromRank, fromFile] = this.#findFromSquare(pieceToMove);
+
+            this.#board.move({
+                from: [fromRank, fromFile],
+                to: pieceToMove.destination,
+            });
         }
+    }
+
+    #findFromSquare({ piece, destination }: MoveInfo): Move {
+        const squares: Move[] = [];
+        this.#board.board.forEach((row, rank) => {
+            row.forEach((square, file) => {
+                if (square === null || square.letter !== piece.letter) {
+                    return;
+                }
+
+                const pieceValidMoves = this.#board.getValidMoves(rank, file);
+                const pieceCanSeeDestination = pieceValidMoves?.some(
+                    (validMove) =>
+                        validMove[0] === destination[0] &&
+                        validMove[1] === destination[1]
+                );
+
+                if (pieceCanSeeDestination) {
+                    squares.push([rank, file]);
+                }
+            });
+        });
+
+        if (squares.length === 1) {
+            return squares[0];
+        }
+
+        return squares.find((square) => {
+            if (piece.rank && piece.file) {
+                return square[0] === piece.rank && square[1] === piece.file;
+            }
+            return square[0] === piece?.rank || square[1] === piece?.file;
+        });
     }
 }
