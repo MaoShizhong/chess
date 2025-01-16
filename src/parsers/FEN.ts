@@ -34,11 +34,26 @@ export function toChessRow(FENRow: string): Row {
 }
 
 export function serialise(
-    chessBoard: Row[],
+    board: Row[],
     activePlayer: Colour,
     castlingRights: CastlingRights
 ): string {
-    const FENPosition = chessBoard
+    const FENPosition = serialisePosition(board);
+    let FENCastling = '';
+    if (castlingRights.w.short) FENCastling += 'K';
+    if (castlingRights.w.long) FENCastling += 'Q';
+    if (castlingRights.b.short) FENCastling += 'k';
+    if (castlingRights.b.long) FENCastling += 'q';
+    if (!FENCastling) FENCastling = '-';
+
+    const FENSegments = [FENPosition, activePlayer, FENCastling];
+
+    // TODO: Handle EP and moves segments later
+    return `${FENSegments.join(' ')} - 0 1`;
+}
+
+export function serialisePosition(board: Row[]) {
+    return board
         .map((row) => {
             let FENRow = '';
             let emptyCounter = 0;
@@ -55,18 +70,6 @@ export function serialise(
             return FENRow.replaceAll('0', '');
         })
         .join('/');
-
-    let FENCastling = '';
-    if (castlingRights.w.short) FENCastling += 'K';
-    if (castlingRights.w.long) FENCastling += 'Q';
-    if (castlingRights.b.short) FENCastling += 'k';
-    if (castlingRights.b.long) FENCastling += 'q';
-    if (!FENCastling) FENCastling = '-';
-
-    const FENSegments = [FENPosition, activePlayer, FENCastling];
-
-    // TODO: Handle EP and moves segments later
-    return `${FENSegments.join(' ')} - 0 1`;
 }
 
 export function split(FENString: string): [string, Colour, CastlingRights] {
