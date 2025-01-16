@@ -128,9 +128,9 @@ describe('Move', () => {
         });
 
         describe('Invalid moves', () => {
-            // https://lichess.org/analysis/standard/rnbqk2r/1pppppp1/4P2p/8/8/pP6/P1PP1PPP/R3KBNR_w_KQkq_-_0_5
+            // https://lichess.org/analysis/standard/rnbqk2r/1pppp1p1/4P2p/8/8/pP3p2/P1PP1PPP/R3KBNR_w_KQkq_-_0_5
             const chess = new Chess(
-                'rnbqk2r/1pppppp1/4P2p/8/8/pP6/P1PP1PPP/R3KBNR w KQkq - 0 5'
+                'rnbqk2r/1pppp1p1/4P2p/8/8/pP3p2/P1PP1PPP/R3KBNR w KQkq - 0 5'
             );
             chess.board.move = vi.fn();
 
@@ -145,6 +145,69 @@ describe('Move', () => {
 
                 // castling not available
                 chess.players.b.move('O-O-O');
+                expect(chess.board.move).not.toHaveBeenCalled();
+            });
+
+            it('Does not consider diagonal pawn moves as valid if non-capturing move', () => {
+                chess.players.w.move('f3');
+                expect(chess.board.move).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('Captures', () => {
+        // https://lichess.org/analysis/standard/1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R_w_KQ_-_0_1
+        const chess = new Chess(
+            '1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R w KQ - 0 1'
+        );
+        chess.board.move = vi.fn();
+
+        describe('Valid captures', () => {
+            test('axb3 tells pawn on a2 to capture on b3', () => {
+                chess.players.w.move('axb3');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[2], FILE.a],
+                    to: [RANK[3], FILE.b],
+                });
+            });
+
+            test('Bxc8 tells bishop on a6 to capture on c8', () => {
+                chess.players.w.move('Bxc8');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[6], FILE.a],
+                    to: [RANK[8], FILE.c],
+                });
+            });
+
+            it('Disambiguates between multiple piece types if multiple can capture', () => {
+                chess.players.w.move('Qxf6');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[3], FILE.f],
+                    to: [RANK[6], FILE.f],
+                });
+            });
+
+            it('Disambiguates between two pieces of same type if both can capture', () => {
+                chess.players.w.move('Naxc5');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[4], FILE.a],
+                    to: [RANK[5], FILE.c],
+                });
+            });
+        });
+
+        describe('Invalid captures', () => {
+            it('Does not call Board.prototype.move if capture is not valid', () => {
+                // No knight can take on h5
+                chess.players.w.move('Nxh5');
+                expect(chess.board.move).not.toHaveBeenCalled();
+
+                // No piece to capture on b7
+                chess.players.w.move('Bxc7');
+                expect(chess.board.move).not.toHaveBeenCalled();
+
+                // Can't capture own colour piece
+                chess.players.b.move('Kxe7');
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
         });
