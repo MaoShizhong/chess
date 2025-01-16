@@ -3,16 +3,27 @@ import { RANK, FILE } from '../board/board';
 
 const CASTLE = { SHORT: 'O-O', LONG: 'O-O-O' };
 
-export function parse(move: string): MoveInfo[] {
-    const moves: MoveInfo[] = [];
+export function parse(move: string): {
+    isCapture: boolean;
+    piecesToMove: MoveInfo[];
+} {
+    const isCapture = move.includes('x');
+    const isPawnCapture = isCapture && move[0] === move[0].toLowerCase();
+
+    const moveWithoutX = move.replace('x', '');
+    const piecesToMove: MoveInfo[] = [];
 
     if (move === CASTLE.SHORT || move === CASTLE.LONG) {
-        moves.push(...parseCastling(move));
+        piecesToMove.push(...parseCastling(moveWithoutX));
+    } else if (isPawnCapture) {
+        const pawnToMove = parseSimple(moveWithoutX.substring(1).split(''));
+        pawnToMove.piece.file = FILE[move[0]];
+        piecesToMove.push(pawnToMove);
     } else {
-        moves.push(parseSimple(move.split('')));
+        piecesToMove.push(parseSimple(moveWithoutX.split('')));
     }
 
-    return moves;
+    return { isCapture, piecesToMove };
 }
 
 function parseCastling(move: string): [MoveInfo, MoveInfo] {
