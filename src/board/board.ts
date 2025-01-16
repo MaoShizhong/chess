@@ -97,7 +97,13 @@ export class Chessboard {
         return checks;
     }
 
-    move({ from, to }: { from: Move; to: Move }): void {}
+    move({ from, to }: { from: Move; to: Move }): void {
+        const [fromRank, fromFile] = from;
+        const [toRank, toFile] = to;
+
+        this.board[toRank][toFile] = this.board[fromRank][fromFile];
+        this.board[fromRank][fromFile] = null;
+    }
 
     flip(): void {
         this.board.reverse();

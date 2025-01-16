@@ -381,3 +381,52 @@ describe('Valid moves', () => {
         });
     });
 });
+
+describe('Moving pieces', () => {
+    it('Moves a piece to an empty square', () => {
+        const chessboard = new Chessboard(STARTING_POSITION);
+
+        const e2Pawn = chessboard.board[RANK[2]][FILE.e];
+        chessboard.move({ from: [RANK[2], FILE.e], to: [RANK[4], FILE.e] });
+
+        expect(chessboard.board[RANK[2]][FILE.e]).toBe(null);
+        expect(chessboard.board[RANK[4]][FILE.e]).toBe(e2Pawn);
+
+        const g8Knight = chessboard.board[RANK[8]][FILE.g];
+        chessboard.move({ from: [RANK[8], FILE.g], to: [RANK[6], FILE.f] });
+
+        expect(chessboard.board[RANK[8]][FILE.g]).toBe(null);
+        expect(chessboard.board[RANK[6]][FILE.f]).toBe(g8Knight);
+    });
+
+    it('Replaces piece with new piece if moving onto an occupied square', () => {
+        // https://lichess.org/analysis/standard/rn1q1rk1/pp3ppp/2pb1p2/8/2BP2b1/4BN2/PPP2PPP/R2QK2R
+        const chessboard = new Chessboard(
+            'rn1q1rk1/pp3ppp/2pb1p2/8/2BP2b1/4BN2/PPP2PPP/R2QK2R'
+        );
+
+        const f7Pawn = chessboard.board[RANK[7]][FILE.f];
+        const c4Bishop = chessboard.board[RANK[4]][FILE.c];
+        chessboard.move({ from: [RANK[4], FILE.c], to: [RANK[7], FILE.f] });
+
+        expect(chessboard.board[RANK[4]][FILE.c]).toBe(null);
+        expect(chessboard.board[RANK[7]][FILE.f]).toBe(c4Bishop);
+        expect(
+            chessboard.board.find((row) =>
+                row.find((square) => square === f7Pawn)
+            )
+        ).toBeFalsy();
+
+        const f3Knight = chessboard.board[RANK[3]][FILE.f];
+        const g4Bishop = chessboard.board[RANK[4]][FILE.g];
+        chessboard.move({ from: [RANK[4], FILE.g], to: [RANK[3], FILE.f] });
+
+        expect(chessboard.board[RANK[4]][FILE.g]).toBe(null);
+        expect(chessboard.board[RANK[3]][FILE.f]).toBe(g4Bishop);
+        expect(
+            chessboard.board.find((row) =>
+                row.find((square) => square === f3Knight)
+            )
+        ).toBeFalsy();
+    });
+});
