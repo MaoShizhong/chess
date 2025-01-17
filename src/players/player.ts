@@ -25,6 +25,13 @@ export class Player {
     }
 
     move(destination: string): void {
+        if (
+            (destination === 'O-O' && !this.castlingRights.short) ||
+            (destination === 'O-O-O' && !this.castlingRights.long)
+        ) {
+            return;
+        }
+
         const { isCapture, piecesToMove } = algebraic.parse(destination);
         const isCastling = piecesToMove.length === 2;
 
