@@ -22,12 +22,12 @@ export class Chessboard {
         rank,
         file,
         isCapture = true,
-        isForCheckCount = false,
+        isForFindingChecks = false,
     }: {
         rank: number;
         file: number;
         isCapture?: boolean;
-        isForCheckCount?: boolean;
+        isForFindingChecks?: boolean;
     }): Move[] | null {
         const piece = this.board[rank][file];
         if (!piece) {
@@ -38,10 +38,10 @@ export class Chessboard {
 
         const validMoves: Move[] = [];
         piece.maximumMoves.forEach((direction, i, arr) => {
-            // Castling moves not necessary to check for counting current checks
+            // Castling moves not necessary to check when seeing if a square is currently in check
             // Including these leads to maximum call stack error
             const isCastlingMove =
-                canCastle && i >= arr.length - 2 && !isForCheckCount;
+                canCastle && i >= arr.length - 2 && !isForFindingChecks;
             const isValidCastling =
                 isCastlingMove &&
                 this.#isValidCastlingMove(rank, file, direction[0]);
@@ -57,7 +57,7 @@ export class Chessboard {
                         file,
                         direction,
                         isCapture,
-                        isForCheckCount
+                        isForFindingChecks
                     )
                 );
             }
@@ -65,36 +65,29 @@ export class Chessboard {
         return validMoves;
     }
 
-    countChecks(
+    isSquareInCheck(
         activeColour: Colour,
         targetRank: number,
         targetFile: number
-    ): number {
-        let checks = 0;
-
-        this.board.forEach((row, rank) => {
-            row.forEach((square, file) => {
+    ): boolean {
+        return this.board.some((row, rank) =>
+            row.some((square, file) => {
                 if (square === null || square.colour === activeColour) {
-                    return;
+                    return false;
                 }
 
                 const enemyValidMoves = this.getValidMoves({
                     rank,
                     file,
                     isCapture: true,
-                    isForCheckCount: true,
+                    isForFindingChecks: true,
                 });
-                const targetSquareSeen = enemyValidMoves?.find(
+                const isTargetSquareSeen = enemyValidMoves?.find(
                     (move) => move[0] === targetRank && move[1] === targetFile
                 );
-
-                if (targetSquareSeen) {
-                    checks++;
-                }
-            });
-        });
-
-        return checks;
+                return isTargetSquareSeen;
+            })
+        );
     }
 
     isKingInCheck(colour: Colour): boolean {
@@ -107,7 +100,7 @@ export class Chessboard {
             (square) => square instanceof King && square.colour === colour
         );
 
-        return this.countChecks(colour, kingRank, kingFile) > 0;
+        return this.isSquareInCheck(colour, kingRank, kingFile);
     }
 
     move({ from, to }: { from: Move; to: Move }): void {
@@ -134,7 +127,7 @@ export class Chessboard {
         file: number,
         direction: SameDirectionMoves,
         isCaptureAttempt: boolean,
-        isForCheckCount: boolean
+        isForFindingChecks: boolean
     ): Move[] {
         const movingPawn = piece instanceof Pawn;
         const movingPiece = piece instanceof Piece && !(piece instanceof Pawn);
@@ -160,7 +153,7 @@ export class Chessboard {
                 movingPawn &&
                 destinationFile !== file &&
                 isCaptureAttempt &&
-                (isEnemyPieceBlocking || isForCheckCount);
+                (isEnemyPieceBlocking || isForFindingChecks);
             const isCapture = isNormalCapture || isPawnCapture;
             const isJustMovement =
                 (movingPiece && square === null) ||
@@ -212,7 +205,11 @@ export class Chessboard {
         );
         const isCastlingThroughCheck = castlingSquaresCoordinates.some(
             ([squareRank, squareFile]) =>
-                this.countChecks(pairedRook.colour, squareRank, squareFile) > 0
+                this.isSquareInCheck(
+                    pairedRook.colour,
+                    squareRank,
+                    squareFile
+                ) > 0
         );
 
         return !pairedRook.hasMoved && !isBlocked && !isCastlingThroughCheck;
