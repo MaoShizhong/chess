@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { Chess } from '..';
 import { RANK, FILE } from '../board/board';
 
@@ -276,6 +276,99 @@ describe('Move', () => {
                 chess.players.w.move('Nxb4');
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
+        });
+    });
+});
+
+describe('Castling rights', () => {
+    // https://lichess.org/analysis/standard/r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R_w_KQkq_-_0_1
+    const chess = new Chess(
+        'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1'
+    );
+    chess.board.move = vi.fn();
+
+    afterEach(() => {
+        for (const player of Object.values(chess.players)) {
+            player.castlingRights = { short: true, long: true };
+            expect(player.castlingRights).toEqual({ short: true, long: true });
+        }
+    });
+
+    it('Permits castling for both players both ways at the start of a normal game', () => {
+        for (const player of Object.values(chess.players)) {
+            expect(player.castlingRights).toEqual({ short: true, long: true });
+        }
+    });
+
+    it("Removes a player's castling rights both ways after castling", () => {
+        chess.players.w.move('O-O');
+        expect(chess.players.w.castlingRights).toEqual({
+            short: false,
+            long: false,
+        });
+
+        chess.players.b.move('O-O-O');
+        expect(chess.players.b.castlingRights).toEqual({
+            short: false,
+            long: false,
+        });
+    });
+
+    it("Removes a player's castling rights both ways after moving king normally", () => {
+        chess.players.w.move('Kf1');
+        expect(chess.players.w.castlingRights).toEqual({
+            short: false,
+            long: false,
+        });
+
+        chess.players.b.move('Kd8');
+        expect(chess.players.b.castlingRights).toEqual({
+            short: false,
+            long: false,
+        });
+    });
+
+    it("Removes a player's short castling rights after a moving h-rook", () => {
+        chess.players.w.move('Rg1');
+        expect(chess.players.w.castlingRights).toEqual({
+            short: false,
+            long: true,
+        });
+
+        chess.players.b.move('Rg8');
+        expect(chess.players.b.castlingRights).toEqual({
+            short: false,
+            long: true,
+        });
+    });
+
+    it("Removes a player's long castling rights after a moving a-rook", () => {
+        chess.players.w.move('Rd1');
+        expect(chess.players.w.castlingRights).toEqual({
+            short: true,
+            long: false,
+        });
+
+        chess.players.b.move('Rc8');
+        expect(chess.players.b.castlingRights).toEqual({
+            short: true,
+            long: false,
+        });
+    });
+
+    it('Only changes castling rights if the move was actually played (valid moves only)', () => {
+        // blocked by pawn
+        chess.players.w.move('Ke2');
+        expect(chess.players.w.castlingRights).toEqual({
+            short: true,
+            long: true,
+        });
+
+        // king on e8
+        chess.players.b.move('Re8');
+        expect(chess.players.b.castlingRights).toEqual({
+            short: true,
+            long: true,
         });
     });
 });

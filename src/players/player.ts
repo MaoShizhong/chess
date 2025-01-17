@@ -1,4 +1,4 @@
-import { Chessboard, RANK } from '../board/board';
+import { Chessboard, FILE, RANK } from '../board/board';
 import {
     Colour,
     Move,
@@ -62,6 +62,9 @@ export class Player {
             }
 
             this.#board.move(moveInfo);
+
+            // don't want to mess with castling rights if a move wasn't valid to play!
+            this.#handleCastlingRights(pieceToMove.piece.letter, fromFile);
         }
     }
 
@@ -114,5 +117,21 @@ export class Player {
         const board = new Chessboard(FENPosition);
         board.move(moveInfo);
         return board.isKingInCheck(this.colour);
+    }
+
+    #handleCastlingRights(pieceLetter: PieceLetter, fromFile: number): void {
+        const upperCasePieceLetter = pieceLetter.toUpperCase();
+        if (!'KR'.includes(upperCasePieceLetter)) {
+            return;
+        }
+
+        if (upperCasePieceLetter === 'K') {
+            this.castlingRights.short = false;
+            this.castlingRights.long = false;
+        } else if (fromFile === FILE.h) {
+            this.castlingRights.short = false;
+        } else if (fromFile === FILE.a) {
+            this.castlingRights.long = false;
+        }
     }
 }
