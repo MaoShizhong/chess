@@ -6,11 +6,21 @@ beforeEach(vi.clearAllMocks);
 
 describe('Move', () => {
     describe('Number of pieces moved', () => {
-        // https://lichess.org/analysis/standard/r2qkb1r/ppp2ppp/2n2n2/1B2pb2/3P1B2/2N2N2/PPP1Q1PP/R3K2R_w_KQkq_-_1_10
+        // https://lichess.org/analysis/fromPosition/r3kb1r/pppq1ppp/2n2n2/1B2pb2/3P1B2/2N2N1P/PPP1Q1P1/R3K2R_w_KQkq_-_1_11
         const chess = new Chess(
-            'r2qkb1r/ppp2ppp/2n2n2/1B2pb2/3P1B2/2N2N2/PPP1Q1PP/R3K2R w KQkq - 1 10'
+            'r3kb1r/pppq1ppp/2n2n2/1B2pb2/3P1B2/2N2N1P/PPP1Q1P1/R3K2R w KQkq - 1 11'
         );
         chess.board.move = vi.fn();
+
+        afterEach(() => {
+            for (const player of Object.values(chess.players)) {
+                player.castlingRights = { short: true, long: true };
+                expect(player.castlingRights).toEqual({
+                    short: true,
+                    long: true,
+                });
+            }
+        });
 
         it('Calls chess.board.move once if piece is movable and not castling', () => {
             chess.players.w.move('a3');
@@ -27,7 +37,7 @@ describe('Move', () => {
             chess.players.w.move('O-O');
             expect(chess.board.move).toHaveBeenCalledTimes(2);
 
-            chess.players.w.move('O-O-O');
+            chess.players.b.move('O-O-O');
             expect(chess.board.move).toHaveBeenCalledTimes(4);
         });
     });
@@ -39,6 +49,16 @@ describe('Move', () => {
                 '1nkr2n1/2ppp3/8/2b5/2N1Q2Q/8/PPB5/1N1K3Q w - - 0 1'
             );
             chess.board.move = vi.fn();
+
+            afterEach(() => {
+                for (const player of Object.values(chess.players)) {
+                    player.castlingRights = { short: true, long: true };
+                    expect(player.castlingRights).toEqual({
+                        short: true,
+                        long: true,
+                    });
+                }
+            });
 
             test('a3 tells board to move piece on a2 to a3', () => {
                 chess.players.w.move('a3');
@@ -94,6 +114,16 @@ describe('Move', () => {
             const chess = new Chess('r3k2r/3p4/8/8/8/8/8/R3K3 w Qkq - 0 1');
             chess.board.move = vi.fn();
 
+            afterEach(() => {
+                for (const player of Object.values(chess.players)) {
+                    player.castlingRights = { short: true, long: true };
+                    expect(player.castlingRights).toEqual({
+                        short: true,
+                        long: true,
+                    });
+                }
+            });
+
             test('d5 tells board to move piece on d7 to d5', () => {
                 chess.players.b.move('d5');
                 expect(chess.board.move).toHaveBeenCalledWith({
@@ -133,6 +163,16 @@ describe('Move', () => {
                 'rnbqk2r/2ppp1p1/1p2P2p/1B6/8/pP3p2/P1PP1PPP/R3K1NR w KQkq - 0 6'
             );
             chess.board.move = vi.fn();
+
+            afterEach(() => {
+                for (const player of Object.values(chess.players)) {
+                    player.castlingRights = { short: true, long: true };
+                    expect(player.castlingRights).toEqual({
+                        short: true,
+                        long: true,
+                    });
+                }
+            });
 
             it('Does not call Board.prototype.move if no valid piece moves available', () => {
                 // destination blocked
@@ -189,6 +229,16 @@ describe('Move', () => {
             );
             chess.board.move = vi.fn();
 
+            afterEach(() => {
+                for (const player of Object.values(chess.players)) {
+                    player.castlingRights = { short: true, long: true };
+                    expect(player.castlingRights).toEqual({
+                        short: true,
+                        long: true,
+                    });
+                }
+            });
+
             test('axb3 tells pawn on a2 to capture on b3', () => {
                 chess.players.w.move('axb3');
                 expect(chess.board.move).toHaveBeenCalledWith({
@@ -228,6 +278,16 @@ describe('Move', () => {
                 '1rb2k2/p2pp1R1/B1n2n1P/2p5/N2br1N1/1p2PQ2/P4P2/4K2R w K - 0 1'
             );
             chess.board.move = vi.fn();
+
+            afterEach(() => {
+                for (const player of Object.values(chess.players)) {
+                    player.castlingRights = { short: true, long: true };
+                    expect(player.castlingRights).toEqual({
+                        short: true,
+                        long: true,
+                    });
+                }
+            });
 
             it('Does not call Board.prototype.move if capture is not valid', () => {
                 // No knight can take on b3
@@ -370,5 +430,11 @@ describe('Castling rights', () => {
             short: true,
             long: true,
         });
+    });
+
+    it('Prevents castling in a direction if the right has been lost', () => {
+        chess.players.w.castlingRights = { short: false, long: false };
+        chess.players.w.move('O-O');
+        expect(chess.board.move).not.toHaveBeenCalled();
     });
 });
