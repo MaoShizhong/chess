@@ -70,8 +70,8 @@ export class Chessboard {
         targetRank: number,
         targetFile: number
     ): boolean {
-        return this.board.some((row, rank) =>
-            row.some((square, file) => {
+        return this.board.some((row, rank) => {
+            return row.some((square, file) => {
                 if (square === null || square.colour === activeColour) {
                     return false;
                 }
@@ -86,8 +86,8 @@ export class Chessboard {
                     (move) => move[0] === targetRank && move[1] === targetFile
                 );
                 return isTargetSquareSeen;
-            })
-        );
+            });
+        });
     }
 
     isKingInCheck(colour: Colour): boolean {
@@ -99,8 +99,49 @@ export class Chessboard {
         const kingFile = this.board[kingRank].findIndex(
             (square) => square instanceof King && square.colour === colour
         );
-
         return this.isSquareInCheck(colour, kingRank, kingFile);
+    }
+
+    canPlayContinue(
+        activeColour: Colour
+    ): [boolean, 'checkmate' | 'stalemate' | undefined] {
+        const inCheck = this.isKingInCheck(activeColour);
+        const movesAvailable: { from: Move; to: Move }[] = [];
+
+        this.board.forEach((row, rank) => {
+            row.forEach((square, file) => {
+                if (square === null || square.colour !== activeColour) {
+                    return;
+                }
+
+                const moves = this.getValidMoves({
+                    rank: rank,
+                    file: file,
+                });
+
+                if (moves?.length) {
+                    movesAvailable.push(
+                        ...moves.map((move) => ({
+                            from: [rank, file] as Move,
+                            to: move,
+                        }))
+                    );
+                }
+            });
+        });
+
+        const validMovesAvailable = movesAvailable.filter((move) => {
+            const boardAfterMove = this.simulateMove(move);
+            return !boardAfterMove.isKingInCheck(activeColour);
+        });
+
+        if (inCheck && !validMovesAvailable.length) {
+            return [false, 'checkmate'];
+        } else if (!inCheck && !validMovesAvailable.length) {
+            return [false, 'stalemate'];
+        } else {
+            return [true, undefined];
+        }
     }
 
     move({ from, to }: { from: Move; to: Move }): void {
@@ -109,6 +150,12 @@ export class Chessboard {
 
         this.board[toRank][toFile] = this.board[fromRank][fromFile];
         this.board[fromRank][fromFile] = null;
+    }
+
+    simulateMove(moveInfo: { from: Move; to: Move }): Chessboard {
+        const board = new Chessboard(FEN.serialisePosition(this.board));
+        board.move(moveInfo);
+        return board;
     }
 
     flip(): void {
@@ -146,8 +193,8 @@ export class Chessboard {
 
             const isNormalCapture = movingPiece && isEnemyPieceBlocking;
             // Pawns normally can move diagonally only if an enemy piece is actually there to be captured.
-            // But empty capture squares must still be counted when determining if a castling king
-            // would pass through a checked square. Annoying edge cases :(
+            // But empty capture squares must still be counted when determining checks
+            // e.g. castling through checked square, or if position is checkmate/stalemate. Annoying edge cases :(
             // They should also only be allowed to do so if a capture attempt e.g. axb3 and not just b3
             const isPawnCapture =
                 movingPawn &&
