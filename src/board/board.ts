@@ -205,11 +205,7 @@ export class Chessboard {
         );
         const isCastlingThroughCheck = castlingSquaresCoordinates.some(
             ([squareRank, squareFile]) =>
-                this.isSquareInCheck(
-                    pairedRook.colour,
-                    squareRank,
-                    squareFile
-                ) > 0
+                this.isSquareInCheck(pairedRook.colour, squareRank, squareFile)
         );
 
         return !pairedRook.hasMoved && !isBlocked && !isCastlingThroughCheck;

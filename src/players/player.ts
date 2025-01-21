@@ -59,12 +59,12 @@ export class Player {
                 from: [fromRank, fromFile] as Move,
                 to: pieceToMove.destination,
             };
-            const willPutKingInCheck = this.#simulateMove(
+            const boardAfterMove = this.#simulateMove(
                 FEN.serialisePosition(this.#board.board),
                 moveInfo
             );
 
-            if (willPutKingInCheck) {
+            if (boardAfterMove.isKingInCheck(this.colour)) {
                 return;
             }
 
@@ -120,10 +120,10 @@ export class Player {
     #simulateMove(
         FENPosition: string,
         moveInfo: { from: Move; to: Move }
-    ): boolean {
+    ): Chessboard {
         const board = new Chessboard(FENPosition);
         board.move(moveInfo);
-        return board.isKingInCheck(this.colour);
+        return board;
     }
 
     #handleCastlingRights(pieceLetter: PieceLetter, fromFile: number): void {
