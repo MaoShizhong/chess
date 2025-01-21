@@ -1,4 +1,4 @@
-import { Colour, Move, Row, SameDirectionMoves } from '../types';
+import { Board, Colour, Move, SameDirectionMoves } from '../types';
 import * as FEN from '../parsers/FEN';
 import { Piece } from '../pieces/piece';
 import { Pawn } from '../pieces/pawn';
@@ -12,7 +12,7 @@ export const FILE: {
 } = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };
 
 export class Chessboard {
-    board: Row[];
+    board: Board;
 
     constructor(FENPosition: string) {
         this.board = this.#createBoard(FENPosition);
@@ -169,7 +169,7 @@ export class Chessboard {
         this.board.forEach((row) => row.reverse());
     }
 
-    #createBoard(position: string): Row[] {
+    #createBoard(position: string): Board {
         const FENRows = position.split('/');
         return FENRows.map((FENRow) => FEN.toChessRow(FENRow));
     }

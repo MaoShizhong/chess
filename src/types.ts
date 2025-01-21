@@ -43,6 +43,7 @@ export type PieceLetter =
 type Piece = Pawn | Knight | Bishop | Rook | Queen | King;
 export type Square = Piece | null;
 export type Row = Square[];
+export type Board = Row[];
 
 // Number relative to current position, not the same as CoordinateNumber
 export type Move = [number, number];

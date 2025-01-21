@@ -4,7 +4,7 @@ import { Knight } from '../pieces/knight';
 import { Pawn } from '../pieces/pawn';
 import { Queen } from '../pieces/queen';
 import { Rook } from '../pieces/rook';
-import { CastlingRights, Colour, PieceLetter, Row } from '../types';
+import { Board, CastlingRights, Colour, PieceLetter, Row } from '../types';
 import { Piece } from '../pieces/piece';
 
 const PIECES = {
@@ -34,7 +34,7 @@ export function toChessRow(FENRow: string): Row {
 }
 
 export function serialise(
-    board: Row[],
+    board: Board,
     activePlayer: Colour,
     castlingRights: CastlingRights
 ): string {
@@ -52,7 +52,7 @@ export function serialise(
     return `${FENSegments.join(' ')} - 0 1`;
 }
 
-export function serialisePosition(board: Row[]) {
+export function serialisePosition(board: Board) {
     return board
         .map((row) => {
             let FENRow = '';
