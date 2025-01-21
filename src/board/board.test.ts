@@ -431,6 +431,22 @@ describe('Moving pieces', () => {
             )
         ).toBeFalsy();
     });
+
+    it('Marks pawns and kings as moved when moved', () => {
+        const chessboard = new Chessboard(STARTING_POSITION);
+
+        const e2Pawn = chessboard.board[RANK[2]][FILE.e] as Pawn;
+        const whiteKing = chessboard.board[RANK[1]][FILE.e] as King;
+
+        expect(e2Pawn.hasMoved).toBe(false);
+        expect(whiteKing.hasMoved).toBe(false);
+
+        chessboard.move({ from: [RANK[2], FILE.e], to: [RANK[4], FILE.e] });
+        expect(e2Pawn.hasMoved).toBe(true);
+
+        chessboard.move({ from: [RANK[1], FILE.e], to: [RANK[2], FILE.e] });
+        expect(whiteKing.hasMoved).toBe(true);
+    });
 });
 
 describe('Game end state', () => {

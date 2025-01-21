@@ -148,8 +148,14 @@ export class Chessboard {
         const [fromRank, fromFile] = from;
         const [toRank, toFile] = to;
 
-        this.board[toRank][toFile] = this.board[fromRank][fromFile];
+        const movedPiece = this.board[fromRank][fromFile];
+
+        this.board[toRank][toFile] = movedPiece;
         this.board[fromRank][fromFile] = null;
+
+        if (movedPiece instanceof King || movedPiece instanceof Pawn) {
+            movedPiece.hasMoved = true;
+        }
     }
 
     simulateMove(moveInfo: { from: Move; to: Move }): Chessboard {
