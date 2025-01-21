@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Chess } from './index';
 
 beforeEach(vi.clearAllMocks);
@@ -67,5 +67,36 @@ describe('Game flow', () => {
 
         chess.playMove('Ka2');
         expect(chess.players.w.move).not.toHaveBeenCalled();
+    });
+});
+
+describe('Results', () => {
+    it('Recognises white win by checkmate', () => {
+        // https://lichess.org/analysis/standard/r1bqkbnr/1ppp1ppp/p1n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR_w_KQkq_-_0_4
+        const chess = new Chess(
+            'r1bqkbnr/1ppp1ppp/p1n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 4'
+        );
+        expect(chess.result).not.toBeDefined();
+
+        chess.playMove('Qxf7');
+        expect(chess.result).toBe('1-0');
+    });
+
+    it('Recognises black win by checkmate', () => {
+        // https://lichess.org/analysis/8/8/8/8/8/1q6/2k5/K7_b_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1q6/2k5/K7 b - - 0 1');
+        expect(chess.result).not.toBeDefined();
+
+        chess.playMove('Qb1');
+        expect(chess.result).toBe('0-1');
+    });
+
+    it('Recognises draw by stalemate', () => {
+        // https://lichess.org/analysis/8/8/8/8/8/1q6/2k5/K7_b_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1q6/2k5/K7 b - - 0 1');
+        expect(chess.result).not.toBeDefined();
+
+        chess.playMove('Qc4');
+        expect(chess.result).toBe('0.5 - 0.5');
     });
 });

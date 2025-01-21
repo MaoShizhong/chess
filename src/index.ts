@@ -1,5 +1,5 @@
 import { Player } from './players/player';
-import { Players } from './types';
+import { Players, Result } from './types';
 import { Chessboard } from './board/board';
 import * as FEN from './parsers/FEN';
 
@@ -8,6 +8,7 @@ export class Chess {
     players: Players;
     activePlayer: Player;
     isGameInPlay: boolean;
+    result?: Result;
 
     /**
      * @throws {TypeError} If invalid FEN given
@@ -48,6 +49,11 @@ export class Chess {
         }
 
         this.isGameInPlay = false;
+        if (gameEndReason === 'stalemate') {
+            this.result = '0.5 - 0.5';
+        } else if (gameEndReason === 'checkmate') {
+            this.result = this.activePlayer.colour === 'w' ? '0-1' : '1-0';
+        }
     }
 
     #swapActivePlayer(): void {
