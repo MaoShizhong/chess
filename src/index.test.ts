@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { Chess } from './index';
+
+beforeEach(vi.clearAllMocks);
 
 // https://lichess.org/analysis/fromPosition/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR_w_KQkq_-_0_1
 const STARTING_POSITION =
@@ -53,5 +55,17 @@ describe('Game flow', () => {
         // still white's turn! this move isn't possible for white yet!
         chess.playMove('e5');
         expect(chess.activePlayer).toBe(chess.players.w);
+    });
+
+    it('Prevents playing moves if game has ended', () => {
+        // https://lichess.org/analysis/8/8/8/8/8/1q6/2k5/K7_b_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1q6/2k5/K7 b - - 0 1');
+        chess.players.w.move = vi.fn();
+
+        chess.playMove('Qb1');
+        expect(chess.isGameInPlay).toBe(false);
+
+        chess.playMove('Ka2');
+        expect(chess.players.w.move).not.toHaveBeenCalled();
     });
 });
