@@ -3,6 +3,7 @@ import { Chessboard, FILE, RANK } from './board';
 import { Colour, Square } from '../types';
 import { King } from '../pieces/king';
 import { Rook } from '../pieces/rook';
+import { Pawn } from '../pieces/pawn';
 
 // https://lichess.org/analysis/standard/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
@@ -429,5 +430,77 @@ describe('Moving pieces', () => {
                 row.find((square) => square === f3Knight)
             )
         ).toBeFalsy();
+    });
+});
+
+describe('Game end state', () => {
+    it('Reports when position is a checkmate', () => {
+        // https://lichess.org/analysis/standard/rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR_w_KQkq_-_1_3
+        const foolsMate = new Chessboard(
+            'rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR'
+        );
+        expect(foolsMate.canPlayContinue('w')).toEqual([false, 'checkmate']);
+
+        // https://lichess.org/analysis/4k3/8/8/8/8/q7/8/KR6_w_-_-_0_1
+        const queenMate = new Chessboard('4k3/8/8/8/8/q7/8/KR6');
+        expect(queenMate.canPlayContinue('w')).toEqual([false, 'checkmate']);
+
+        // https://lichess.org/analysis/standard/1nbqkb1r/r1pppp1p/5Np1/pp2Q3/8/4P3/PPPP1PPP/R1B1KBNR_b_KQk_-_0_7
+        const smotheredMate = new Chessboard(
+            '1nbqkb1r/r1pppp1p/5Np1/pp2Q3/8/4P3/PPPP1PPP/R1B1KBNR'
+        );
+        expect(smotheredMate.canPlayContinue('b')).toEqual([
+            false,
+            'checkmate',
+        ]);
+    });
+
+    it('Reports when position is a stalemate', () => {
+        // https://lichess.org/analysis/8/5KBk/8/8/p7/P7/8/8_b_-_-_0_1
+        const stalemate1 = new Chessboard('8/5KBk/8/8/p7/P7/8/8');
+
+        const whiteKing = stalemate1.board[1][5] as King;
+        // static position so need to manually set these to prevent invalid moves contaminating test
+        whiteKing.hasMoved = true;
+        expect(stalemate1.canPlayContinue('b')).toEqual([false, 'stalemate']);
+
+        // https://lichess.org/analysis/6k1/b7/8/8/5p2/5P1p/7P/7K_w_-_-_0_1
+        const stalemate2 = new Chessboard('6k1/b7/8/8/5p2/5P1p/7P/7K');
+
+        const f3Pawn = stalemate2.board[RANK[3]][FILE.f] as Pawn;
+        const h2Pawn = stalemate2.board[RANK[2]][FILE.h] as Pawn;
+        f3Pawn.hasMoved = true;
+        h2Pawn.hasMoved = true;
+        expect(stalemate2.canPlayContinue('w')).toEqual([false, 'stalemate']);
+
+        // https://lichess.org/analysis/N1r5/1pP5/1P6/8/8/5q1k/8/6K1_w_-_-_0_1
+        const stalemate3 = new Chessboard('N1r5/1pP5/1P6/8/8/5q1k/8/6K1');
+
+        const blackKing = stalemate3.board[RANK[3]][FILE.h] as King;
+        const b6Pawn = stalemate3.board[RANK[6]][FILE.b] as Pawn;
+        const c7Pawn = stalemate3.board[RANK[7]][FILE.c] as Pawn;
+        blackKing.hasMoved = true;
+        b6Pawn.hasMoved = true;
+        c7Pawn.hasMoved = true;
+        expect(stalemate3.canPlayContinue('w')).toEqual([false, 'stalemate']);
+    });
+
+    it('Reports false when position is still playable', () => {
+        const playable1 = new Chessboard(STARTING_POSITION);
+        expect(playable1.canPlayContinue('b')).toEqual([true, undefined]);
+
+        // https://lichess.org/analysis/standard/r3kb1r/ppp1pppp/2n2n2/q4b2/3P4/2N1BN2/PPP2PPP/R2QKB1R_w_KQkq_-_5_7
+        const playable2 = new Chessboard(
+            'r3kb1r/ppp1pppp/2n2n2/q4b2/3P4/2N1BN2/PPP2PPP/R2QKB1R'
+        );
+        expect(playable2.canPlayContinue('w')).toEqual([true, undefined]);
+
+        // https://lichess.org/analysis/8/8/8/8/8/qr6/1Pk5/K7_w_-_-_0_1
+        const playable3 = new Chessboard('8/8/8/8/8/qr6/1Pk5/K7');
+        expect(playable3.canPlayContinue('w')).toEqual([true, undefined]);
+
+        // https://lichess.org/analysis/8/8/8/8/8/q7/2k5/K1N5_w_-_-_0_1
+        const playable4 = new Chessboard('8/8/8/8/8/q7/2k5/K1N5');
+        expect(playable4.canPlayContinue('w')).toEqual([true, undefined]);
     });
 });
