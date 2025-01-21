@@ -24,12 +24,12 @@ export class Player {
         this.#board = board;
     }
 
-    move(destination: string): void {
+    move(destination: string): boolean {
         if (
             (destination === 'O-O' && !this.castlingRights.short) ||
             (destination === 'O-O-O' && !this.castlingRights.long)
         ) {
-            return;
+            return false;
         }
 
         const { isCapture, piecesToMove } = algebraic.parse(destination);
@@ -52,7 +52,7 @@ export class Player {
             );
 
             if (!validPiece) {
-                return;
+                return false;
             }
 
             const moveInfo = {
@@ -65,7 +65,7 @@ export class Player {
             );
 
             if (boardAfterMove.isKingInCheck(this.colour)) {
-                return;
+                return false;
             }
 
             this.#board.move(moveInfo);
@@ -73,6 +73,8 @@ export class Player {
             // don't want to mess with castling rights if a move wasn't valid to play!
             this.#handleCastlingRights(pieceToMove.piece.letter, fromFile);
         }
+
+        return piecesToMove.length > 0;
     }
 
     #findFromSquare(
