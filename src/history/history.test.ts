@@ -44,6 +44,7 @@ describe('State', () => {
         });
 
         expect(history.currentState).toEqual(stateAfterE4);
+        expect(history.length).toBe(2);
 
         const d7Pawn = board[RANK[7]][FILE.d];
         board[RANK[6]][FILE.d] = d7Pawn;
@@ -54,6 +55,7 @@ describe('State', () => {
         });
 
         expect(history.currentState).toEqual(stateAfterE4D6);
+        expect(history.length).toBe(3);
     });
 
     it('Moves to and returns previous history state if available', () => {
@@ -112,6 +114,8 @@ describe('State', () => {
         });
 
         expect(history.currentState).toEqual(stateAfterE4);
+        expect(history.length).toBe(2);
+
         history.toPreviousState();
         expect(history.currentState).toEqual(startingState);
 
@@ -126,5 +130,6 @@ describe('State', () => {
 
         expect(history.currentState).toEqual(stateAfterNf3);
         expect(history.toPreviousState()).toEqual(startingState);
+        expect(history.length).toBe(2);
     });
 });

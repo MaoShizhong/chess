@@ -11,6 +11,10 @@ export class ChessHistory {
         this.#history = [FENState];
     }
 
+    get length(): number {
+        return this.#history.length;
+    }
+
     get currentState(): HistoryState {
         const [FENPosition, activePlayer, castlingRights] = FEN.split(
             this.#history[this.#currentIndex]
