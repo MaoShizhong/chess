@@ -45,6 +45,8 @@ export type Square = Piece | null;
 export type Row = Square[];
 export type Board = Row[];
 
+export type HistoryState = [Board, Colour, CastlingRights];
+
 // Number relative to current position, not the same as CoordinateNumber
 export type Move = [number, number];
 // Moves organised by blockable direction to facilitate valid move filtering
