@@ -35,6 +35,44 @@ describe('Players', () => {
     });
 });
 
+describe('Move counts', () => {
+    describe.skip('Halfmoves', () => {});
+
+    describe('Fullmoves', () => {
+        it('Initialises with full move count from input FEN', () => {
+            const chess1 = new Chess(STARTING_POSITION);
+            expect(chess1.fullMoves).toBe(1);
+
+            const chess2 = new Chess(
+                '5r2/3kb2r/1Bpp1p2/5P2/2P1N1nP/1P6/P1P3P1/1K2R2R b - - 0 26'
+            );
+            expect(chess2.fullMoves).toBe(26);
+        });
+
+        it('Fullmove counter increases by 1 after a black move', () => {
+            const fullMoves = 26;
+            const chess = new Chess(
+                `5r2/3kb2r/1Bpp1p2/5P2/2P1N1nP/1P6/P1P3P1/1K2R2R b - - 0 ${fullMoves}`
+            );
+            expect(chess.fullMoves).toBe(fullMoves);
+
+            chess.playMove('Rb8');
+            expect(chess.fullMoves).toBe(fullMoves + 1);
+        });
+
+        it('Does not increase fullmove counter after a white move', () => {
+            const fullMoves = 57;
+            const chess = new Chess(
+                `4Q3/1K6/5Q2/8/6pp/7k/8/8 w - - 0 ${fullMoves}`
+            );
+            expect(chess.fullMoves).toBe(fullMoves);
+
+            chess.playMove('Qc1');
+            expect(chess.fullMoves).toBe(fullMoves);
+        });
+    });
+});
+
 describe('Game flow', () => {
     it('Swaps active player after a valid move is played', () => {
         const chess = new Chess(STARTING_POSITION);

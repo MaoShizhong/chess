@@ -9,14 +9,22 @@ export class Chess {
     activePlayer: Player;
     isGameInPlay: boolean;
     result?: Result;
+    #fullMoves: number;
 
     /**
      * @throws {TypeError} If invalid FEN given
      */
     constructor(
-        FENString: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq'
+        FENString: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
     ) {
-        const [position, activePlayer, castlingRights] = FEN.split(FENString);
+        const [
+            position,
+            activePlayer,
+            castlingRights,
+            enPassantTarget,
+            halfMoves,
+            fullMoves,
+        ] = FEN.split(FENString);
 
         this.board = new Chessboard(position);
         this.players = {
@@ -27,6 +35,11 @@ export class Chess {
         this.isGameInPlay = this.board.canPlayContinue(
             this.activePlayer.colour
         )[0];
+        this.#fullMoves = fullMoves;
+    }
+
+    get fullMoves(): number {
+        return this.#fullMoves;
     }
 
     playMove(algebraicMove: string): void {
@@ -39,6 +52,9 @@ export class Chess {
             return;
         }
 
+        if (this.activePlayer.colour === 'b') {
+            this.#fullMoves++;
+        }
         this.#swapActivePlayer();
 
         const [canStillPlay, gameEndReason] = this.board.canPlayContinue(
