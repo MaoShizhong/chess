@@ -15,8 +15,7 @@ export type Colour = 'w' | 'b';
 
 export type Result = '1-0' | '0-1' | '0.5 - 0.5';
 
-type CoordinateNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-export type Coordinate = [CoordinateNumber, CoordinateNumber];
+export type Coordinate = [number, number];
 
 export type PlayerCastlingRights = {
     short: boolean;
@@ -44,6 +43,15 @@ type Piece = Pawn | Knight | Bishop | Rook | Queen | King;
 export type Square = Piece | null;
 export type Row = Square[];
 export type Board = Row[];
+
+export type FENSegments = [
+    string,
+    Colour,
+    CastlingRights,
+    Coordinate | null,
+    number,
+    number,
+];
 
 export type HistoryState = [Board, Colour, CastlingRights];
 

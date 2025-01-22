@@ -1,7 +1,12 @@
-import { MoveInfo, PieceLetter } from '../types';
+import { Coordinate, MoveInfo, PieceLetter } from '../types';
 import { RANK, FILE } from '../board/board';
 
 const CASTLE = { SHORT: 'O-O', LONG: 'O-O-O' };
+
+export function getCoordinate(coordinate: string): Coordinate {
+    const [file, rank] = coordinate.split('');
+    return [RANK[Number(rank)], FILE[file]];
+}
 
 export function parse(move: string): {
     isCapture: boolean;

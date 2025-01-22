@@ -1,11 +1,19 @@
+import * as algebraic from './algebraic';
 import { Bishop } from '../pieces/bishop';
 import { King } from '../pieces/king';
 import { Knight } from '../pieces/knight';
 import { Pawn } from '../pieces/pawn';
 import { Queen } from '../pieces/queen';
 import { Rook } from '../pieces/rook';
-import { Board, CastlingRights, Colour, PieceLetter, Row } from '../types';
 import { Piece } from '../pieces/piece';
+import {
+    Board,
+    CastlingRights,
+    Colour,
+    FENSegments,
+    PieceLetter,
+    Row,
+} from '../types';
 
 const PIECES = {
     P: Pawn,
@@ -72,39 +80,76 @@ export function serialisePosition(board: Board) {
         .join('/');
 }
 
-export function split(FENString: string): [string, Colour, CastlingRights] {
+export function split(FENString: string): FENSegments {
     const segments = FENString.split(' ');
 
     // throws if invalid FEN
     validate(FENString, segments);
 
-    const [position, activePlayer, castling] = segments;
+    const [
+        position,
+        activePlayer,
+        castling,
+        enPassantTarget,
+        halfMoves,
+        fullMoves,
+    ] = segments;
     const castlingRights = {
         w: { short: castling.includes('K'), long: castling.includes('Q') },
         b: { short: castling.includes('k'), long: castling.includes('q') },
     };
+    const enPassant =
+        enPassantTarget === '-'
+            ? null
+            : algebraic.getCoordinate(enPassantTarget);
 
-    return [position, activePlayer as Colour, castlingRights];
+    return [
+        position,
+        activePlayer as Colour,
+        castlingRights,
+        enPassant,
+        Number(halfMoves),
+        Number(fullMoves),
+    ];
 }
 
 function validate(
     FENString: string,
-    [position, activePlayer, castling]: string[]
+    [
+        position,
+        activePlayer,
+        castling,
+        enPassantTargets,
+        halfMoves,
+        fullMoves,
+    ]: string[]
 ): void {
     const ValidityError = new TypeError(
         `${FENString} is not a valid FEN string.`
     );
 
     // https://regexr.com/8at8b to test position regex
-    const isPositionSegment = /^([rnbqkp1-8]{1,8}\/){7}[rnbqkp1-8]{1,8}$/i.test(
-        position
-    );
+    const hasPositionSegment =
+        /^([rnbqkp1-8]{1,8}\/){7}[rnbqkp1-8]{1,8}$/i.test(position);
     // https://regexr.com/8at9u to test active player regex
-    const isActivePlayer = /^(w|b)$/.test(activePlayer);
+    const hasActivePlayer = /^(w|b)$/.test(activePlayer);
     // https://regexr.com/8at90 to test castling regex
-    const isCastlingSegment = /^(-|K?Q?k?q?)$/.test(castling);
+    const hasCastlingSegment = /^(-|K?Q?k?q?)$/.test(castling);
+    // https://regexr.com/8bavo to test en passant regex
+    const hasEnPassantSegment = /^(-|[a-h](3|6))$/.test(enPassantTargets);
+    // https://regexr.com/8bb01 to test halfmoves regex
+    const hasHalfmoveSegment = /^(\d{1,2}|100)$/.test(halfMoves);
+    // https://regexr.com/8bb07 to test fullmoves regex
+    const hasFullmoveSegment = /^\d+$/.test(fullMoves);
 
-    if (!isPositionSegment || !isActivePlayer || !isCastlingSegment) {
+    if (
+        !hasPositionSegment ||
+        !hasActivePlayer ||
+        !hasCastlingSegment ||
+        !hasEnPassantSegment ||
+        !hasHalfmoveSegment ||
+        !hasFullmoveSegment
+    ) {
         throw ValidityError;
     }
 
