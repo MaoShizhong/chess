@@ -53,7 +53,14 @@ export type FENSegments = [
     number,
 ];
 
-export type HistoryState = [Board, Colour, CastlingRights];
+export type HistoryState = {
+    board: Board;
+    activeColour: Colour;
+    castlingRights: CastlingRights;
+    enPassantTarget: Coordinate | null;
+    halfMoves: number;
+    fullMoves: number;
+};
 
 // Number relative to current position, not the same as CoordinateNumber
 export type Move = [number, number];
