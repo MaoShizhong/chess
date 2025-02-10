@@ -10,6 +10,7 @@ import {
     Board,
     CastlingRights,
     Colour,
+    Coordinate,
     FENSegments,
     PieceLetter,
     Row,
@@ -44,9 +45,13 @@ export function toChessRow(FENRow: string): Row {
 export function serialise(
     board: Board,
     activePlayer: Colour,
-    castlingRights: CastlingRights
+    castlingRights: CastlingRights,
+    enPassantTarget: Coordinate | null,
+    halfMoves: number,
+    fullMoves: number
 ): string {
     const FENPosition = serialisePosition(board);
+
     let FENCastling = '';
     if (castlingRights.w.short) FENCastling += 'K';
     if (castlingRights.w.long) FENCastling += 'Q';
@@ -54,10 +59,17 @@ export function serialise(
     if (castlingRights.b.long) FENCastling += 'q';
     if (!FENCastling) FENCastling = '-';
 
-    const FENSegments = [FENPosition, activePlayer, FENCastling];
+    const FENSegments = [
+        FENPosition,
+        activePlayer,
+        FENCastling,
+        // TODO: En passant coordinate to algebraic
+        '-',
+        halfMoves,
+        fullMoves,
+    ];
 
-    // TODO: Handle EP and moves segments later
-    return `${FENSegments.join(' ')} - 0 1`;
+    return FENSegments.join(' ');
 }
 
 export function serialisePosition(board: Board) {

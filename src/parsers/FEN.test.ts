@@ -185,7 +185,7 @@ describe('Serialising to FEN', () => {
             w: { short: true, long: true },
             b: { short: true, long: true },
         };
-        expect(FEN.serialise(najdorf, 'w', castlingRights)).toBe(
+        expect(FEN.serialise(najdorf, 'w', castlingRights, null, 0, 1)).toBe(
             'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 1'
         );
 
@@ -204,8 +204,29 @@ describe('Serialising to FEN', () => {
             w: { short: false, long: false },
             b: { short: true, long: true },
         };
-        expect(FEN.serialise(berlinDraw, 'w', berlinCastlingRights)).toEqual(
-            'r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 0 1'
-        );
+        expect(
+            FEN.serialise(berlinDraw, 'w', berlinCastlingRights, null, 0, 1)
+        ).toEqual('r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 0 1');
     });
+
+    it('Serialises moves counters', () => {
+        // prettier-ignore
+        const berlinDraw = [
+            [new Rook('b'), null, new Bishop('b'), null, new King('b'), new Bishop('b'), null, new Rook('b')],
+            [new Pawn('b'), new Pawn('b'), new Pawn('b'), null, null, new Pawn('b'), new Pawn('b'), new Pawn('b')],
+            [null, null, null, new Queen('b'), null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [new Pawn('w'), null, null, new Queen('w'), null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, new Pawn('w'), new Pawn('w'), null, null, new Pawn('w'), new Pawn('w'), new Pawn('w')],
+            [new Rook('w'), new Knight('w'), new Bishop('w'), null, null, new Rook('w'), new King('w'), null],
+        ];
+        const berlinCastlingRights = {
+            w: { short: false, long: false },
+            b: { short: true, long: true },
+        };
+        expect(
+            FEN.serialise(berlinDraw, 'w', berlinCastlingRights, null, 4, 13)
+        ).toEqual('r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 4 13');
+    })
 });
