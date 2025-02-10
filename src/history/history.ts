@@ -1,4 +1,11 @@
-import { Board, CastlingRights, Colour, HistoryState } from '../types';
+import {
+    Board,
+    CastlingRights,
+    Colour,
+    Coordinate,
+    HistorySegments,
+    HistoryState,
+} from '../types';
 import * as FEN from '../parsers/FEN';
 import { Chessboard } from '../board/board';
 
@@ -16,14 +23,28 @@ export class ChessHistory {
     }
 
     get currentState(): HistoryState {
-        const [FENPosition, activePlayer, castlingRights] = FEN.split(
-            this.#history[this.#currentIndex]
-        );
-        return [
-            new Chessboard(FENPosition).board,
-            activePlayer,
+        return this.getState(this.#currentIndex);
+    }
+
+    getState(index: number): HistoryState {
+        const [
+            FENPosition,
+            activeColour,
             castlingRights,
-        ];
+            enPassantTarget,
+            halfMoves,
+            fullMoves,
+        ] = FEN.split(this.#history[index]);
+        const board = new Chessboard(FENPosition).board;
+
+        return {
+            board,
+            activeColour,
+            castlingRights,
+            enPassantTarget,
+            halfMoves,
+            fullMoves,
+        };
     }
 
     toPreviousState(): HistoryState {
@@ -44,12 +65,8 @@ export class ChessHistory {
         return this.currentState;
     }
 
-    record(
-        board: Board,
-        activeColour: Colour,
-        castlingRights: CastlingRights
-    ): void {
-        const FENState = FEN.serialise(board, activeColour, castlingRights);
+    record(...args: HistorySegments): void {
+        const FENState = FEN.serialise(...args);
         this.#currentIndex++;
 
         // If gone back some states and recording new state, overwrite "future" states

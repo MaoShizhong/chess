@@ -44,14 +44,16 @@ export type Square = Piece | null;
 export type Row = Square[];
 export type Board = Row[];
 
-export type FENSegments = [
-    string,
+type FENSegmentsWithoutPosition = [
     Colour,
     CastlingRights,
-    Coordinate | null,
-    number,
-    number,
+    enPassantTarget: Coordinate | null,
+    halfMoves: number,
+    fullMoves: number,
 ];
+
+export type FENSegments = [string, ...FENSegmentsWithoutPosition];
+export type HistorySegments = [Board, ...FENSegmentsWithoutPosition];
 
 export type HistoryState = {
     board: Board;

@@ -49,17 +49,24 @@ describe('State', () => {
         expect(history.currentState).toEqual(startingState);
     });
 
-    it.only('Appends a new history state when currently at latest state', () => {
+    it('Appends a new history state when currently at latest state', () => {
         const history = new ChessHistory(STARTING_FEN);
         const { board } = history.currentState;
         const e2Pawn = board[RANK[2]][FILE.e];
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(board, 'b', {
-            w: { short: true, long: true },
-            b: { short: true, long: true },
-        });
+        history.record(
+            board,
+            'b',
+            {
+                w: { short: true, long: true },
+                b: { short: true, long: true },
+            },
+            null,
+            0,
+            1
+        );
 
         expect(history.currentState).toEqual(stateAfterE4);
         expect(history.length).toBe(2);
@@ -67,10 +74,17 @@ describe('State', () => {
         const d7Pawn = board[RANK[7]][FILE.d];
         board[RANK[6]][FILE.d] = d7Pawn;
         board[RANK[7]][FILE.d] = null;
-        history.record(board, 'w', {
-            w: { short: true, long: true },
-            b: { short: true, long: true },
-        });
+        history.record(
+            board,
+            'w',
+            {
+                w: { short: true, long: true },
+                b: { short: true, long: true },
+            },
+            null,
+            0,
+            2
+        );
 
         expect(history.currentState).toEqual(stateAfterE4D6);
         expect(history.length).toBe(3);
@@ -83,10 +97,17 @@ describe('State', () => {
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(board, 'b', {
-            w: { short: true, long: true },
-            b: { short: true, long: true },
-        });
+        history.record(
+            board,
+            'b',
+            {
+                w: { short: true, long: true },
+                b: { short: true, long: true },
+            },
+            null,
+            0,
+            1
+        );
 
         expect(history.toPreviousState()).toEqual(startingState);
     });
@@ -103,10 +124,17 @@ describe('State', () => {
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(board, 'b', {
-            w: { short: true, long: true },
-            b: { short: true, long: true },
-        });
+        history.record(
+            board,
+            'b',
+            {
+                w: { short: true, long: true },
+                b: { short: true, long: true },
+            },
+            null,
+            0,
+            1
+        );
 
         history.toPreviousState();
 
@@ -120,16 +148,23 @@ describe('State', () => {
 
     it('Overwrites any future states when recording after moving to previous state', () => {
         const history = new ChessHistory(STARTING_FEN);
-        const {board} = history.currentState;
+        const { board } = history.currentState;
         const { board: boardCopy } = history.currentState;
         const e2Pawn = board[RANK[2]][FILE.e];
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(board, 'b', {
-            w: { short: true, long: true },
-            b: { short: true, long: true },
-        });
+        history.record(
+            board,
+            'b',
+            {
+                w: { short: true, long: true },
+                b: { short: true, long: true },
+            },
+            null,
+            0,
+            1
+        );
 
         expect(history.currentState).toEqual(stateAfterE4);
         expect(history.length).toBe(2);
@@ -141,10 +176,17 @@ describe('State', () => {
         boardCopy[RANK[3]][FILE.f] = g1Knight;
         boardCopy[RANK[1]][FILE.g] = null;
 
-        history.record(boardCopy, 'b', {
-            w: { short: true, long: true },
-            b: { short: true, long: true },
-        });
+        history.record(
+            boardCopy,
+            'b',
+            {
+                w: { short: true, long: true },
+                b: { short: true, long: true },
+            },
+            null,
+            1,
+            1
+        );
 
         expect(history.currentState).toEqual(stateAfterNf3);
         expect(history.toPreviousState()).toEqual(startingState);
