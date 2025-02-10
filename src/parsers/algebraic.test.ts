@@ -219,3 +219,19 @@ describe('Parsing algebraic notation', () => {
         });
     });
 });
+
+describe('Converting to algebraic notation', () => {
+    it.each([
+        [4, 'a', 'a4'],
+        [7, 'c', 'c7'],
+        [1, 'b', 'b1'],
+        [3, 'h', 'h3'],
+    ])(
+        'Converts rank %i and file %s to %s',
+        (rank, file, algebraicNotation) => {
+            expect(algebraic.toAlgebraic([RANK[rank], FILE[file]])).toBe(
+                algebraicNotation
+            );
+        }
+    );
+});

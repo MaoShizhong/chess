@@ -8,6 +8,11 @@ export function getCoordinate(coordinate: string): Coordinate {
     return [RANK[Number(rank)], FILE[file]];
 }
 
+export function toAlgebraic([rank, file]: Coordinate): string {
+    const files = 'abcdefgh';
+    return `${files[file]}${RANK[rank]}`;
+}
+
 export function parse(move: string): {
     isCapture: boolean;
     piecesToMove: MoveInfo[];
