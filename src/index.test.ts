@@ -143,6 +143,30 @@ describe('History', () => {
         chess.playMove('Rc1');
         expect(chess.history.record).not.toHaveBeenCalled();
     });
+
+    it('Loads previous position if available', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('e4');
+        chess.playMove('d5');
+        chess.toPreviousPosition();
+        expect(chess.board).toEqual(
+            new Chess(
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
+            ).board
+        );
+    });
+
+    it('Loads next position if available', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('e4');
+        chess.toPreviousPosition();
+        chess.toNextPosition();
+        expect(chess.board).toEqual(
+            new Chess(
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
+            ).board
+        );
+    });
 });
 
 describe('Game flow', () => {

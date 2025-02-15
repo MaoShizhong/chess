@@ -7,7 +7,6 @@ import {
     PlayerCastlingRights,
 } from '../types';
 import * as algebraic from '../parsers/algebraic';
-import * as FEN from '../parsers/FEN';
 
 export class Player {
     colour: Colour;

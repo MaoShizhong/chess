@@ -1,5 +1,5 @@
 import { Player } from './players/player';
-import { CastlingRights, Players, Result } from './types';
+import { CastlingRights, HistoryState, Players, Result } from './types';
 import { Chessboard } from './board/board';
 import * as FEN from './parsers/FEN';
 import { ChessHistory } from './history/history';
@@ -95,6 +95,33 @@ export class Chess {
         } else if (gameEndReason === 'checkmate') {
             this.result = this.activePlayer.colour === 'w' ? '0-1' : '1-0';
         }
+    }
+
+    toPreviousPosition(): Chess {
+        this.#loadPosition(this.history.toPreviousState());
+        return this;
+    }
+
+    toNextPosition(): Chess {
+        this.#loadPosition(this.history.toNextState());
+        return this;
+    }
+
+    #loadPosition({
+        board,
+        activeColour,
+        castlingRights,
+        enPassantTarget,
+        halfMoves,
+        fullMoves,
+    }: HistoryState): void {
+        this.board.board.length = 0;
+        this.board.board.push(...board);
+        this.players.w.castlingRights = castlingRights.w;
+        this.players.b.castlingRights = castlingRights.b;
+        this.activePlayer = this.players[activeColour];
+        this.#halfMoves = halfMoves;
+        this.#fullMoves = fullMoves;
     }
 
     #swapActivePlayer(): void {
