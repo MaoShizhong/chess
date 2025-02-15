@@ -1,9 +1,11 @@
 import { Player } from './players/player';
-import { Players, Result } from './types';
+import { CastlingRights, Players, Result } from './types';
 import { Chessboard } from './board/board';
 import * as FEN from './parsers/FEN';
+import { ChessHistory } from './history/history';
 
 export class Chess {
+    history: ChessHistory;
     board: Chessboard;
     players: Players;
     activePlayer: Player;
@@ -27,7 +29,8 @@ export class Chess {
             fullMoves,
         ] = FEN.split(FENString);
 
-        this.board = new Chessboard(position);
+        this.history = new ChessHistory(FENString);
+        this.board = new Chessboard(position, castlingRights);
         this.players = {
             w: new Player('w', castlingRights['w'], this.board),
             b: new Player('b', castlingRights['b'], this.board),
@@ -48,6 +51,13 @@ export class Chess {
         return this.#fullMoves;
     }
 
+    get castlingRights(): CastlingRights {
+        return {
+            w: this.players.w.castlingRights,
+            b: this.players.b.castlingRights,
+        };
+    }
+
     playMove(algebraicMove: string): void {
         if (!this.isGameInPlay) {
             return;
@@ -62,6 +72,15 @@ export class Chess {
         this.#halfMoves = isCaptureOrPawnMove ? 0 : this.#halfMoves + 1;
         this.#fullMoves += Number(this.activePlayer.colour === 'b');
         this.#swapActivePlayer();
+        // TODO: Change null to en passant possible coordinate
+        this.history.record(
+            this.board.board,
+            this.activePlayer.colour,
+            this.castlingRights,
+            null,
+            this.#halfMoves,
+            this.#fullMoves
+        );
 
         const [canStillPlay, gameEndReason] = this.board.canPlayContinue(
             this.activePlayer.colour

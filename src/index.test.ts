@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Chess } from './index';
+import { ChessHistory } from './history/history';
 
 beforeEach(vi.clearAllMocks);
 
@@ -112,6 +113,35 @@ describe('Move counts', () => {
             chess2.playMove('Nxe5');
             expect(chess2.halfMoves).toBe(0);
         });
+    });
+});
+
+describe('History', () => {
+    it('Records played moves in history', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('e4');
+        expect(chess.history.currentState.board).toEqual(
+            new Chess(
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
+            ).board.board
+        );
+
+        chess.playMove('d5');
+        expect(chess.history.currentState.board).toEqual(
+            new Chess(
+                'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'
+            ).board.board
+        );
+    });
+
+    it('Does not record new history state if move not played (invalid)', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.history.record = vi.fn();
+        chess.playMove('Ke2');
+        expect(chess.history.record).not.toHaveBeenCalled();
+
+        chess.playMove('Rc1');
+        expect(chess.history.record).not.toHaveBeenCalled();
     });
 });
 
