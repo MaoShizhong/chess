@@ -1,4 +1,10 @@
-import { Board, Colour, Move, SameDirectionMoves } from '../types';
+import {
+    Board,
+    CastlingRights,
+    Colour,
+    Move,
+    SameDirectionMoves,
+} from '../types';
 import * as FEN from '../parsers/FEN';
 import { Piece } from '../pieces/piece';
 import { Pawn } from '../pieces/pawn';
@@ -14,8 +20,14 @@ export const FILE: {
 export class Chessboard {
     board: Board;
 
-    constructor(FENPosition: string) {
-        this.board = this.#createBoard(FENPosition);
+    constructor(
+        FENPosition: string,
+        castlingRights: CastlingRights = {
+            w: { short: true, long: true },
+            b: { short: true, long: true },
+        }
+    ) {
+        this.board = this.#createBoard(FENPosition, castlingRights);
     }
 
     getValidMoves({
@@ -169,9 +181,55 @@ export class Chessboard {
         this.board.forEach((row) => row.reverse());
     }
 
-    #createBoard(position: string): Board {
+    #createBoard(position: string, castlingRights: CastlingRights): Board {
+        const starting = {
+            a1Rook: { rank: RANK[1], file: FILE.a },
+            e1King: { rank: RANK[1], file: FILE.e },
+            h1Rook: { rank: RANK[1], file: FILE.h },
+            a8Rook: { rank: RANK[8], file: FILE.a },
+            e8King: { rank: RANK[8], file: FILE.e },
+            h8Rook: { rank: RANK[8], file: FILE.h },
+        };
         const FENRows = position.split('/');
-        return FENRows.map((FENRow) => FEN.toChessRow(FENRow));
+        const board = FENRows.map((FENRow) => FEN.toChessRow(FENRow));
+
+        board.forEach((row, rank) => {
+            row.forEach((square, file) => {
+                if (
+                    !(square instanceof Rook) &&
+                    !(square instanceof King) &&
+                    !(square instanceof Pawn)
+                ) {
+                    return;
+                }
+
+                square.hasMoved = (() => {
+                    switch (square.constructor) {
+                        case Pawn:
+                            return (
+                                (square.colour === 'w' && rank !== RANK[2]) ||
+                                (square.colour === 'b' && rank !== RANK[7])
+                            );
+                        case King:
+                            return (
+                                !castlingRights[square.colour].short &&
+                                !castlingRights[square.colour].long
+                            );
+                        case Rook:
+                            return (
+                                (file === FILE.a &&
+                                    !castlingRights[square.colour].long) ||
+                                (file === FILE.h &&
+                                    !castlingRights[square.colour].short)
+                            );
+                        default:
+                            return false;
+                    }
+                })();
+            });
+        });
+
+        return board;
     }
 
     #getValidNormalMoves(

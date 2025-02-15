@@ -35,7 +35,7 @@ export class ChessHistory {
             halfMoves,
             fullMoves,
         ] = FEN.split(this.#history[index]);
-        const board = new Chessboard(FENPosition).board;
+        const board = new Chessboard(FENPosition, castlingRights).board;
 
         return {
             board,
