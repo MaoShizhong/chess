@@ -36,8 +36,6 @@ describe('Players', () => {
 });
 
 describe('Move counts', () => {
-    describe.skip('Halfmoves', () => {});
-
     describe('Fullmoves', () => {
         it('Initialises with full move count from input FEN', () => {
             const chess1 = new Chess(STARTING_POSITION);
@@ -69,6 +67,50 @@ describe('Move counts', () => {
 
             chess.playMove('Qc1');
             expect(chess.fullMoves).toBe(fullMoves);
+        });
+    });
+
+    describe('Halfmoves', () => {
+        it('Initialises with half move count from input FEN', () => {
+            const chess1 = new Chess(STARTING_POSITION);
+            expect(chess1.halfMoves).toBe(0);
+
+            const chess2 = new Chess(
+                'r1bqkb1r/pppppppp/2n2n2/8/8/2N2N2/PPPPPPPP/R1BQKB1R w KQkq - 4 3'
+            );
+            expect(chess2.halfMoves).toBe(4);
+        });
+
+        it('Halfmove counter increases by 1 after a non-capture or non-pawn move', () => {
+            const halfMoves = 4;
+            const chess = new Chess(
+                `r1bqkb1r/pppppppp/2n2n2/8/8/2N2N2/PPPPPPPP/R1BQKB1R w KQkq - ${halfMoves} 3`
+            );
+            expect(chess.halfMoves).toBe(halfMoves);
+
+            chess.playMove('Ne5');
+            expect(chess.halfMoves).toBe(halfMoves + 1);
+        });
+
+        it('Resets halfmove counter after a capture or pawn move', () => {
+            const halfMoves = 5;
+            // pawn move
+            const chess = new Chess(
+                `r1bqkb1r/pppppppp/2n2n2/4N3/8/2N5/PPPPPPPP/R1BQKB1R b KQkq - ${halfMoves} 3`
+            );
+            expect(chess.halfMoves).toBe(halfMoves);
+
+            chess.playMove('d5');
+            expect(chess.halfMoves).toBe(0);
+
+            // capture
+            const chess2 = new Chess(
+                `r1bqkb1r/pppppppp/2n2n2/4N3/8/2N5/PPPPPPPP/R1BQKB1R b KQkq - ${halfMoves} 3`
+            );
+            expect(chess2.halfMoves).toBe(halfMoves);
+
+            chess2.playMove('Nxe5');
+            expect(chess2.halfMoves).toBe(0);
         });
     });
 });

@@ -24,14 +24,15 @@ export class Player {
         this.#board = board;
     }
 
-    move(destination: string): boolean {
+    move(destination: string): [boolean, boolean] {
         if (
             (destination === 'O-O' && !this.castlingRights.short) ||
             (destination === 'O-O-O' && !this.castlingRights.long)
         ) {
-            return false;
+            return [false, false];
         }
 
+        let isPawnMove = false;
         const { isCapture, piecesToMove } = algebraic.parse(destination);
         const isCastling = piecesToMove.length === 2;
 
@@ -39,6 +40,9 @@ export class Player {
             if (isCastling) {
                 pieceToMove.destination[0] =
                     this.colour === 'w' ? RANK[1] : RANK[8];
+            }
+            if (pieceToMove.piece.letter === 'P') {
+                isPawnMove = true;
             }
             if (this.colour === 'b') {
                 pieceToMove.piece.letter = <PieceLetter>(
@@ -52,7 +56,7 @@ export class Player {
             );
 
             if (!validPiece) {
-                return false;
+                return [false, false];
             }
 
             const moveInfo = {
@@ -62,7 +66,7 @@ export class Player {
             const boardAfterMove = this.#board.simulateMove(moveInfo);
 
             if (boardAfterMove.isKingInCheck(this.colour)) {
-                return false;
+                return [false, false];
             }
 
             this.#board.move(moveInfo);
@@ -71,7 +75,7 @@ export class Player {
             this.#handleCastlingRights(pieceToMove.piece.letter, fromFile);
         }
 
-        return piecesToMove.length > 0;
+        return [piecesToMove.length > 0, isCapture || isPawnMove];
     }
 
     #findFromSquare(

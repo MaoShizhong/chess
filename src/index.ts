@@ -9,6 +9,7 @@ export class Chess {
     activePlayer: Player;
     isGameInPlay: boolean;
     result?: Result;
+    #halfMoves: number;
     #fullMoves: number;
 
     /**
@@ -35,7 +36,12 @@ export class Chess {
         this.isGameInPlay = this.board.canPlayContinue(
             this.activePlayer.colour
         )[0];
+        this.#halfMoves = halfMoves;
         this.#fullMoves = fullMoves;
+    }
+
+    get halfMoves(): number {
+        return this.#halfMoves;
     }
 
     get fullMoves(): number {
@@ -47,14 +53,14 @@ export class Chess {
             return;
         }
 
-        const moveWasPlayed = this.activePlayer.move(algebraicMove);
+        const [moveWasPlayed, isCaptureOrPawnMove] =
+            this.activePlayer.move(algebraicMove);
         if (!moveWasPlayed) {
             return;
         }
 
-        if (this.activePlayer.colour === 'b') {
-            this.#fullMoves++;
-        }
+        this.#halfMoves = isCaptureOrPawnMove ? 0 : this.#halfMoves + 1;
+        this.#fullMoves += Number(this.activePlayer.colour === 'b');
         this.#swapActivePlayer();
 
         const [canStillPlay, gameEndReason] = this.board.canPlayContinue(
