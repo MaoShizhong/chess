@@ -15,7 +15,6 @@ import {
     PieceLetter,
     Row,
 } from '../types';
-import { RANK } from '../board/board';
 
 const PIECES = {
     P: Pawn,

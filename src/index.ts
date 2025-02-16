@@ -30,7 +30,7 @@ export class Chess {
         ] = FEN.split(FENString);
 
         this.history = new ChessHistory(FENString);
-        this.board = new Chessboard(position, castlingRights);
+        this.board = new Chessboard(position, castlingRights, enPassantTarget);
         this.players = {
             w: new Player('w', castlingRights['w'], this.board),
             b: new Player('b', castlingRights['b'], this.board),
@@ -71,6 +71,7 @@ export class Chess {
 
         this.#halfMoves = isCaptureOrPawnMove ? 0 : this.#halfMoves + 1;
         this.#fullMoves += Number(this.activePlayer.colour === 'b');
+        this.board.enPassant = enPassantTarget;
         this.#swapActivePlayer();
         this.history.record(
             this.board.board,
@@ -116,6 +117,7 @@ export class Chess {
     }: HistoryState): void {
         this.board.board.length = 0;
         this.board.board.push(...board);
+        this.board.enPassant = enPassantTarget;
         this.players.w.castlingRights = castlingRights.w;
         this.players.b.castlingRights = castlingRights.b;
         this.activePlayer = this.players[activeColour];

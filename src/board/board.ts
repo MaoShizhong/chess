@@ -2,6 +2,7 @@ import {
     Board,
     CastlingRights,
     Colour,
+    Coordinate,
     Move,
     SameDirectionMoves,
 } from '../types';
@@ -19,15 +20,18 @@ export const FILE: {
 
 export class Chessboard {
     board: Board;
+    enPassant: Coordinate | null;
 
     constructor(
         FENPosition: string,
         castlingRights: CastlingRights = {
             w: { short: true, long: true },
             b: { short: true, long: true },
-        }
+        },
+        enPassantTarget: Coordinate | null = null
     ) {
         this.board = this.#createBoard(FENPosition, castlingRights);
+        this.enPassant = enPassantTarget;
     }
 
     getValidMoves({
@@ -182,14 +186,6 @@ export class Chessboard {
     }
 
     #createBoard(position: string, castlingRights: CastlingRights): Board {
-        const starting = {
-            a1Rook: { rank: RANK[1], file: FILE.a },
-            e1King: { rank: RANK[1], file: FILE.e },
-            h1Rook: { rank: RANK[1], file: FILE.h },
-            a8Rook: { rank: RANK[8], file: FILE.a },
-            e8King: { rank: RANK[8], file: FILE.e },
-            h8Rook: { rank: RANK[8], file: FILE.h },
-        };
         const FENRows = position.split('/');
         const board = FENRows.map((FENRow) => FEN.toChessRow(FENRow));
 

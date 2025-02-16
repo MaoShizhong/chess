@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Chess } from './index';
-import { ChessHistory } from './history/history';
+import { FILE, RANK } from './board/board';
 
 beforeEach(vi.clearAllMocks);
 
@@ -122,14 +122,14 @@ describe('History', () => {
         chess.playMove('e4');
         expect(chess.history.currentState.board).toEqual(
             new Chess(
-                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
             ).board.board
         );
 
         chess.playMove('d5');
         expect(chess.history.currentState.board).toEqual(
             new Chess(
-                'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'
+                'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2'
             ).board.board
         );
     });
@@ -151,7 +151,7 @@ describe('History', () => {
         chess.toPreviousPosition();
         expect(chess.board).toEqual(
             new Chess(
-                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
             ).board
         );
     });
@@ -163,9 +163,29 @@ describe('History', () => {
         chess.toNextPosition();
         expect(chess.board).toEqual(
             new Chess(
-                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
             ).board
         );
+    });
+});
+
+describe('En passant', () => {
+    it('Passes board object en passant coordinate if available', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('e4');
+        expect(chess.board.enPassant).toEqual([RANK[3], FILE.e]);
+
+        chess.playMove('d5');
+        expect(chess.board.enPassant).toEqual([RANK[6], FILE.d]);
+    });
+
+    it('Passes null to board object if no available en passant coordinate', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('Nf3');
+        expect(chess.board.enPassant).toBeNull();
+
+        chess.playMove('g6');
+        expect(chess.board.enPassant).toBeNull();
     });
 });
 
