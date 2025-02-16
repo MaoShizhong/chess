@@ -254,6 +254,31 @@ describe('Valid moves', () => {
             });
             expect(d2PawnMoves).toContainEqual([RANK[3], FILE.e]);
         });
+
+        it('Includes en passant capture square if available to pawn', () => {
+            const chessboard = new Chessboard(
+                'rnbqkbnr/pp2pppp/8/2ppP3/8/8/PPPP1PPP/RNBQKBNR'
+            );
+            chessboard.enPassant = [RANK[6], FILE.d];
+
+            const e5PawnMoves = chessboard.getValidMoves({
+                rank: RANK[5],
+                file: FILE.e,
+            });
+            expect(e5PawnMoves).toContainEqual([RANK[6], FILE.d]);
+        });
+
+        it('Does not include en passant capture square if not available to pawn', () => {
+            const chessboard = new Chessboard(
+                'rnbqkbnr/pp2pppp/8/2ppP3/8/8/PPPP1PPP/RNBQKBNR'
+            );
+
+            const e5PawnMoves = chessboard.getValidMoves({
+                rank: RANK[5],
+                file: FILE.e,
+            });
+            expect(e5PawnMoves).not.toContainEqual([RANK[6], FILE.d]);
+        });
     });
 
     describe('Castling', () => {

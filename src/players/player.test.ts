@@ -223,9 +223,9 @@ describe('Move', () => {
 
     describe('Captures', () => {
         describe('Valid captures', () => {
-            // https://lichess.org/analysis/standard/1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R_w_KQ_-_0_1
+            // https://lichess.org/analysis/standard/1rb1k3/p3pp2/B1n2n2/2ppP2p/N3N3/1p3Q2/P4P2/R3K2R_w_KQ_d6_0_1
             const chess = new Chess(
-                '1rb1k3/p2ppp2/B1n2n2/2p4p/N3N3/1p2PQ2/P4P2/R3K2R w KQ - 0 1'
+                '1rb1k3/p3pp2/B1n2n2/2ppP2p/N3N3/1p3Q2/P4P2/R3K2R w KQ d6 0 1'
             );
             chess.board.move = vi.fn();
 
@@ -270,12 +270,20 @@ describe('Move', () => {
                     to: [RANK[5], FILE.c],
                 });
             });
+
+            it('exd6 tells pawn on e5 to capture on d6 (en passant)', () => {
+                chess.players.w.move('exd6');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[5], FILE.e],
+                    to: [RANK[6], FILE.d],
+                });
+            });
         });
 
         describe('Invalid captures', () => {
-            // https://lichess.org/analysis/standard/1rb2k2/p2pp1R1/B1n2n1P/2p5/N2br1N1/1p2PQ2/P4P2/4K2R_w_K_-_0_1
+            // https://lichess.org/analysis/1rb2k2/p2pp1R1/B1n2n1P/2p5/NpPbr1N1/4PQ2/P4P2/4K2R_b_K_-_0_1
             const chess = new Chess(
-                '1rb2k2/p2pp1R1/B1n2n1P/2p5/N2br1N1/1p2PQ2/P4P2/4K2R w K - 0 1'
+                '1rb2k2/p2pp1R1/B1n2n1P/2p5/NpPbr1N1/4PQ2/P4P2/4K2R b K - 0 1'
             );
             chess.board.move = vi.fn();
 
@@ -300,6 +308,10 @@ describe('Move', () => {
 
                 // Can't capture own colour piece
                 chess.players.b.move('Kxe7');
+                expect(chess.board.move).not.toHaveBeenCalled();
+
+                // En passant not available
+                chess.players.w.move('bxc3');
                 expect(chess.board.move).not.toHaveBeenCalled();
             });
 
