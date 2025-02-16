@@ -42,22 +42,7 @@ export class Player {
                 pieceToMove.destination[0] =
                     this.colour === 'w' ? RANK[1] : RANK[8];
             }
-            if (pieceToMove.piece.letter === 'P') {
-                isPawnMove = true;
-                const [rank, file] = pieceToMove.destination;
-                switch (this.colour) {
-                    case 'w':
-                        if (rank === RANK[4] && file === FILE[destination[0]]) {
-                            enPassantTarget = [RANK[3], file];
-                        }
-                        break;
-                    case 'b':
-                        if (rank === RANK[5] && file === FILE[destination[0]]) {
-                            enPassantTarget = [RANK[6], file];
-                        }
-                        break;
-                }
-            }
+
             if (this.colour === 'b') {
                 pieceToMove.piece.letter = <PieceLetter>(
                     pieceToMove.piece.letter.toLowerCase()
@@ -71,6 +56,27 @@ export class Player {
 
             if (!validPiece) {
                 return [false, false, null];
+            }
+
+            if (pieceToMove.piece.letter.toUpperCase() === 'P') {
+                isPawnMove = true;
+                const [rank, file] = pieceToMove.destination;
+                const isSameFile = file === FILE[destination[0]];
+                const movesTwoSquares =
+                    Math.abs(rank - fromRank) === 2;
+
+                switch (this.colour) {
+                    case 'w':
+                        if (rank === RANK[4] && isSameFile && movesTwoSquares) {
+                            enPassantTarget = [RANK[3], file];
+                        }
+                        break;
+                    case 'b':
+                        if (rank === RANK[5] && isSameFile && movesTwoSquares) {
+                            enPassantTarget = [RANK[6], file];
+                        }
+                        break;
+                }
             }
 
             const moveInfo = {
