@@ -63,7 +63,7 @@ export class Chess {
             return;
         }
 
-        const [moveWasPlayed, isCaptureOrPawnMove] =
+        const [moveWasPlayed, isCaptureOrPawnMove, enPassantTarget] =
             this.activePlayer.move(algebraicMove);
         if (!moveWasPlayed) {
             return;
@@ -72,12 +72,11 @@ export class Chess {
         this.#halfMoves = isCaptureOrPawnMove ? 0 : this.#halfMoves + 1;
         this.#fullMoves += Number(this.activePlayer.colour === 'b');
         this.#swapActivePlayer();
-        // TODO: Change null to en passant possible coordinate
         this.history.record(
             this.board.board,
             this.activePlayer.colour,
             this.castlingRights,
-            null,
+            enPassantTarget,
             this.#halfMoves,
             this.#fullMoves
         );

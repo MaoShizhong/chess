@@ -15,6 +15,7 @@ import {
     PieceLetter,
     Row,
 } from '../types';
+import { RANK } from '../board/board';
 
 const PIECES = {
     P: Pawn,
@@ -63,8 +64,7 @@ export function serialise(
         FENPosition,
         activePlayer,
         FENCastling,
-        // TODO: En passant coordinate to algebraic
-        '-',
+        enPassantTarget ? algebraic.toAlgebraic(enPassantTarget) : '-',
         halfMoves,
         fullMoves,
     ];

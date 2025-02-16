@@ -1,11 +1,4 @@
-import {
-    Board,
-    CastlingRights,
-    Colour,
-    Coordinate,
-    HistorySegments,
-    HistoryState,
-} from '../types';
+import { HistorySegments, HistoryState } from '../types';
 import * as FEN from '../parsers/FEN';
 import { Chessboard } from '../board/board';
 

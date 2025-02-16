@@ -20,7 +20,7 @@ const stateAfterE4 = {
         .board,
     activeColour: 'b',
     castlingRights: STARTING_CASTLING,
-    enPassantTarget: null,
+    enPassantTarget: [RANK[3], FILE.e],
     halfMoves: 0,
     fullMoves: 1,
 };
@@ -63,7 +63,7 @@ describe('State', () => {
                 w: { short: true, long: true },
                 b: { short: true, long: true },
             },
-            null,
+            [RANK[3], FILE.e],
             0,
             1
         );
@@ -131,7 +131,7 @@ describe('State', () => {
                 w: { short: true, long: true },
                 b: { short: true, long: true },
             },
-            null,
+            [RANK[3], FILE.e],
             0,
             1
         );
@@ -161,7 +161,7 @@ describe('State', () => {
                 w: { short: true, long: true },
                 b: { short: true, long: true },
             },
-            null,
+            [RANK[3], FILE.e],
             0,
             1
         );
