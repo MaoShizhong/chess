@@ -338,6 +338,40 @@ describe('Move', () => {
             });
         });
     });
+
+    describe('En passant', () => {
+        it('Reports en passant target after pawn moves two squares forward', () => {
+            // https://lichess.org/analysis/standard/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR_w_KQkq_-_0_1
+            const chess = new Chess(
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+            );
+            chess.board.move = vi.fn();
+
+            expect(chess.players.w.move('e4')).toContainEqual([
+                RANK[3],
+                FILE.e,
+            ]);
+            expect(chess.players.w.move('d4')).toContainEqual([
+                RANK[3],
+                FILE.d,
+            ]);
+            expect(chess.players.b.move('c5')).toContainEqual([
+                RANK[6],
+                FILE.c,
+            ]);
+        });
+
+        it('Does not report en passant target after any non-double pawn move', () => {
+            // https://lichess.org/analysis/standard/rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR_w_KQkq_-_0_2
+            const chess = new Chess(
+                'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'
+            );
+            chess.board.move = vi.fn();
+
+            expect(chess.players.w.move('exd5')[2]).toBeNull();
+            expect(chess.players.b.move('c6')[2]).toBeNull();
+        });
+    });
 });
 
 describe('Castling rights', () => {

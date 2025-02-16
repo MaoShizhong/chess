@@ -1,6 +1,7 @@
 import { Chessboard, FILE, RANK } from '../board/board';
 import {
     Colour,
+    Coordinate,
     Move,
     MoveInfo,
     PieceLetter,
@@ -23,15 +24,16 @@ export class Player {
         this.#board = board;
     }
 
-    move(destination: string): [boolean, boolean] {
+    move(destination: string): [boolean, boolean, Coordinate | null] {
         if (
             (destination === 'O-O' && !this.castlingRights.short) ||
             (destination === 'O-O-O' && !this.castlingRights.long)
         ) {
-            return [false, false];
+            return [false, false, null];
         }
 
         let isPawnMove = false;
+        let enPassantTarget: Coordinate | null = null;
         const { isCapture, piecesToMove } = algebraic.parse(destination);
         const isCastling = piecesToMove.length === 2;
 
@@ -42,6 +44,19 @@ export class Player {
             }
             if (pieceToMove.piece.letter === 'P') {
                 isPawnMove = true;
+                const [rank, file] = pieceToMove.destination;
+                switch (this.colour) {
+                    case 'w':
+                        if (rank === RANK[4] && file === FILE[destination[0]]) {
+                            enPassantTarget = [RANK[3], file];
+                        }
+                        break;
+                    case 'b':
+                        if (rank === RANK[5] && file === FILE[destination[0]]) {
+                            enPassantTarget = [RANK[6], file];
+                        }
+                        break;
+                }
             }
             if (this.colour === 'b') {
                 pieceToMove.piece.letter = <PieceLetter>(
@@ -55,7 +70,7 @@ export class Player {
             );
 
             if (!validPiece) {
-                return [false, false];
+                return [false, false, null];
             }
 
             const moveInfo = {
@@ -65,7 +80,7 @@ export class Player {
             const boardAfterMove = this.#board.simulateMove(moveInfo);
 
             if (boardAfterMove.isKingInCheck(this.colour)) {
-                return [false, false];
+                return [false, false, null];
             }
 
             this.#board.move(moveInfo);
@@ -74,7 +89,11 @@ export class Player {
             this.#handleCastlingRights(pieceToMove.piece.letter, fromFile);
         }
 
-        return [piecesToMove.length > 0, isCapture || isPawnMove];
+        return [
+            piecesToMove.length > 0,
+            isCapture || isPawnMove,
+            enPassantTarget,
+        ];
     }
 
     #findFromSquare(
