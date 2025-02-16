@@ -249,7 +249,9 @@ export class Chessboard {
             const isOwnPieceBlocking =
                 square instanceof Piece && square.colour === piece.colour;
             const isEnemyPieceBlocking =
-                square instanceof Piece && square.colour !== piece.colour;
+                (square instanceof Piece && square.colour !== piece.colour) ||
+                (this.enPassant?.[0] === destinationRank &&
+                    this.enPassant?.[1] === destinationFile);
 
             const isNormalCapture = movingPiece && isEnemyPieceBlocking;
             // Pawns normally can move diagonally only if an enemy piece is actually there to be captured.
@@ -266,6 +268,10 @@ export class Chessboard {
                 (movingPiece && square === null) ||
                 (movingPawn && destinationFile === file && square === null);
 
+            if (isPawnCapture && this.enPassant) {
+                validMoves.push(this.enPassant);
+            }
+
             // discard square and those behind in same direction
             if (isOwnPieceBlocking) {
                 break;
@@ -273,7 +279,7 @@ export class Chessboard {
                 validMoves.push([destinationRank, destinationFile]);
             }
 
-            // piece blocking so disscard behind but still include capturable square
+            // piece blocking so discard behind but still include capturable square
             if (isCapture) {
                 break;
             }
