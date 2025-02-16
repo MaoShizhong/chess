@@ -268,10 +268,6 @@ export class Chessboard {
                 (movingPiece && square === null) ||
                 (movingPawn && destinationFile === file && square === null);
 
-            if (isPawnCapture && this.enPassant) {
-                validMoves.push(this.enPassant);
-            }
-
             // discard square and those behind in same direction
             if (isOwnPieceBlocking) {
                 break;
