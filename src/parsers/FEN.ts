@@ -16,7 +16,7 @@ import {
     Row,
 } from '../types';
 
-const PIECES = {
+export const PIECES = {
     P: Pawn,
     p: Pawn,
     R: Rook,

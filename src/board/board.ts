@@ -4,6 +4,7 @@ import {
     Colour,
     Coordinate,
     Move,
+    PromotionPieceLetter,
     SameDirectionMoves,
 } from '../types';
 import * as FEN from '../parsers/FEN';
@@ -160,11 +161,24 @@ export class Chessboard {
         }
     }
 
-    move({ from, to }: { from: Move; to: Move }): void {
+    move({
+        from,
+        to,
+        promoteTo,
+    }: {
+        from: Move;
+        to: Move;
+        promoteTo?: PromotionPieceLetter;
+    }): void {
         const [fromRank, fromFile] = from;
         const [toRank, toFile] = to;
+        const { PIECES } = FEN;
 
-        const movedPiece = this.board[fromRank][fromFile];
+        const colour = promoteTo?.toUpperCase() === promoteTo ? 'w' : 'b';
+
+        const movedPiece = promoteTo
+            ? new PIECES[promoteTo](colour)
+            : this.board[fromRank][fromFile];
 
         this.board[toRank][toFile] = movedPiece;
         this.board[fromRank][fromFile] = null;

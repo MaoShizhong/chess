@@ -4,6 +4,8 @@ import { Colour, Square } from '../types';
 import { King } from '../pieces/king';
 import { Rook } from '../pieces/rook';
 import { Pawn } from '../pieces/pawn';
+import { Queen } from '../pieces/queen';
+import { Bishop } from '../pieces/bishop';
 
 // https://lichess.org/analysis/standard/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
@@ -471,6 +473,36 @@ describe('Moving pieces', () => {
 
         chessboard.move({ from: [RANK[1], FILE.e], to: [RANK[2], FILE.e] });
         expect(whiteKing.hasMoved).toBe(true);
+    });
+
+    it('Replaces pawn with desired piece when promoting', () => {
+        // https://lichess.org/analysis/4k3/6P1/8/8/8/8/1p6/4K3_w_-_-_0_1
+        const chessboard = new Chessboard('4k3/6P1/8/8/8/8/1p6/4K3');
+        const g7Pawn = chessboard.board[RANK[7]][FILE.g];
+        chessboard.move({
+            from: [RANK[7], FILE.g],
+            to: [RANK[8], FILE.g],
+            promoteTo: 'Q',
+        });
+
+        expect(chessboard.board[RANK[7]][FILE.g]).toBe(null);
+        expect(chessboard.board[RANK[8]][FILE.g]).toEqual(new Queen('w'));
+        for (const row of chessboard.board) {
+            expect(row).not.toContain(g7Pawn);
+        }
+
+        const b2Pawn = chessboard.board[RANK[2]][FILE.b];
+        chessboard.move({
+            from: [RANK[2], FILE.b],
+            to: [RANK[1], FILE.b],
+            promoteTo: 'b',
+        });
+
+        expect(chessboard.board[RANK[2]][FILE.b]).toBe(null);
+        expect(chessboard.board[RANK[1]][FILE.b]).toEqual(new Bishop('b'));
+        for (const row of chessboard.board) {
+            expect(row).not.toContain(b2Pawn);
+        }
     });
 });
 
