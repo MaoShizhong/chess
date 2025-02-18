@@ -6,6 +6,7 @@ import {
     MoveInfo,
     PieceLetter,
     PlayerCastlingRights,
+    PromotionPieceLetter,
 } from '../types';
 import * as algebraic from '../parsers/algebraic';
 
@@ -47,6 +48,9 @@ export class Player {
                 pieceToMove.piece.letter = <PieceLetter>(
                     pieceToMove.piece.letter.toLowerCase()
                 );
+                pieceToMove.promoteTo = <PromotionPieceLetter>(
+                    pieceToMove.promoteTo?.toLowerCase()
+                );
             }
 
             const [validPiece, fromRank, fromFile] = this.#findFromSquare(
@@ -58,12 +62,12 @@ export class Player {
                 return [false, false, null];
             }
 
+
             if (pieceToMove.piece.letter.toUpperCase() === 'P') {
                 isPawnMove = true;
                 const [rank, file] = pieceToMove.destination;
                 const isSameFile = file === FILE[destination[0]];
-                const movesTwoSquares =
-                    Math.abs(rank - fromRank) === 2;
+                const movesTwoSquares = Math.abs(rank - fromRank) === 2;
 
                 switch (this.colour) {
                     case 'w':
@@ -82,6 +86,7 @@ export class Player {
             const moveInfo = {
                 from: [fromRank, fromFile] as Move,
                 to: pieceToMove.destination,
+                promoteTo: pieceToMove.promoteTo,
             };
             const boardAfterMove = this.#board.simulateMove(moveInfo);
 

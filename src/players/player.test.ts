@@ -44,9 +44,9 @@ describe('Move', () => {
 
     describe('Non-captures', () => {
         describe('Valid move call details (White)', () => {
-            // https://lichess.org/analysis/standard/1nkr2n1/2ppp3/8/2b5/2N1Q2Q/8/PPB5/1N1K3Q_w_-_-_0_1
+            // https://lichess.org/analysis/standard/1nkr2n1/2pppP2/8/2b5/2N1Q2Q/8/PPB5/1N1K3Q_w_-_-_0_1
             const chess = new Chess(
-                '1nkr2n1/2ppp3/8/2b5/2N1Q2Q/8/PPB5/1N1K3Q w - - 0 1'
+                '1nkr2n1/2pppP2/8/2b5/2N1Q2Q/8/PPB5/1N1K3Q w - - 0 1'
             );
             chess.board.move = vi.fn();
 
@@ -107,11 +107,20 @@ describe('Move', () => {
                     to: [RANK[1], FILE.e],
                 });
             });
+
+            test('f8=Q tells board to move piece on f7 to f8 and promote to Queen', () => {
+                chess.players.w.move('f8=Q');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[7], FILE.f],
+                    to: [RANK[8], FILE.f],
+                    promoteTo: 'Q',
+                });
+            });
         });
 
         describe('Valid move call details (Black)', () => {
-            // https://lichess.org/analysis/standard/r3k2r/3p4/8/8/8/8/8/R3K3_w_Qkq_-_0_1
-            const chess = new Chess('r3k2r/3p4/8/8/8/8/8/R3K3 w Qkq - 0 1');
+            // https://lichess.org/analysis/standard/r3k2r/3p4/8/8/8/8/7p/R3K3_w_Qkq_-_0_1
+            const chess = new Chess('r3k2r/3p4/8/8/8/8/7p/R3K3 w Qkq - 0 1');
             chess.board.move = vi.fn();
 
             afterEach(() => {
@@ -153,6 +162,15 @@ describe('Move', () => {
                 expect(chess.board.move).toHaveBeenNthCalledWith(2, {
                     from: [RANK[8], FILE.a],
                     to: [RANK[8], FILE.d],
+                });
+            });
+
+            test('h1=R tells board to move piece on h2 to h1 and promote to Rook', () => {
+                chess.players.b.move('h1=R');
+                expect(chess.board.move).toHaveBeenCalledWith({
+                    from: [RANK[2], FILE.h],
+                    to: [RANK[1], FILE.h],
+                    promoteTo: 'r',
                 });
             });
         });
