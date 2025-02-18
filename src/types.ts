@@ -39,6 +39,7 @@ export type PieceLetter =
     | 'r'
     | 'q'
     | 'k';
+export type PromotionPieceLetter = Exclude<PieceLetter, 'P' | 'p' | 'K' | 'k'>;
 type Piece = Pawn | Knight | Bishop | Rook | Queen | King;
 export type Square = Piece | null;
 export type Row = Square[];
@@ -77,5 +78,6 @@ export type MoveInfo = {
         rank?: number;
     };
     destination: Move;
+    promoteTo?: PromotionPieceLetter;
 };
 export type PlayerMoveInfo = MoveInfo & { colour: Colour };

@@ -1,4 +1,9 @@
-import { Coordinate, MoveInfo, PieceLetter } from '../types';
+import {
+    Coordinate,
+    MoveInfo,
+    PieceLetter,
+    PromotionPieceLetter,
+} from '../types';
 import { RANK, FILE } from '../board/board';
 
 const CASTLE = { SHORT: 'O-O', LONG: 'O-O-O' };
@@ -17,6 +22,7 @@ export function parse(move: string): {
     isCapture: boolean;
     piecesToMove: MoveInfo[];
 } {
+    const isPromotion = move.includes('=');
     const isCapture = move.includes('x');
     const isPawnCapture = isCapture && move[0] === move[0].toLowerCase();
 
@@ -64,6 +70,12 @@ function parseSimple(notationParts: string[]): MoveInfo {
         piece: { letter: 'P' },
         destination: [0, 0],
     };
+
+    if (notationParts.includes('=')) {
+        moveInfo.promoteTo = <PromotionPieceLetter>notationParts.at(-1);
+        // remove promotion details
+        notationParts.splice(-2, 2);
+    }
 
     switch (notationParts.length) {
         case 2: {

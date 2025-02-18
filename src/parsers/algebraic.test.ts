@@ -218,6 +218,56 @@ describe('Parsing algebraic notation', () => {
             });
         });
     });
+
+    describe('Promotion', () => {
+        it('Parses non-capture promotion', () => {
+            expect(algebraic.parse('e8=Q')).toEqual({
+                isCapture: false,
+                piecesToMove: [
+                    {
+                        piece: { letter: 'P' },
+                        destination: [RANK[8], FILE.e],
+                        promoteTo: 'Q',
+                    },
+                ],
+            });
+
+            expect(algebraic.parse('c1=R')).toEqual({
+                isCapture: false,
+                piecesToMove: [
+                    {
+                        piece: { letter: 'P' },
+                        destination: [RANK[1], FILE.c],
+                        promoteTo: 'R',
+                    },
+                ],
+            });
+        });
+
+        it('Parses capture promotion', () => {
+            expect(algebraic.parse('dxe1=Q')).toEqual({
+                isCapture: true,
+                piecesToMove: [
+                    {
+                        piece: { letter: 'P', file: FILE.d },
+                        destination: [RANK[1], FILE.e],
+                        promoteTo: 'Q',
+                    },
+                ],
+            });
+
+            expect(algebraic.parse('bxc8=R')).toEqual({
+                isCapture: true,
+                piecesToMove: [
+                    {
+                        piece: { letter: 'P', file: FILE.b },
+                        destination: [RANK[8], FILE.c],
+                        promoteTo: 'R',
+                    },
+                ],
+            });
+        });
+    });
 });
 
 describe('Converting to algebraic notation', () => {
