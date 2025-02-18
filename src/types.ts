@@ -46,7 +46,7 @@ export type Row = Square[];
 export type Board = Row[];
 
 type StartingHistoryEntry = { FEN: string };
-type HistoryEntry = StartingHistoryEntry & { move: string };
+export type HistoryEntry = StartingHistoryEntry & { move: string };
 export type History = [StartingHistoryEntry, ...HistoryEntry[]];
 
 type FENSegmentsWithoutPosition = [

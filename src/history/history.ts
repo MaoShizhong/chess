@@ -1,14 +1,15 @@
-import { HistorySegments, HistoryState } from '../types';
+import { History, HistorySegments, HistoryState } from '../types';
 import * as FEN from '../parsers/FEN';
+import * as PGN from '../parsers/PGN';
 import { Chessboard } from '../board/board';
 
 export class ChessHistory {
     #currentIndex: number;
-    #history: { position: string; move?: string }[];
+    #history: History;
 
     constructor(FENState: string) {
         this.#currentIndex = 0;
-        this.#history = [{ position: FENState }];
+        this.#history = [{ FEN: FENState }];
     }
 
     get length(): number {
@@ -27,7 +28,7 @@ export class ChessHistory {
             enPassantTarget,
             halfMoves,
             fullMoves,
-        ] = FEN.split(this.#history[index].position);
+        ] = FEN.split(this.#history[index].FEN);
         const board = new Chessboard(FENPosition, castlingRights).board;
 
         return {
@@ -64,8 +65,12 @@ export class ChessHistory {
 
         // If gone back some states and recording new state, overwrite "future" states
         this.#history.splice(this.#currentIndex, Infinity, {
-            position: FENState,
+            FEN: FENState,
             move: move,
         });
+    }
+
+    toPGN(): string {
+        return PGN.serialise(this.#history);
     }
 }
