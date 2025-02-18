@@ -74,6 +74,7 @@ export class Chess {
         this.board.enPassant = enPassantTarget;
         this.#swapActivePlayer();
         this.history.record(
+            algebraicMove,
             this.board.board,
             this.activePlayer.colour,
             this.castlingRights,

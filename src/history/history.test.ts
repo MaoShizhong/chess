@@ -57,6 +57,7 @@ describe('State', () => {
         board[RANK[2]][FILE.e] = null;
 
         history.record(
+            'e4',
             board,
             'b',
             {
@@ -75,6 +76,7 @@ describe('State', () => {
         board[RANK[6]][FILE.d] = d7Pawn;
         board[RANK[7]][FILE.d] = null;
         history.record(
+            'd6',
             board,
             'w',
             {
@@ -98,6 +100,7 @@ describe('State', () => {
         board[RANK[2]][FILE.e] = null;
 
         history.record(
+            'e4',
             board,
             'b',
             {
@@ -125,6 +128,7 @@ describe('State', () => {
         board[RANK[2]][FILE.e] = null;
 
         history.record(
+            'e4',
             board,
             'b',
             {
@@ -155,6 +159,7 @@ describe('State', () => {
         board[RANK[2]][FILE.e] = null;
 
         history.record(
+            'e4',
             board,
             'b',
             {
@@ -177,6 +182,7 @@ describe('State', () => {
         boardCopy[RANK[1]][FILE.g] = null;
 
         history.record(
+            'Nf3',
             boardCopy,
             'b',
             {

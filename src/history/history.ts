@@ -4,11 +4,11 @@ import { Chessboard } from '../board/board';
 
 export class ChessHistory {
     #currentIndex: number;
-    #history: string[];
+    #history: { position: string; move?: string }[];
 
     constructor(FENState: string) {
         this.#currentIndex = 0;
-        this.#history = [FENState];
+        this.#history = [{ position: FENState }];
     }
 
     get length(): number {
@@ -27,7 +27,7 @@ export class ChessHistory {
             enPassantTarget,
             halfMoves,
             fullMoves,
-        ] = FEN.split(this.#history[index]);
+        ] = FEN.split(this.#history[index].position);
         const board = new Chessboard(FENPosition, castlingRights).board;
 
         return {
@@ -58,11 +58,14 @@ export class ChessHistory {
         return this.currentState;
     }
 
-    record(...args: HistorySegments): void {
-        const FENState = FEN.serialise(...args);
+    record(move: string, ...toSerialise: HistorySegments): void {
+        const FENState = FEN.serialise(...toSerialise);
         this.#currentIndex++;
 
         // If gone back some states and recording new state, overwrite "future" states
-        this.#history.splice(this.#currentIndex, Infinity, FENState);
+        this.#history.splice(this.#currentIndex, Infinity, {
+            position: FENState,
+            move: move,
+        });
     }
 }
