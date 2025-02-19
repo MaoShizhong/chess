@@ -23,13 +23,13 @@
         "PGN"
     ],
     "scripts": {
-        "build": "tsc -p tsconfig.prod.json && vite build",
+        "build": "npm run check -- -p tsconfig.prod.json && vite build",
         "check": "npm run lint && npm run format:check -- . && tsc --noEmit",
-        "dev": "vite-node ./src/index.ts",
+        "dev": "vite-node --watch ./src/index.ts",
         "format": "prettier --write",
         "format:check": "prettier --check",
         "lint": "eslint .",
-        "prepublishOnly": "npm run format:check -- . && npm run lint && npm run build",
+        "prepublishOnly": "npm run build",
         "start": "node ./dist/index.js",
         "test": "vitest",
         "test:once": "vitest run"
@@ -45,6 +45,7 @@
         "typescript-eslint": "^8.19.1",
         "vite": "^5.4.11",
         "vite-node": "^3.0.5",
+        "vite-plugin-dts": "^4.5.0",
         "vitest": "^3.0.5"
     }
 }
