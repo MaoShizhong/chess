@@ -11,7 +11,7 @@ import * as FEN from './parsers/FEN';
 import * as PGN from './parsers/PGN';
 import { ChessHistory } from './history/history';
 
-export class Chess {
+class Chess {
     history: ChessHistory;
     board: Chessboard;
     players: Players;
@@ -189,3 +189,6 @@ export class Chess {
         }
     }
 }
+
+export { Chess };
+module.exports = { Chess };
