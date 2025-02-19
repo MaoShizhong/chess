@@ -9,10 +9,15 @@ export function serialise(history: History): string {
 
     let PGN = isStandardStart ? '' : `[SetUp "1"]\n[FEN "${startingFEN}"]\n\n`;
 
+    const startingFullMoves = Number(startingFEN.split(' ').at(-1)) - 1;
+
     moves.forEach((move, i) => {
         const [_, nextPlayer] = FEN.split(move.FEN);
-        if (nextPlayer === 'b') {
-            const moveNumber = i / 2 + 1;
+
+        if (i === 0 && nextPlayer === 'w') {
+            PGN += `${startingFullMoves + 1}... `;
+        } else if (nextPlayer === 'b') {
+            const moveNumber = i / 2 + 1 + startingFullMoves;
             PGN += `${moveNumber}. `;
         }
 

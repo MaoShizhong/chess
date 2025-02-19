@@ -58,6 +58,15 @@ const midGameStart_Bg5Qb6: History = [
         move: 'Qb6',
     },
 ];
+const midGameStartBlack: History = [
+    {
+        FEN: 'rn1qkbnr/pp2ppp1/2p5/3pPbBp/3P3P/8/PPP2PP1/RN1QKBNR b KQkq - 1 5',
+    },
+    {
+        FEN: 'rn2kbnr/pp2ppp1/1qp5/3pPbBp/3P3P/8/PPP2PP1/RN1QKBNR w KQkq - 2 6',
+        move: 'Qb6',
+    },
+];
 const checksMoves: History = [
     { FEN: '8/8/8/8/3b4/2k5/8/K1N5 w - - 0 1' },
     { FEN: '8/8/8/8/3b4/2k5/N7/K7 b - - 1 1', move: 'Na2+' },
@@ -105,8 +114,20 @@ describe('Serialising', () => {
     });
 
     it('Serialises moves following a non-standard starting FEN', () => {
-        expect(PGN.serialise(midGameStart_Bg5Qb6).split('\n').at(-1)).toBe(
-            '1. Bg5 Qb6'
+        expect(PGN.serialise(midGameStart_Bg5Qb6).split('\n').at(-1)).toContain(
+            'Bg5 Qb6'
+        );
+    });
+
+    it('Starts recording moves from next full move number if active player is white', () => {
+        expect(PGN.serialise(midGameStart_Bg5Qb6).split('\n').at(-1)).toMatch(
+            /^5\./
+        );
+    });
+
+    it('Follows move number with ... if non-standard starting FEN and first move is by black', () => {
+        expect(PGN.serialise(midGameStartBlack).split('\n').at(-1)).toBe(
+            '5... Qb6'
         );
     });
 
