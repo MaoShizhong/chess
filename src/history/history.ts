@@ -6,10 +6,12 @@ import { Chessboard } from '../board/board';
 export class ChessHistory {
     #currentIndex: number;
     #history: History;
+    #positionCounts: { [key: string]: number };
 
     constructor(FENState: string) {
         this.#currentIndex = 0;
         this.#history = [{ FEN: FENState }];
+        this.#positionCounts = { [FENState.split(' ')[0]]: 1 };
     }
 
     get length(): number {
@@ -61,6 +63,9 @@ export class ChessHistory {
 
     record(move: string, toSerialise: HistorySegments, result?: Result): void {
         const FENState = FEN.serialise(...toSerialise);
+        const FENPosition = FENState.split(' ')[0];
+        this.#positionCounts[FENPosition] =
+            (this.#positionCounts[FENPosition] ?? 0) + 1;
         this.#currentIndex++;
 
         // If gone back some states and recording new state, overwrite "future" states
@@ -69,6 +74,10 @@ export class ChessHistory {
             move: move,
             result: result,
         });
+    }
+
+    isThreefoldRepetition(): boolean {
+        return Object.values(this.#positionCounts).some((count) => count === 3);
     }
 
     toPGN(): string {

@@ -102,29 +102,43 @@ export class Chess {
             this.#fullMoves,
         ];
 
+        let isThreefoldRepetition = false;
         const [canStillPlay, gameEndReason] = this.board.canPlayContinue(
             this.activePlayer.colour
         );
-        if (canStillPlay && this.#halfMoves < 100) {
+        if (canStillPlay) {
             this.history.record(
                 checksOpponent ? `${algebraicMove}+` : algebraicMove,
                 historyToSerialiseToFEN
             );
-            return;
+
+            isThreefoldRepetition = this.history.isThreefoldRepetition();
+            if (this.#halfMoves < 100 && !isThreefoldRepetition) {
+                return;
+            }
         }
 
         this.isGameInPlay = false;
-        if (gameEndReason === 'stalemate' || this.halfMoves >= 100) {
+        if (
+            gameEndReason === 'stalemate' ||
+            this.#halfMoves >= 100 ||
+            isThreefoldRepetition
+        ) {
             this.result = '1/2-1/2';
         } else if (gameEndReason === 'checkmate') {
             this.result = this.activePlayer.colour === 'w' ? '0-1' : '1-0';
         }
 
-        this.history.record(
-            gameEndReason === 'checkmate' ? `${algebraicMove}#` : algebraicMove,
-            historyToSerialiseToFEN,
-            this.result
-        );
+        // Move that led to draw by 50-move rule or threefold rep already recorded
+        if (!canStillPlay) {
+            this.history.record(
+                gameEndReason === 'checkmate'
+                    ? `${algebraicMove}#`
+                    : algebraicMove,
+                historyToSerialiseToFEN,
+                this.result
+            );
+        }
     }
 
     toPreviousPosition(): Chess {
