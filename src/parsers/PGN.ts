@@ -15,7 +15,12 @@ export function serialise(history: History): string {
             const moveNumber = i / 2 + 1;
             PGN += `${moveNumber}. `;
         }
+
         PGN += `${move.move} `;
+
+        if (move.result) {
+            PGN += move.result;
+        }
     });
 
     return PGN.trim();

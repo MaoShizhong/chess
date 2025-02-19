@@ -25,12 +25,14 @@ export class Player {
         this.#board = board;
     }
 
-    move(destination: string): [boolean, boolean, Coordinate | null] {
+    move(
+        destination: string
+    ): [false] | [boolean, boolean, Coordinate | null, boolean] {
         if (
             (destination === 'O-O' && !this.castlingRights.short) ||
             (destination === 'O-O-O' && !this.castlingRights.long)
         ) {
-            return [false, false, null];
+            return [false];
         }
 
         let isPawnMove = false;
@@ -59,9 +61,8 @@ export class Player {
             );
 
             if (!validPiece) {
-                return [false, false, null];
+                return [false];
             }
-
 
             if (pieceToMove.piece.letter.toUpperCase() === 'P') {
                 isPawnMove = true;
@@ -91,7 +92,7 @@ export class Player {
             const boardAfterMove = this.#board.simulateMove(moveInfo);
 
             if (boardAfterMove.isKingInCheck(this.colour)) {
-                return [false, false, null];
+                return [false];
             }
 
             this.#board.move(moveInfo);
@@ -104,6 +105,7 @@ export class Player {
             piecesToMove.length > 0,
             isCapture || isPawnMove,
             enPassantTarget,
+            this.#board.isKingInCheck(this.colour === 'w' ? 'b' : 'w'),
         ];
     }
 

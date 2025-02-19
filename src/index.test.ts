@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { Chess } from './index';
 import { FILE, RANK } from './board/board';
 
@@ -132,6 +132,42 @@ describe('History', () => {
                 'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2'
             ).board.board
         );
+    });
+
+    it('Records check move with trailing +', () => {
+        // https://lichess.org/analysis/standard/8/8/8/8/8/1QK5/8/k7_w_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1QK5/8/k7 w - - 0 1');
+        chess.history.record = vi.fn();
+
+        chess.playMove('Qa3');
+        expect((chess.history.record as Mock).mock.calls[0][0]).toBe('Qa3+');
+    });
+
+    it('Records checkmate move with trailing #', () => {
+        // https://lichess.org/analysis/standard/8/8/8/8/8/1QK5/8/k7_w_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1QK5/8/k7 w - - 0 1');
+        chess.history.record = vi.fn();
+
+        chess.playMove('Qb2');
+        expect((chess.history.record as Mock).mock.calls[0][0]).toBe('Qb2#');
+    });
+
+    it('Passes win result to record method if game has ended with checkmate', () => {
+        // https://lichess.org/analysis/standard/8/8/8/8/8/1QK5/8/k7_w_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1QK5/8/k7 w - - 0 1');
+        chess.history.record = vi.fn();
+
+        chess.playMove('Qb2');
+        expect((chess.history.record as Mock).mock.calls[0][2]).toBe('1-0');
+    });
+
+    it('Passes draw result to record method if game has ended with stalemate', () => {
+        // https://lichess.org/analysis/standard/8/8/8/8/8/1QK5/8/k7_w_-_-_0_1
+        const chess = new Chess('8/8/8/8/8/1QK5/8/k7 w - - 0 1');
+        chess.history.record = vi.fn();
+
+        chess.playMove('Kc2');
+        expect((chess.history.record as Mock).mock.calls[0][2]).toBe('1/2-1/2');
     });
 
     it('Does not record new history state if move not played (invalid)', () => {

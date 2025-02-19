@@ -13,8 +13,6 @@ export type Players = {
 
 export type Colour = 'w' | 'b';
 
-export type Result = '1-0' | '0-1' | '0.5 - 0.5';
-
 export type Coordinate = [number, number];
 
 export type PlayerCastlingRights = {
@@ -45,8 +43,12 @@ export type Square = Piece | null;
 export type Row = Square[];
 export type Board = Row[];
 
+export type Result = '1-0' | '0-1' | '1/2-1/2';
 type StartingHistoryEntry = { FEN: string };
-export type HistoryEntry = StartingHistoryEntry & { move: string };
+export type HistoryEntry = StartingHistoryEntry & {
+    move: string;
+    result?: Result;
+};
 export type History = [StartingHistoryEntry, ...HistoryEntry[]];
 
 type FENSegmentsWithoutPosition = [
