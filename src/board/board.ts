@@ -22,6 +22,7 @@ export const FILE: {
 export class Chessboard {
     board: Board;
     enPassant: Coordinate | null;
+    #castlingRights: CastlingRights;
 
     constructor(
         FENPosition: string,
@@ -31,7 +32,8 @@ export class Chessboard {
         },
         enPassantTarget: Coordinate | null = null
     ) {
-        this.board = this.#createBoard(FENPosition, castlingRights);
+        this.#castlingRights = castlingRights;
+        this.board = this.#createBoard(FENPosition, this.#castlingRights);
         this.enPassant = enPassantTarget;
     }
 
@@ -189,7 +191,10 @@ export class Chessboard {
     }
 
     simulateMove(moveInfo: { from: Move; to: Move }): Chessboard {
-        const board = new Chessboard(FEN.serialisePosition(this.board));
+        const board = new Chessboard(
+            FEN.serialisePosition(this.board),
+            this.#castlingRights
+        );
         board.move(moveInfo);
         return board;
     }

@@ -289,6 +289,30 @@ describe('Results', () => {
         chess.playMove('Qc4');
         expect(chess.result).toBe('1/2-1/2');
     });
+
+    it('Recognises draw by threefold repetition', () => {
+        // https://lichess.org/analysis/7k/7p/7P/7K/8/8/8/8_w_-_-_0_1
+        const chess = new Chess('7k/7p/7P/7K/8/8/8/8 w - - 0 1');
+        chess.playMove('Kg5');
+        chess.playMove('Kg8');
+        chess.playMove('Kh5');
+        chess.playMove('Kh8');
+        chess.playMove('Kg5');
+        chess.playMove('Kg8');
+        chess.playMove('Kh5');
+        expect(chess.result).not.toBeDefined();
+        chess.playMove('Kh8');
+        expect(chess.result).toBe('1/2-1/2');
+    });
+
+    it('Recognises draw by reaching 100 half moves (50-move rule)', () => {
+        // https://lichess.org/analysis/fromPosition/8/8/8/3R4/2r4k/5K2/5B2/8_b_-_-_98_127
+        const chess = new Chess('8/8/8/3R4/2r4k/5K2/5B2/8 b - - 98 127');
+        chess.playMove('Kh3');
+        expect(chess.result).not.toBeDefined();
+        chess.playMove('Rh5');
+        expect(chess.result).toBe('1/2-1/2');
+    });
 });
 
 describe('Constructing from PGN', () => {
