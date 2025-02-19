@@ -38,5 +38,10 @@ export function getStartingFEN(PGN: string): string {
 export function getMoves(PGN: string): string[] {
     // https://regexr.com/8c9j5 to test this regex
     const movesString = PGN.match(/\d+\.+ .+/)?.[0] ?? '';
-    return movesString.split(' ').filter((move) => !/\./.test(move));
+    return movesString
+        .split(' ')
+        .filter((move) => !/\./.test(move))
+        .map((move) =>
+            move.endsWith('#') || move.endsWith('+') ? move.slice(0, -1) : move
+        );
 }

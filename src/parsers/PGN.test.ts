@@ -164,4 +164,12 @@ describe('Extracting moves', () => {
             )
         ).toEqual(['c5', 'dxc5', 'Nc6', 'Bb5', 'e6']);
     });
+
+    it('Removes trailing + and #', () => {
+        expect(
+            PGN.getMoves(
+                '[FEN "r1bq1k1r/ppp2ppp/2np1n2/2b1p3/2B1P3/2N2Q1P/PPPP1PP1/R1B1K1NR w KQ - 1 7"]\n\n7. Nge2 Bxf2+ 8. Kxf2 Nh5 9. Qxf7#'
+            )
+        ).toEqual(['Nge2', 'Bxf2', 'Kxf2', 'Nh5', 'Qxf7']);
+    });
 });
