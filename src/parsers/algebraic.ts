@@ -22,7 +22,6 @@ export function parse(move: string): {
     isCapture: boolean;
     piecesToMove: MoveInfo[];
 } {
-    const isPromotion = move.includes('=');
     const isCapture = move.includes('x');
     const isPawnCapture = isCapture && move[0] === move[0].toLowerCase();
 

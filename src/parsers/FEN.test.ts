@@ -228,5 +228,5 @@ describe('Serialising to FEN', () => {
         expect(
             FEN.serialise(berlinDraw, 'w', berlinCastlingRights, null, 4, 13)
         ).toEqual('r1b1kb1r/ppp2ppp/3q4/8/P2Q4/8/1PP2PPP/RNB2RK1 w kq - 4 13');
-    })
+    });
 });

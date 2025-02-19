@@ -21,14 +21,19 @@ import { Chess } from 'chess-ts';
 const chess = new Chess();
 
 // Start from specified position via FEN
-const chessFromFEN = new Chess('rnb1kbnr/pp2pppp/8/2pq4/3P4/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4');
+const chessFromFEN = new Chess(
+    'rnb1kbnr/pp2pppp/8/2pq4/3P4/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4'
+);
 
 // Construct from PGN (with full history)
-const chessFromPGN = new Chess(`
+const chessFromPGN = new Chess(
+    `
     [FEN "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3"]
 
     3. Bc4 Bc5 4. Qg4 Kf8 5. Qf3 Nf6 6. Nge2 d6 7. h3
-`, { isPGN: true });
+`,
+    { isPGN: true }
+);
 ```
 
 ## Methods
