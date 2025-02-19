@@ -1,11 +1,11 @@
 {
-    "name": "chessboard-ts",
+    "name": "chess-ts",
     "version": "1.0.0",
     "author": "MaoShizhong",
-    "description": "Simple code-only Chessboard written in TypeScript. Handles FEN.",
+    "description": "Simple code-only Chessboard written in TypeScript. Handles FEN and PGN.",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/MaoShizhong/chessboard-ts"
+        "url": "git+https://github.com/MaoShizhong/chess-ts"
     },
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -18,7 +18,8 @@
     "keywords": [
         "chess",
         "chessboard",
-        "FEN"
+        "FEN",
+        "PGN"
     ],
     "scripts": {
         "build": "tsc -p tsconfig.prod.json && vite build",
