@@ -251,6 +251,6 @@ describe('Results', () => {
         expect(chess.result).not.toBeDefined();
 
         chess.playMove('Qc4');
-        expect(chess.result).toBe('0.5 - 0.5');
+        expect(chess.result).toBe('1/2-1/2');
     });
 });

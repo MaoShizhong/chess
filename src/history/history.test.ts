@@ -56,8 +56,7 @@ describe('State', () => {
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(
-            'e4',
+        history.record('e4', [
             board,
             'b',
             {
@@ -66,8 +65,8 @@ describe('State', () => {
             },
             [RANK[3], FILE.e],
             0,
-            1
-        );
+            1,
+        ]);
 
         expect(history.currentState).toEqual(stateAfterE4);
         expect(history.length).toBe(2);
@@ -75,8 +74,7 @@ describe('State', () => {
         const d7Pawn = board[RANK[7]][FILE.d];
         board[RANK[6]][FILE.d] = d7Pawn;
         board[RANK[7]][FILE.d] = null;
-        history.record(
-            'd6',
+        history.record('d6', [
             board,
             'w',
             {
@@ -85,8 +83,8 @@ describe('State', () => {
             },
             null,
             0,
-            2
-        );
+            2,
+        ]);
 
         expect(history.currentState).toEqual(stateAfterE4D6);
         expect(history.length).toBe(3);
@@ -99,8 +97,7 @@ describe('State', () => {
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(
-            'e4',
+        history.record('e4', [
             board,
             'b',
             {
@@ -109,8 +106,8 @@ describe('State', () => {
             },
             null,
             0,
-            1
-        );
+            1,
+        ]);
 
         expect(history.toPreviousState()).toEqual(startingState);
     });
@@ -127,8 +124,7 @@ describe('State', () => {
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(
-            'e4',
+        history.record('e4', [
             board,
             'b',
             {
@@ -137,8 +133,8 @@ describe('State', () => {
             },
             [RANK[3], FILE.e],
             0,
-            1
-        );
+            1,
+        ]);
 
         history.toPreviousState();
 
@@ -158,8 +154,7 @@ describe('State', () => {
         board[RANK[4]][FILE.e] = e2Pawn;
         board[RANK[2]][FILE.e] = null;
 
-        history.record(
-            'e4',
+        history.record('e4', [
             board,
             'b',
             {
@@ -168,8 +163,8 @@ describe('State', () => {
             },
             [RANK[3], FILE.e],
             0,
-            1
-        );
+            1,
+        ]);
 
         expect(history.currentState).toEqual(stateAfterE4);
         expect(history.length).toBe(2);
@@ -181,8 +176,7 @@ describe('State', () => {
         boardCopy[RANK[3]][FILE.f] = g1Knight;
         boardCopy[RANK[1]][FILE.g] = null;
 
-        history.record(
-            'Nf3',
+        history.record('Nf3', [
             boardCopy,
             'b',
             {
@@ -191,8 +185,8 @@ describe('State', () => {
             },
             null,
             1,
-            1
-        );
+            1,
+        ]);
 
         expect(history.currentState).toEqual(stateAfterNf3);
         expect(history.toPreviousState()).toEqual(startingState);

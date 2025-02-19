@@ -1,5 +1,11 @@
 import { Player } from './players/player';
-import { CastlingRights, HistoryState, Players, Result } from './types';
+import {
+    CastlingRights,
+    HistorySegments,
+    HistoryState,
+    Players,
+    Result,
+} from './types';
 import { Chessboard } from './board/board';
 import * as FEN from './parsers/FEN';
 import { ChessHistory } from './history/history';
@@ -63,8 +69,12 @@ export class Chess {
             return;
         }
 
-        const [moveWasPlayed, isCaptureOrPawnMove, enPassantTarget] =
-            this.activePlayer.move(algebraicMove);
+        const [
+            moveWasPlayed,
+            isCaptureOrPawnMove,
+            enPassantTarget,
+            checksOpponent,
+        ] = this.activePlayer.move(algebraicMove);
         if (!moveWasPlayed) {
             return;
         }
@@ -73,29 +83,39 @@ export class Chess {
         this.#fullMoves += Number(this.activePlayer.colour === 'b');
         this.board.enPassant = enPassantTarget;
         this.#swapActivePlayer();
-        this.history.record(
-            algebraicMove,
+
+        const historyToSerialiseToFEN: HistorySegments = [
             this.board.board,
             this.activePlayer.colour,
             this.castlingRights,
             enPassantTarget,
             this.#halfMoves,
-            this.#fullMoves
-        );
+            this.#fullMoves,
+        ];
 
         const [canStillPlay, gameEndReason] = this.board.canPlayContinue(
             this.activePlayer.colour
         );
         if (canStillPlay) {
+            this.history.record(
+                checksOpponent ? `${algebraicMove}+` : algebraicMove,
+                historyToSerialiseToFEN
+            );
             return;
         }
 
         this.isGameInPlay = false;
         if (gameEndReason === 'stalemate') {
-            this.result = '0.5 - 0.5';
+            this.result = '1/2-1/2';
         } else if (gameEndReason === 'checkmate') {
             this.result = this.activePlayer.colour === 'w' ? '0-1' : '1-0';
         }
+
+        this.history.record(
+            gameEndReason === 'checkmate' ? `${algebraicMove}#` : algebraicMove,
+            historyToSerialiseToFEN,
+            this.result
+        );
     }
 
     toPreviousPosition(): Chess {

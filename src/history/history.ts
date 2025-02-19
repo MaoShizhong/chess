@@ -1,4 +1,4 @@
-import { History, HistorySegments, HistoryState } from '../types';
+import { History, HistorySegments, HistoryState, Result } from '../types';
 import * as FEN from '../parsers/FEN';
 import * as PGN from '../parsers/PGN';
 import { Chessboard } from '../board/board';
@@ -59,7 +59,7 @@ export class ChessHistory {
         return this.currentState;
     }
 
-    record(move: string, ...toSerialise: HistorySegments): void {
+    record(move: string, toSerialise: HistorySegments, result?: Result): void {
         const FENState = FEN.serialise(...toSerialise);
         this.#currentIndex++;
 
@@ -67,6 +67,7 @@ export class ChessHistory {
         this.#history.splice(this.#currentIndex, Infinity, {
             FEN: FENState,
             move: move,
+            result: result,
         });
     }
 
