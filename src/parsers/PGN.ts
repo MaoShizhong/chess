@@ -1,4 +1,4 @@
-import { History, HistoryEntry } from '../types';
+import { History } from '../types';
 import * as FEN from './FEN';
 
 export function serialise(history: History): string {
@@ -24,4 +24,19 @@ export function serialise(history: History): string {
     });
 
     return PGN.trim();
+}
+
+export function getStartingFEN(PGN: string): string {
+    // https://regexr.com/8c9ig to test this regex
+    const providedStartingFEN = PGN.match(/(?<=\[FEN ").+(?="\])/)?.[0];
+    return (
+        providedStartingFEN ??
+        'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    );
+}
+
+export function getMoves(PGN: string): string[] {
+    // https://regexr.com/8c9j5 to test this regex
+    const movesString = PGN.match(/\d+\.+ .+/)?.[0] ?? '';
+    return movesString.split(' ').filter((move) => !/\./.test(move));
 }

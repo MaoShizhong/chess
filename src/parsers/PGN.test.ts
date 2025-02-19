@@ -127,3 +127,41 @@ describe('Serialising', () => {
         expect(PGN.serialise(stalemate).endsWith('1/2-1/2')).toBe(true);
     });
 });
+
+describe('Starting position', () => {
+    it('Extracts starting FEN position if tag pair present', () => {
+        expect(
+            PGN.getStartingFEN(
+                '[FEN "8/8/8/8/8/1QK5/8/k7 w - - 0 1"]\n\n1. Qb4 Ka2 2. Qb5 Ka1'
+            )
+        ).toBe('8/8/8/8/8/1QK5/8/k7 w - - 0 1');
+
+        expect(
+            PGN.getStartingFEN(
+                '[FEN "rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3"]\n\n3... c5 4. dxc5 Nc6 5. Bb5 e6'
+            )
+        ).toBe('rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3');
+    });
+
+    it('Returns standard starting FEN position if no FEN tag pair present', () => {
+        expect(PGN.getStartingFEN('1. e4 e5 2. Nc3 Nc6')).toBe(
+            'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        );
+    });
+});
+
+describe('Extracting moves', () => {
+    it('Gets moves from PGN string', () => {
+        expect(
+            PGN.getMoves(
+                '[FEN "8/8/8/8/8/1QK5/8/k7 w - - 0 1"]\n\n1. Qb4 Ka2 2. Qb5 Ka1'
+            )
+        ).toEqual(['Qb4', 'Ka2', 'Qb5', 'Ka1']);
+
+        expect(
+            PGN.getMoves(
+                '[FEN "rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3"]\n\n3... c5 4. dxc5 Nc6 5. Bb5 e6'
+            )
+        ).toEqual(['c5', 'dxc5', 'Nc6', 'Bb5', 'e6']);
+    });
+});
