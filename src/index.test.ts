@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { Chess } from './index';
-import { FILE, RANK } from './board/board';
+import { Chessboard, FILE, RANK } from './board/board';
 
 beforeEach(vi.clearAllMocks);
 
@@ -288,5 +288,37 @@ describe('Results', () => {
 
         chess.playMove('Qc4');
         expect(chess.result).toBe('1/2-1/2');
+    });
+});
+
+describe('Constructing from PGN', () => {
+    it('Constructs full game state inc. history from PGN string', () => {
+        // https://lichess.org/analysis/standard/8/8/8/8/8/1QK5/8/k7
+        const chess = new Chess(
+            '[FEN "8/8/8/8/8/1QK5/8/k7 w - - 0 1"]\n\n1. Qb4 Ka2 2. Qb5 Ka1',
+            { isPGN: true }
+        );
+        // https://lichess.org/analysis/standard/8/8/8/1Q6/8/2K5/8/k7_w_-_-_4_3
+        expect(chess.board.board).toEqual(
+            new Chessboard('8/8/8/1Q6/8/2K5/8/k7').board
+        );
+        expect(chess.activePlayer.colour).toBe('w');
+        expect(chess.halfMoves).toBe(4);
+        expect(chess.history.length).toBe(4);
+
+        // https://lichess.org/analysis/standard/r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P1Q1/2N5/PPPP1PPP/R1B1K1NR_w_KQ_-_6_5
+        const chess2 = new Chess(
+            '[FEN "r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P1Q1/2N5/PPPP1PPP/R1B1K1NR w KQ - 6 5"]\n\n5. Qf3',
+            { isPGN: true }
+        );
+        // https://lichess.org/analysis/fromPosition/r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P3/2N2Q2/PPPP1PPP/R1B1K1NR
+        expect(chess2.board.board).toEqual(
+            new Chessboard(
+                'r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P3/2N2Q2/PPPP1PPP/R1B1K1NR'
+            ).board
+        );
+        expect(chess2.activePlayer.colour).toBe('b');
+        expect(chess2.halfMoves).toBe(7);
+        expect(chess2.history.length).toBe(1);
     });
 });
