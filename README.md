@@ -1,4 +1,4 @@
-# Chess TS
+# Chess
 
 A Node-playable chessboard written in TypeScript. Can be created from a FEN or PGN string, and can be serialised to FEN or PGN.
 
