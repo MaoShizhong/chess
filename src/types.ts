@@ -38,8 +38,7 @@ export type PieceLetter =
     | 'q'
     | 'k';
 export type PromotionPieceLetter = Exclude<PieceLetter, 'P' | 'p' | 'K' | 'k'>;
-type Piece = Pawn | Knight | Bishop | Rook | Queen | King;
-export type Square = Piece | null;
+export type Square = Pawn | Knight | Bishop | Rook | Queen | King | null;
 export type Row = Square[];
 export type Board = Row[];
 
