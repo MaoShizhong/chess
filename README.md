@@ -5,17 +5,17 @@ A Node-playable chessboard written in TypeScript. Can be created from a FEN or P
 ## Install
 
 ```bash
-npm install chess-ts
+npm install @maoshizhong/chess
 ```
 
 ## Usage
 
 ```javascript
 // CJS
-const { Chess } = require('chess-ts');
+const { Chess } = require('@maoshizhong/chess');
 
 // ESM
-import { Chess } from 'chess-ts';
+import { Chess } from '@maoshizhong/chess';
 
 // Start with standard chessboard
 const chess = new Chess();
