@@ -22,6 +22,10 @@ export class ChessHistory {
         return this.getState(this.#currentIndex);
     }
 
+    get currentFEN(): string {
+        return this.#history[this.#currentIndex].FEN;
+    }
+
     getState(index: number): HistoryState {
         const [
             FENPosition,

@@ -155,6 +155,10 @@ export class Chess {
         return this.history.toPGN();
     }
 
+    toFEN(): string {
+        return this.history.currentFEN;
+    }
+
     #loadPosition({
         board,
         activeColour,
