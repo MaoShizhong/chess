@@ -45,7 +45,7 @@ export function getMoves(PGN: string): string[] {
     const movesString = PGN.match(/\d+\.+ .+/)?.[0] ?? '';
     return movesString
         .split(' ')
-        .filter((move) => !/\./.test(move))
+        .filter((move) => !/\.|1-0|0-1|1\/2-1\/2/.test(move))
         .map((move) =>
             move.endsWith('#') || move.endsWith('+') ? move.slice(0, -1) : move
         );

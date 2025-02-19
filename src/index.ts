@@ -151,6 +151,10 @@ export class Chess {
         return this;
     }
 
+    toPGN(): string {
+        return this.history.toPGN();
+    }
+
     #loadPosition({
         board,
         activeColour,

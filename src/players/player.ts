@@ -39,6 +39,7 @@ export class Player {
         let enPassantTarget: Coordinate | null = null;
         const { isCapture, piecesToMove } = algebraic.parse(destination);
         const isCastling = piecesToMove.length === 2;
+        const movesToMake = [];
 
         for (const pieceToMove of piecesToMove) {
             if (isCastling) {
@@ -95,10 +96,14 @@ export class Player {
                 return [false];
             }
 
-            this.#board.move(moveInfo);
+            movesToMake.push(moveInfo);
 
             // don't want to mess with castling rights if a move wasn't valid to play!
             this.#handleCastlingRights(pieceToMove.piece.letter, fromFile);
+        }
+
+        for (const move of movesToMake) {
+            this.#board.move(move);
         }
 
         return [
