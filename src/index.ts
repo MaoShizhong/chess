@@ -8,6 +8,7 @@ import {
 } from './types';
 import { Chessboard } from './board/board';
 import * as FEN from './parsers/FEN';
+import * as PGN from './parsers/PGN';
 import { ChessHistory } from './history/history';
 
 export class Chess {
@@ -24,8 +25,12 @@ export class Chess {
      * @throws {TypeError} If invalid FEN given
      */
     constructor(
-        FENString: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        startingState: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        { isPGN } = { isPGN: false }
     ) {
+        const FENString = isPGN
+            ? PGN.getStartingFEN(startingState)
+            : startingState;
         const [
             position,
             activePlayer,
@@ -47,6 +52,10 @@ export class Chess {
         )[0];
         this.#halfMoves = halfMoves;
         this.#fullMoves = fullMoves;
+
+        if (isPGN) {
+            this.#constructFromPGN(startingState);
+        }
     }
 
     get halfMoves(): number {
@@ -149,5 +158,12 @@ export class Chess {
     #swapActivePlayer(): void {
         this.activePlayer =
             this.activePlayer.colour === 'w' ? this.players.b : this.players.w;
+    }
+
+    #constructFromPGN(PGNString: string): void {
+        const moves = PGN.getMoves(PGNString);
+        for (const move of moves) {
+            this.playMove(move);
+        }
     }
 }

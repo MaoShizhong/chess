@@ -300,11 +300,14 @@ describe('Constructing from PGN', () => {
         );
         // https://lichess.org/analysis/standard/8/8/8/1Q6/8/2K5/8/k7_w_-_-_4_3
         expect(chess.board.board).toEqual(
-            new Chessboard('8/8/8/1Q6/8/2K5/8/k7').board
+            new Chessboard('8/8/8/1Q6/8/2K5/8/k7', {
+                w: { short: false, long: false },
+                b: { short: false, long: false },
+            }).board
         );
         expect(chess.activePlayer.colour).toBe('w');
         expect(chess.halfMoves).toBe(4);
-        expect(chess.history.length).toBe(4);
+        expect(chess.history.length).toBe(5);
 
         // https://lichess.org/analysis/standard/r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P1Q1/2N5/PPPP1PPP/R1B1K1NR_w_KQ_-_6_5
         const chess2 = new Chess(
@@ -314,11 +317,15 @@ describe('Constructing from PGN', () => {
         // https://lichess.org/analysis/fromPosition/r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P3/2N2Q2/PPPP1PPP/R1B1K1NR
         expect(chess2.board.board).toEqual(
             new Chessboard(
-                'r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P3/2N2Q2/PPPP1PPP/R1B1K1NR'
+                'r1bq1knr/pppp1ppp/2n5/2b1p3/2B1P3/2N2Q2/PPPP1PPP/R1B1K1NR',
+                {
+                    w: { short: true, long: true },
+                    b: { short: false, long: false },
+                }
             ).board
         );
         expect(chess2.activePlayer.colour).toBe('b');
         expect(chess2.halfMoves).toBe(7);
-        expect(chess2.history.length).toBe(1);
+        expect(chess2.history.length).toBe(2);
     });
 });
