@@ -58,6 +58,24 @@ const midGameStart_Bg5Qb6: History = [
         move: 'Qb6',
     },
 ];
+const checksMoves: History = [
+    { FEN: '8/8/8/8/3b4/2k5/8/K1N5 w - - 0 1' },
+    { FEN: '8/8/8/8/3b4/2k5/N7/K7 b - - 1 1', move: 'Na2+' },
+    { FEN: '8/8/8/8/3b4/3k4/N7/K7 w - - 2 2', move: 'Kd3+' },
+];
+const lastMovePosition: History = [
+    {
+        FEN: '8/8/8/8/8/1QK5/8/k7 w - - 0 1',
+    },
+];
+const checkmate: History = [
+    ...lastMovePosition,
+    { FEN: '8/8/8/8/8/2K5/1Q6/k7 b - - 1 1', move: 'Qb2#', result: '1-0' },
+];
+const stalemate: History = [
+    ...lastMovePosition,
+    { FEN: '8/8/8/8/8/1Q6/2K5/k7 b - - 1 1', move: 'Kc2', result: '1/2-1/2' },
+];
 
 describe('Serialising', () => {
     it('Serialises single move from white', () => {
@@ -90,5 +108,22 @@ describe('Serialising', () => {
         expect(PGN.serialise(midGameStart_Bg5Qb6).split('\n').at(-1)).toBe(
             '1. Bg5 Qb6'
         );
+    });
+
+    it('Serialises check moves with a trailing +', () => {
+        expect(PGN.serialise(checksMoves).split('\n').at(-1)).toBe(
+            '1. Na2+ Kd3+'
+        );
+    });
+
+    it('Serialises checkmate move with a trailing #', () => {
+        expect(PGN.serialise(checkmate).split('\n').at(-1)).toContain(
+            '1. Qb2#'
+        );
+    });
+
+    it('Appends result if game is over', () => {
+        expect(PGN.serialise(checkmate).endsWith('1-0')).toBe(true);
+        expect(PGN.serialise(stalemate).endsWith('1/2-1/2')).toBe(true);
     });
 });
