@@ -4,7 +4,7 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
     build: {
         lib: {
-            entry: './dist/index.js',
+            entry: 'src/index.ts',
             formats: ['cjs'],
             fileName: 'index',
         },
