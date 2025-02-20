@@ -22,7 +22,7 @@ class Chess {
     #fullMoves: number;
 
     /**
-     * @throws {TypeError} If invalid FEN given
+     * @throws {TypeError} If invalid FEN given or PGN contains invalid move
      */
     constructor(
         startingState: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -73,9 +73,12 @@ class Chess {
         };
     }
 
-    playMove(algebraicMove: string): void {
+    playMove(algebraicMove: string): Error | null {
+        const invalidMoveError = new Error(
+            `${algebraicMove} is not a valid move`
+        );
         if (!this.isGameInPlay) {
-            return;
+            return invalidMoveError;
         }
 
         const [
@@ -85,7 +88,7 @@ class Chess {
             checksOpponent,
         ] = this.activePlayer.move(algebraicMove);
         if (!moveWasPlayed) {
-            return;
+            return invalidMoveError;
         }
 
         this.#halfMoves = isCaptureOrPawnMove ? 0 : this.#halfMoves + 1;
@@ -114,7 +117,7 @@ class Chess {
 
             isThreefoldRepetition = this.history.isThreefoldRepetition();
             if (this.#halfMoves < 100 && !isThreefoldRepetition) {
-                return;
+                return null;
             }
         }
 
@@ -139,6 +142,7 @@ class Chess {
                 this.result
             );
         }
+        return null;
     }
 
     toPreviousPosition(): Chess {
@@ -185,7 +189,10 @@ class Chess {
     #constructFromPGN(PGNString: string): void {
         const moves = PGN.getMoves(PGNString);
         for (const move of moves) {
-            this.playMove(move);
+            const result = this.playMove(move);
+            if (result instanceof Error) {
+                throw new Error(`Invalid PGN - could not play ${move}`);
+            }
         }
     }
 }

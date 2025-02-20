@@ -40,7 +40,7 @@ const chessFromPGN = new Chess(
 
 ### constructor(startingState?: string, opts?: { isPGN: boolean })
 
-Will throw if the resulting FEN string is invalid (e.g. not a 8x8 board position, missing segments etc.).
+Will throw if given PGN and it contains an invalid move, or the resulting starting FEN string is invalid (e.g. not a 8x8 board position, missing segments etc.).
 
 #### startingState (optional)
 
@@ -62,9 +62,9 @@ Returns full move count for current position.
 
 Returns current castling rights for each player.
 
-### playMove(move: string): void
+### playMove(move: string): Error | null
 
-Makes the active player play the provided algebraic notation move if possible.
+Makes the active player play the provided algebraic notation move if possible. If successful, returns null. If unsuccessful, returns an Error object.
 
 ### toPreviousPosition(): Chess
 

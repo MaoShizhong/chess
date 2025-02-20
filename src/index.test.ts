@@ -353,3 +353,37 @@ describe('Constructing from PGN', () => {
         expect(chess2.history.length).toBe(2);
     });
 });
+
+describe('Error reporting', () => {
+    it('Throws if provided PGN contains invalid moves', () => {
+        expect(() => new Chess('1. e4 e5 2. e5', { isPGN: true })).toThrow(
+            'Invalid PGN - could not play e5'
+        );
+
+        expect(() => new Chess('1. e7', { isPGN: true })).toThrow(
+            'Invalid PGN - could not play e7'
+        );
+    });
+
+    it('Returns null if move successfully played', () => {
+        const chess = new Chess(STARTING_POSITION);
+        const e4Result = chess.playMove('e4');
+        expect(e4Result).toBe(null);
+
+        const e5Result = chess.playMove('e5');
+        expect(e5Result).toBe(null);
+    });
+
+    it('Returns error if move not played', () => {
+        const chess = new Chess(STARTING_POSITION);
+        const Kd1Result = chess.playMove('Kd1');
+        expect(Kd1Result).toBeInstanceOf(Error);
+        expect(Kd1Result?.message).toBe('Kd1 is not a valid move');
+
+        // https://lichess.org/analysis/8/8/8/8/2k5/1q6/8/K7_w_-_-_0_1
+        const chess2 = new Chess('8/8/8/8/2k5/1q6/8/K7 w - - 0 1');
+        const Kb1Result = chess.playMove('Kb1');
+        expect(Kb1Result).toBeInstanceOf(Error);
+        expect(Kb1Result?.message).toBe('Kb1 is not a valid move');
+    });
+});
