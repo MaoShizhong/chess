@@ -420,7 +420,7 @@ describe('Error reporting', () => {
 
         // https://lichess.org/analysis/8/8/8/8/2k5/1q6/8/K7_w_-_-_0_1
         const chess2 = new Chess('8/8/8/8/2k5/1q6/8/K7 w - - 0 1');
-        const Kb1Result = chess.playMove('Kb1');
+        const Kb1Result = chess2.playMove('Kb1');
         expect(Kb1Result).toBeInstanceOf(Error);
         expect(Kb1Result?.message).toBe('Kb1 is not a valid move');
     });

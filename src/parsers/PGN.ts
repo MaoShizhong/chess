@@ -1,7 +1,10 @@
 import { History } from '../types';
 import * as FEN from './FEN';
 
-export function serialise(history: History, movesOnly: boolean): string {
+export function serialise(
+    history: History,
+    movesOnly: boolean = false
+): string {
     const [{ FEN: startingFEN }, ...moves] = history;
     const isStandardStart =
         startingFEN ===
