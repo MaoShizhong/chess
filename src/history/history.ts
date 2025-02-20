@@ -96,7 +96,7 @@ export class ChessHistory {
         return Object.values(this.#positionCounts).some((count) => count === 3);
     }
 
-    toPGN(): string {
-        return PGN.serialise(this.#history);
+    toPGN(movesOnly: boolean): string {
+        return PGN.serialise(this.#history, movesOnly);
     }
 }

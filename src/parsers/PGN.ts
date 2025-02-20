@@ -1,13 +1,16 @@
 import { History } from '../types';
 import * as FEN from './FEN';
 
-export function serialise(history: History): string {
+export function serialise(history: History, movesOnly: boolean): string {
     const [{ FEN: startingFEN }, ...moves] = history;
     const isStandardStart =
         startingFEN ===
         'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-    let PGN = isStandardStart ? '' : `[SetUp "1"]\n[FEN "${startingFEN}"]\n\n`;
+    let PGN =
+        isStandardStart || movesOnly
+            ? ''
+            : `[SetUp "1"]\n[FEN "${startingFEN}"]\n\n`;
 
     const startingFullMoves = Number(startingFEN.split(' ').at(-1)) - 1;
 
