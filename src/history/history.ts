@@ -47,6 +47,18 @@ export class ChessHistory {
         };
     }
 
+    toNthState(n: number): HistoryState {
+        if (0 <= n && n < this.length) {
+            this.#currentIndex = n;
+        } else if (n < 0) {
+            this.#currentIndex = 0;
+        } else {
+            this.#currentIndex = this.length - 1;
+        }
+
+        return this.currentState;
+    }
+
     toPreviousState(): HistoryState {
         const hasPreviousState = this.#currentIndex > 0;
         if (hasPreviousState) {
@@ -84,7 +96,7 @@ export class ChessHistory {
         return Object.values(this.#positionCounts).some((count) => count === 3);
     }
 
-    toPGN(): string {
-        return PGN.serialise(this.#history);
+    toPGN(movesOnly: boolean): string {
+        return PGN.serialise(this.#history, movesOnly);
     }
 }

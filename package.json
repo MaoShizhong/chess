@@ -1,6 +1,6 @@
 {
     "name": "@maoshizhong/chess",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "author": "MaoShizhong",
     "description": "Simple code-only Chessboard written in TypeScript. Handles FEN and PGN.",
     "repository": {

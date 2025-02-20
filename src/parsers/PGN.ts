@@ -1,13 +1,19 @@
 import { History } from '../types';
 import * as FEN from './FEN';
 
-export function serialise(history: History): string {
+export function serialise(
+    history: History,
+    movesOnly: boolean = false
+): string {
     const [{ FEN: startingFEN }, ...moves] = history;
     const isStandardStart =
         startingFEN ===
         'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-    let PGN = isStandardStart ? '' : `[SetUp "1"]\n[FEN "${startingFEN}"]\n\n`;
+    let PGN =
+        isStandardStart || movesOnly
+            ? ''
+            : `[SetUp "1"]\n[FEN "${startingFEN}"]\n\n`;
 
     const startingFullMoves = Number(startingFEN.split(' ').at(-1)) - 1;
 
@@ -17,7 +23,8 @@ export function serialise(history: History): string {
         if (i === 0 && nextPlayer === 'w') {
             PGN += `${startingFullMoves + 1}... `;
         } else if (nextPlayer === 'b') {
-            const moveNumber = i / 2 + 1 + startingFullMoves;
+            // Without Math.ceil, if first move is by black then the next move is numbered with .5
+            const moveNumber = Math.ceil(i / 2 + 1 + startingFullMoves);
             PGN += `${moveNumber}. `;
         }
 

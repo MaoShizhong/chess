@@ -353,3 +353,75 @@ describe('Constructing from PGN', () => {
         expect(chess2.history.length).toBe(2);
     });
 });
+
+describe('Serialising to PGN', () => {
+    it('Serialises full game to PGN', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('e4');
+        chess.playMove('e5');
+        chess.playMove('d4');
+        expect(chess.toPGN()).toBe('1. e4 e5 2. d4');
+
+        const chess2 = new Chess(
+            'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3'
+        );
+        chess2.playMove('Nf3');
+        chess2.playMove('Bg4');
+        chess2.playMove('Be2');
+        expect(chess2.toPGN()).toBe(
+            '[SetUp "1"]\n[FEN "rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3"]\n\n3. Nf3 Bg4 4. Be2'
+        );
+    });
+
+    it('Omits tag pairs from PGN if requested', () => {
+        const chess = new Chess(
+            'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3'
+        );
+        chess.playMove('Nf3');
+        chess.playMove('Bg4');
+        chess.playMove('Be2');
+        expect(chess.toPGN({ movesOnly: true })).toBe('3. Nf3 Bg4 4. Be2');
+
+        const chess2 = new Chess(
+            'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2'
+        );
+        chess2.playMove('Qxd5');
+        chess2.playMove('Nf3');
+        chess2.playMove('Bg4');
+        expect(chess2.toPGN({ movesOnly: true })).toBe('2... Qxd5 3. Nf3 Bg4');
+    });
+});
+
+describe('Error reporting', () => {
+    it('Throws if provided PGN contains invalid moves', () => {
+        expect(() => new Chess('1. e4 e5 2. e5', { isPGN: true })).toThrow(
+            'Invalid PGN - could not play e5'
+        );
+
+        expect(() => new Chess('1. e7', { isPGN: true })).toThrow(
+            'Invalid PGN - could not play e7'
+        );
+    });
+
+    it('Returns null if move successfully played', () => {
+        const chess = new Chess(STARTING_POSITION);
+        const e4Result = chess.playMove('e4');
+        expect(e4Result).toBe(null);
+
+        const e5Result = chess.playMove('e5');
+        expect(e5Result).toBe(null);
+    });
+
+    it('Returns error if move not played', () => {
+        const chess = new Chess(STARTING_POSITION);
+        const Kd1Result = chess.playMove('Kd1');
+        expect(Kd1Result).toBeInstanceOf(Error);
+        expect(Kd1Result?.message).toBe('Kd1 is not a valid move');
+
+        // https://lichess.org/analysis/8/8/8/8/2k5/1q6/8/K7_w_-_-_0_1
+        const chess2 = new Chess('8/8/8/8/2k5/1q6/8/K7 w - - 0 1');
+        const Kb1Result = chess2.playMove('Kb1');
+        expect(Kb1Result).toBeInstanceOf(Error);
+        expect(Kb1Result?.message).toBe('Kb1 is not a valid move');
+    });
+});
