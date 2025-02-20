@@ -354,6 +354,44 @@ describe('Constructing from PGN', () => {
     });
 });
 
+describe('Serialising to PGN', () => {
+    it('Serialises full game to PGN', () => {
+        const chess = new Chess(STARTING_POSITION);
+        chess.playMove('e4');
+        chess.playMove('e5');
+        chess.playMove('d4');
+        expect(chess.toPGN()).toBe('1. e4 e5 2. d4');
+
+        const chess2 = new Chess(
+            'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3'
+        );
+        chess2.playMove('Nf3');
+        chess2.playMove('Bg4');
+        chess2.playMove('Be2');
+        expect(chess2.toPGN()).toBe(
+            '[SetUp "1"]\n[FEN "rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3"]\n\n3. Nf3 Bg4 4. Be2'
+        );
+    });
+
+    it('Omits tag pairs from PGN if requested', () => {
+        const chess = new Chess(
+            'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3'
+        );
+        chess.playMove('Nf3');
+        chess.playMove('Bg4');
+        chess.playMove('Be2');
+        expect(chess.toPGN({ movesOnly: true })).toBe('3. Nf3 Bg4 4. Be2');
+
+        const chess2 = new Chess(
+            'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2'
+        );
+        chess2.playMove('Qxd5');
+        chess2.playMove('Nf3');
+        chess2.playMove('Bg4');
+        expect(chess2.toPGN({ movesOnly: true })).toBe('2... Qxd5 3. Nf3 Bg4');
+    });
+});
+
 describe('Error reporting', () => {
     it('Throws if provided PGN contains invalid moves', () => {
         expect(() => new Chess('1. e4 e5 2. e5', { isPGN: true })).toThrow(

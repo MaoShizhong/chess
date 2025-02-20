@@ -17,7 +17,8 @@ export function serialise(history: History): string {
         if (i === 0 && nextPlayer === 'w') {
             PGN += `${startingFullMoves + 1}... `;
         } else if (nextPlayer === 'b') {
-            const moveNumber = i / 2 + 1 + startingFullMoves;
+            // Without Math.ceil, if first move is by black then the next move is numbered with .5
+            const moveNumber = Math.ceil(i / 2 + 1 + startingFullMoves);
             PGN += `${moveNumber}. `;
         }
 

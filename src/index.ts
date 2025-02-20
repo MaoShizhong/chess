@@ -160,8 +160,12 @@ class Chess {
         return this;
     }
 
-    toPGN(): string {
-        return this.history.toPGN();
+    toPGN({ movesOnly } = { movesOnly: false }): string {
+        const fullPGN = this.history.toPGN();
+        const movesList = fullPGN
+            .substring(fullPGN.lastIndexOf(']') + 1)
+            .trim();
+        return movesOnly ? movesList : fullPGN;
     }
 
     toFEN(): string {
