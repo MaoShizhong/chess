@@ -155,6 +155,11 @@ class Chess {
         return this;
     }
 
+    toNthPosition(n: number): Chess {
+        this.#loadPosition(this.history.toNthState(n));
+        return this;
+    }
+
     toPGN(): string {
         return this.history.toPGN();
     }
