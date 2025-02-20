@@ -1,6 +1,6 @@
 {
     "name": "@maoshizhong/chess",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "author": "MaoShizhong",
     "description": "Simple code-only Chessboard written in TypeScript. Handles FEN and PGN.",
     "repository": {
@@ -23,7 +23,7 @@
         "PGN"
     ],
     "scripts": {
-        "build": "npm run check -- -p tsconfig.prod.json && vite build",
+        "build": "npm run lint && npm run format:check -- . && tsc -p tsconfig.prod.json && vite build",
         "check": "npm run lint && npm run format:check -- . && tsc --noEmit",
         "dev": "vite-node --watch ./src/index.ts",
         "format": "prettier --write",
