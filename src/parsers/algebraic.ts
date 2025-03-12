@@ -1,10 +1,12 @@
 import {
     Coordinate,
+    MoveCoordinates,
     MoveInfo,
     PieceLetter,
     PromotionPieceLetter,
 } from '../types';
-import { RANK, FILE } from '../board/board';
+import { RANK, FILE, Chessboard } from '../board/board';
+import { Piece } from '../pieces/piece';
 
 const CASTLE = { SHORT: 'O-O', LONG: 'O-O-O' };
 
@@ -16,6 +18,66 @@ export function getCoordinate(coordinate: string): Coordinate {
 export function toAlgebraic([rank, file]: Coordinate): string {
     const files = 'abcdefgh';
     return `${files[file]}${RANK[rank]}`;
+}
+
+export function toFullAlgebraicMove(
+    { from, to }: MoveCoordinates,
+    board: Chessboard
+): [boolean, string] {
+    const [fromRank, fromFile] = getCoordinate(from);
+    const [toRank, toFile] = getCoordinate(to);
+    const isCapture = board.board[toRank][toFile] instanceof Piece;
+
+    const pieceToMove = board.board[fromRank][fromFile];
+    if (!pieceToMove) {
+        return [false, ''];
+    }
+
+    let pieceLetter = pieceToMove.letter.toUpperCase();
+    if (pieceLetter === 'P') {
+        return [true, isCapture ? `${from[0]}x${to}` : to];
+    } else if (pieceLetter === 'K' && fromFile - toFile === 2) {
+        return [true, 'O-O-O'];
+    } else if (pieceLetter === 'K' && fromFile - toFile === -2) {
+        return [true, 'O-O'];
+    }
+
+    let rankDisambiguator = '';
+    let fileDisambiguator = '';
+    const isTargetSquare = (coordinate: Coordinate) =>
+        toRank === coordinate[0] && toFile === coordinate[1];
+
+    board.board.forEach((row, rank) => {
+        row.forEach((square, file) => {
+            if (
+                square !== pieceToMove &&
+                square?.letter === pieceToMove.letter
+            ) {
+                const needsDisambiguating = board
+                    .getValidMoves({
+                        rank,
+                        file,
+                        isCapture,
+                    })
+                    ?.some(isTargetSquare);
+
+                if (!needsDisambiguating) {
+                    return;
+                }
+                if (fromRank === rank) {
+                    fileDisambiguator = from[0];
+                }
+                if (fromFile === file) {
+                    rankDisambiguator = from[1];
+                }
+            }
+        });
+    });
+
+    return [
+        true,
+        `${pieceToMove.letter.toUpperCase()}${fileDisambiguator}${rankDisambiguator}${isCapture ? 'x' : ''}${to}`,
+    ];
 }
 
 export function parse(move: string): {

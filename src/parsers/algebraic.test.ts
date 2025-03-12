@@ -270,7 +270,7 @@ describe('Parsing algebraic notation', () => {
     });
 });
 
-describe.only('Converting to algebraic notation', () => {
+describe('Converting to algebraic notation', () => {
     it.each([
         [4, 'a', 'a4'],
         [7, 'c', 'c7'],
