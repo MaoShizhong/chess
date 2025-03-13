@@ -403,25 +403,23 @@ describe('Error reporting', () => {
         );
     });
 
-    it('Returns null if move successfully played', () => {
+    it('Returns null and played moved if move successfully played', () => {
         const chess = new Chess(STARTING_POSITION);
         const e4Result = chess.playMove('e4');
-        expect(e4Result).toBe(null);
+        expect(e4Result).toEqual([null, 'e4']);
 
         const e5Result = chess.playMove('e5');
-        expect(e5Result).toBe(null);
+        expect(e5Result).toEqual([null, 'e5']);
     });
 
     it('Returns error if move not played', () => {
         const chess = new Chess(STARTING_POSITION);
-        const Kd1Result = chess.playMove('Kd1');
-        expect(Kd1Result).toBeInstanceOf(Error);
-        expect(Kd1Result?.message).toBe('Kd1 is not a valid move');
+        const [Kd1Error] = chess.playMove('Kd1');
+        expect(Kd1Error?.message).toBe('Kd1 is not a valid move');
 
         // https://lichess.org/analysis/8/8/8/8/2k5/1q6/8/K7_w_-_-_0_1
         const chess2 = new Chess('8/8/8/8/2k5/1q6/8/K7 w - - 0 1');
-        const Kb1Result = chess2.playMove('Kb1');
-        expect(Kb1Result).toBeInstanceOf(Error);
-        expect(Kb1Result?.message).toBe('Kb1 is not a valid move');
+        const [Kb1Error] = chess2.playMove('Kb1');
+        expect(Kb1Error?.message).toBe('Kb1 is not a valid move');
     });
 });
