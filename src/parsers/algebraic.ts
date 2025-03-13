@@ -33,7 +33,7 @@ export function toFullAlgebraicMove(
         return [false, ''];
     }
 
-    let pieceLetter = pieceToMove.letter.toUpperCase();
+    const pieceLetter = pieceToMove.letter.toUpperCase();
     if (pieceLetter === 'P') {
         return [true, isCapture ? `${from[0]}x${to}` : to];
     } else if (pieceLetter === 'K' && fromFile - toFile === 2) {
@@ -76,7 +76,7 @@ export function toFullAlgebraicMove(
 
     return [
         true,
-        `${pieceToMove.letter.toUpperCase()}${fileDisambiguator}${rankDisambiguator}${isCapture ? 'x' : ''}${to}`,
+        `${pieceLetter}${fileDisambiguator}${rankDisambiguator}${isCapture ? 'x' : ''}${to}`,
     ];
 }
 
