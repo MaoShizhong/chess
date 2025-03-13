@@ -70,7 +70,7 @@ export type HistoryState = {
     fullMoves: number;
 };
 
-// Number relative to current position, not the same as CoordinateNumber
+// Number relative to current position, not the same as Coordinate
 export type Move = [number, number];
 // Moves organised by blockable direction to facilitate valid move filtering
 export type SameDirectionMoves = Move[];
@@ -86,3 +86,9 @@ export type MoveInfo = {
     promoteTo?: PromotionPieceLetter;
 };
 export type PlayerMoveInfo = MoveInfo & { colour: Colour };
+
+// e.g. { from: 'g1', to: 'f3' }
+export type MoveCoordinates = {
+    from: string;
+    to: string;
+};

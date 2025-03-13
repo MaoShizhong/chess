@@ -31,9 +31,25 @@ const chessFromPGN = new Chess(
     [FEN "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3"]
 
     3. Bc4 Bc5 4. Qg4 Kf8 5. Qf3 Nf6 6. Nge2 d6 7. h3
-`,
+    `,
     { isPGN: true }
 );
+
+// Play moves - player switching/castling rights handled automatically
+chess.playMove('e4');
+chess.playMove('e5');
+chess.playMove('d4');
+chess.playMove('exd4');
+
+// Instead of algebraic moves, moves can be passed as "from" coordinate and "to" coordinate
+chess.playMove({ from: 'g1', to: 'f3' });
+chess.playMove({ from: 'b8', to: 'c6' });
+chess.playMove({ from: 'b1', to: 'd2' });
+
+// Get the PGN
+console.log(chess.toPGN()); // 1. e4 e5 2. d4 exd4 3. Nf3 Nc6 4. Nbd2
+// Get the current position's FEN
+console.log(chess.toFEN()); // r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPPN1PPP/R1BQKB1R b KQkq - 3 4
 ```
 
 ## Methods
@@ -62,9 +78,11 @@ Returns full move count for current position.
 
 Returns current castling rights for each player.
 
-### playMove(move: string): Error | null
+### playMove(move: string | { from: string, to: string }): Error | null
 
-Makes the active player play the provided algebraic notation move if possible. If successful, returns null. If unsuccessful, returns an Error object.
+Makes the active player play the provided move if possible. If successful, returns null. If unsuccessful, returns an Error object.
+
+Moves can be provided as a full algebraic move as a string (e.g. 'e4' / 'Nf3' / 'Bxc6' / 'O-O') or as an object with a "from" coordinate and "to" coordinate, given in algebraic notation (e.g. { from: 'e1', to: 'g1' }). If given as an object, the resulting algebraic move will automatically include any castling, capture or disambiguating information.
 
 ### toNthPosition(n: number): Chess
 

@@ -3,13 +3,15 @@ import {
     CastlingRights,
     HistorySegments,
     HistoryState,
+    MoveCoordinates,
     Players,
     Result,
 } from './types';
 import { Chessboard } from './board/board';
+import { ChessHistory } from './history/history';
 import * as FEN from './parsers/FEN';
 import * as PGN from './parsers/PGN';
-import { ChessHistory } from './history/history';
+import * as algebraic from './parsers/algebraic';
 
 class Chess {
     history: ChessHistory;
@@ -73,10 +75,17 @@ class Chess {
         };
     }
 
-    playMove(algebraicMove: string): Error | null {
+    playMove(move: string | MoveCoordinates): Error | null {
+        // TODO: replace falsy expression with coordinates->toAlgebraic method call
+        const [couldConvertToAlgebraic, algebraicMove] =
+            typeof move === 'string'
+                ? [true, move]
+                : algebraic.toFullAlgebraicMove(move, this.board);
+
         const invalidMoveError = new Error(
-            `${algebraicMove} is not a valid move`
+            `${couldConvertToAlgebraic ? algebraicMove : move} is not a valid move`
         );
+
         if (!this.isGameInPlay) {
             return invalidMoveError;
         }

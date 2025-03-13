@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as algebraic from './algebraic';
-import { RANK, FILE } from '../board/board';
+import { RANK, FILE, Chessboard } from '../board/board';
 
 describe('Parsing algebraic notation', () => {
     describe('Non-captures', () => {
@@ -284,4 +284,38 @@ describe('Converting to algebraic notation', () => {
             );
         }
     );
+
+    describe('Converting move coordinates to algebraic move when given a board', () => {
+        const boards: { [key: string]: Chessboard } = {
+            'starting board': new Chessboard(
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+            ),
+            // https://lichess.org/analysis/r3k3/8/8/8/8/8/8/4K2R_w_Kq_-_0_1
+            'castling board': new Chessboard('r3k3/8/8/8/8/8/8/4K2R'),
+            // https://lichess.org/analysis/r3k3/1q6/1N6/8/5p2/6P1/8/2B1K2R_w_Kq_-_0_1
+            'open board': new Chessboard('r3k3/1q6/1N6/8/5p2/6P1/8/2B1K2R'),
+            // https://lichess.org/analysis/2r1k3/8/8/4p3/2N1Q1NQ/2r5/8/3K3Q_w_-_-_0_1
+            'disambiguating board': new Chessboard(
+                '2r1k3/8/8/4p3/2N1Q1NQ/2r5/8/3K3Q'
+            ),
+        };
+
+        it.each([
+            ['g1', 'f3', 'Nf3', 'starting board'],
+            ['a2', 'a3', 'a3', 'starting board'],
+            ['e1', 'g1', 'O-O', 'castling board'],
+            ['e8', 'c8', 'O-O-O', 'castling board'],
+            ['e1', 'e2', 'Ke2', 'open board'],
+            ['c1', 'f4', 'Bxf4', 'open board'],
+            ['f4', 'g3', 'fxg3', 'open board'],
+            ['b7', 'b6', 'Qxb6', 'open board'],
+            ['c4', 'e5', 'Ncxe5', 'disambiguating board'],
+            ['c3', 'c4', 'R3xc4', 'disambiguating board'],
+            ['h4', 'e1', 'Qh4e1', 'disambiguating board'],
+        ])('Converts %s->%s to %s on the %s', (from, to, result, board) => {
+            expect(
+                algebraic.toFullAlgebraicMove({ from, to }, boards[board])
+            ).toEqual([true, result]);
+        });
+    });
 });
