@@ -75,7 +75,7 @@ class Chess {
         };
     }
 
-    playMove(move: string | MoveCoordinates): Error | null {
+    playMove(move: string | MoveCoordinates): [Error | null, string] {
         // TODO: replace falsy expression with coordinates->toAlgebraic method call
         const [couldConvertToAlgebraic, algebraicMove] =
             typeof move === 'string'
@@ -87,7 +87,7 @@ class Chess {
         );
 
         if (!couldConvertToAlgebraic || !this.isGameInPlay) {
-            return invalidMoveError;
+            return [invalidMoveError, ''];
         }
 
         const [
@@ -97,7 +97,7 @@ class Chess {
             checksOpponent,
         ] = this.activePlayer.move(algebraicMove);
         if (!moveWasPlayed) {
-            return invalidMoveError;
+            return [invalidMoveError, ''];
         }
 
         this.#halfMoves = isCaptureOrPawnMove ? 0 : this.#halfMoves + 1;
@@ -126,7 +126,7 @@ class Chess {
 
             isThreefoldRepetition = this.history.isThreefoldRepetition();
             if (this.#halfMoves < 100 && !isThreefoldRepetition) {
-                return null;
+                return [null, algebraicMove];
             }
         }
 
@@ -151,7 +151,7 @@ class Chess {
                 this.result
             );
         }
-        return null;
+        return [null, algebraicMove];
     }
 
     toPreviousPosition(): Chess {
@@ -203,8 +203,8 @@ class Chess {
     #constructFromPGN(PGNString: string): void {
         const moves = PGN.getMoves(PGNString);
         for (const move of moves) {
-            const result = this.playMove(move);
-            if (result instanceof Error) {
+            const [error] = this.playMove(move);
+            if (error) {
                 throw new Error(`Invalid PGN - could not play ${move}`);
             }
         }
