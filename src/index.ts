@@ -86,7 +86,7 @@ class Chess {
             `${couldConvertToAlgebraic ? algebraicMove : move} is not a valid move`
         );
 
-        if (!this.isGameInPlay) {
+        if (!couldConvertToAlgebraic || !this.isGameInPlay) {
             return invalidMoveError;
         }
 
