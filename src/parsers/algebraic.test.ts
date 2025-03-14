@@ -317,5 +317,18 @@ describe('Converting to algebraic notation', () => {
                 algebraic.toFullAlgebraicMove({ from, to }, boards[board])
             ).toEqual([true, result]);
         });
+
+        it.each([
+            ['e2', 'f4', 'starting board'],
+            ['a7', 'g5', 'starting board'],
+            ['a7', 'g6', 'starting board'],
+        ])(
+            "Does not convert pawn move from %s->%s on the %s (move doesn't exist)",
+            (from, to, board) => {
+                expect(
+                    algebraic.toFullAlgebraicMove({ from, to }, boards[board])
+                ).toEqual([false, '']);
+            }
+        );
     });
 });
