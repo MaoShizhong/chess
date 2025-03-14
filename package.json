@@ -5,7 +5,7 @@
     "description": "Simple code-only Chessboard written in TypeScript. Handles FEN and PGN.",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/MaoShizhong/chess"
+        "url": "git+https://github.com/MaoShizhong/chess.git"
     },
     "license": "MIT",
     "main": "./dist/index.js",
