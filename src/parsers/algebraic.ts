@@ -35,7 +35,13 @@ export function toFullAlgebraicMove(
 
     const pieceLetter = pieceToMove.letter.toUpperCase();
     if (pieceLetter === 'P') {
-        return [true, isCapture ? `${from[0]}x${to}` : to];
+        const destination = isCapture ? `${from[0]}x${to}` : to;
+        // Without this check, e2->f4 will be converted to f4, but that move is never possible
+        // Captures will still convert but will fail in the player move validation
+        // But non-capture nonsensical pawn moves should never be converted due to lack of disambiguators
+        return fromFile === toFile || isCapture
+            ? [true, destination]
+            : [false, ''];
     } else if (pieceLetter === 'K' && fromFile - toFile === 2) {
         return [true, 'O-O-O'];
     } else if (pieceLetter === 'K' && fromFile - toFile === -2) {
