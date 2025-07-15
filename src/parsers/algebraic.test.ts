@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as algebraic from './algebraic';
 import { RANK, FILE, Chessboard } from '../board/board';
+import type { PromotionPieceLetter } from '../types';
 
 describe('Parsing algebraic notation', () => {
     describe('Non-captures', () => {
@@ -298,6 +299,12 @@ describe('Converting to algebraic notation', () => {
             'disambiguating board': new Chessboard(
                 '2r1k3/8/8/4p3/2N1Q1NQ/2r5/8/3K3Q'
             ),
+            // https://lichess.org/analysis/8/PPP4R/3P4/5k2/8/8/8/3K4_w_-_-_0_1
+            'promotion board': new Chessboard('8/PPP4R/3P4/5k2/8/8/8/3K4'),
+            // https://lichess.org/analysis/standard/rnbqkbnr/p1p1pppp/1p6/3pP3/8/8/PPPP1PPP/RNBQKBNR_w_KQkq_d6_0_3
+            'en passant board': new Chessboard(
+                'rnbqkbnr/p1p1pppp/1p6/3pP3/8/8/PPPP1PPP/RNBQKBNR'
+            ),
         };
 
         it.each([
@@ -330,5 +337,63 @@ describe('Converting to algebraic notation', () => {
                 ).toEqual([false, '']);
             }
         );
+
+        it.each([
+            ['a7', 'a8', 'Q', 'a8=Q'],
+            ['b7', 'b8', 'B', 'b8=B'],
+            ['c7', 'c8', 'N', 'c8=N'],
+        ])(
+            'Promotes %s pawn when it reaches %s to a %s',
+            (from, to, promoteTo, result) => {
+                expect(
+                    algebraic.toFullAlgebraicMove(
+                        {
+                            from: from,
+                            to: to,
+                            promoteTo: promoteTo as PromotionPieceLetter,
+                        },
+                        boards['promotion board']
+                    )
+                ).toEqual([true, result]);
+            }
+        );
+
+        it('Ignores promotion letter if not a pawn move', () => {
+            expect(
+                algebraic.toFullAlgebraicMove(
+                    {
+                        from: 'h7',
+                        to: 'h8',
+                        promoteTo: 'Q',
+                    },
+                    boards['promotion board']
+                )
+            ).toEqual([true, 'Rh8']);
+        });
+
+        it('Ignores promotion letter if not on last rank', () => {
+            expect(
+                algebraic.toFullAlgebraicMove(
+                    {
+                        from: 'd6',
+                        to: 'd7',
+                        promoteTo: 'Q',
+                    },
+                    boards['promotion board']
+                )
+            ).toEqual([true, 'd7']);
+        });
+
+        it('Recognises en passant capture', () => {
+            // d6 capturable
+            boards['en passant board'].enPassant = [2, 3];
+
+            expect(
+                algebraic.toFullAlgebraicMove(
+                    { from: 'e5', to: 'd6' },
+                    boards['en passant board']
+                )
+            ).toEqual([true, 'exd6']);
+        });
     });
 });

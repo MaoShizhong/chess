@@ -87,8 +87,9 @@ export type MoveInfo = {
 };
 export type PlayerMoveInfo = MoveInfo & { colour: Colour };
 
-// e.g. { from: 'g1', to: 'f3' }
+// e.g. { from: 'g1', to: 'f3' } or { from: 'e7', to: 'e8', promoteTo: 'Q' }
 export type MoveCoordinates = {
     from: string;
     to: string;
+    promoteTo?: PromotionPieceLetter;
 };

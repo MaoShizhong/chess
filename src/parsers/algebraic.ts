@@ -21,12 +21,11 @@ export function toAlgebraic([rank, file]: Coordinate): string {
 }
 
 export function toFullAlgebraicMove(
-    { from, to }: MoveCoordinates,
+    { from, to, promoteTo }: MoveCoordinates,
     board: Chessboard
 ): [boolean, string] {
     const [fromRank, fromFile] = getCoordinate(from);
     const [toRank, toFile] = getCoordinate(to);
-    const isCapture = board.board[toRank][toFile] instanceof Piece;
 
     const pieceToMove = board.board[fromRank][fromFile];
     if (!pieceToMove) {
@@ -34,8 +33,23 @@ export function toFullAlgebraicMove(
     }
 
     const pieceLetter = pieceToMove.letter.toUpperCase();
+    const isWhite = pieceToMove.letter === pieceLetter;
+    let isCapture = board.board[toRank][toFile] instanceof Piece;
+
     if (pieceLetter === 'P') {
-        const destination = isCapture ? `${from[0]}x${to}` : to;
+        // check for valid en passant capture since the target square will be empty
+        if (!isCapture && board.enPassant) {
+            const [enPassantRank, enPassantFile] = board.enPassant;
+            isCapture = enPassantRank === toRank && enPassantFile === toFile;
+        }
+
+        const promotionRank = isWhite ? RANK[8] : RANK[1];
+        let destination = isCapture ? `${from[0]}x${to}` : to;
+
+        if (promoteTo && toRank === promotionRank) {
+            destination += `=${promoteTo}`;
+        }
+
         // Without this check, e2->f4 will be converted to f4, but that move is never possible
         // Captures will still convert but will fail in the player move validation
         // But non-capture nonsensical pawn moves should never be converted due to lack of disambiguators

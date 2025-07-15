@@ -175,7 +175,10 @@ export class Chessboard {
         const [fromRank, fromFile] = from;
         const [toRank, toFile] = to;
         const { PIECES } = FEN;
+        const [enPassantRank, enPassantFile] = this.enPassant ?? [];
 
+        const isEnPassantCapture =
+            toRank === enPassantRank && toFile === enPassantFile;
         const colour = promoteTo?.toUpperCase() === promoteTo ? 'w' : 'b';
 
         const movedPiece = promoteTo
@@ -184,6 +187,10 @@ export class Chessboard {
 
         this.board[toRank][toFile] = movedPiece;
         this.board[fromRank][fromFile] = null;
+
+        if (isEnPassantCapture) {
+            this.board[colour === 'w' ? toRank + 1 : toRank - 1][toFile] = null;
+        }
 
         if (movedPiece instanceof King || movedPiece instanceof Pawn) {
             movedPiece.hasMoved = true;
