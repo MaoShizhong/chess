@@ -78,11 +78,11 @@ Returns full move count for current position.
 
 Returns current castling rights for each player.
 
-### playMove(move: string | { from: string, to: string }): \[Error | null, string\]
+### playMove(move: string | { from: string, to: string, promoteTo?: string }): \[Error | null, string\]
 
 Makes the active player play the provided move if possible. Returns an array with an Error object and empty string if unsuccessful, or null and played algebraic move if successful.
 
-Moves can be provided as a full algebraic move as a string (e.g. 'e4' / 'Nf3' / 'Bxc6' / 'O-O') or as an object with a "from" coordinate and "to" coordinate, given in algebraic notation (e.g. { from: 'e1', to: 'g1' }). If given as an object, the resulting algebraic move will automatically include any castling, capture or disambiguating information.
+Moves can be provided as a full algebraic move as a string (e.g. 'e4' / 'Nf3' / 'Bxc6' / 'O-O') or as an object with a "from" coordinate and "to" coordinate, given in algebraic notation (e.g. { from: 'e1', to: 'g1' }), with an optional promotion letter (only Q/R/B/N are accepted). If given as an object, the resulting algebraic move will automatically include any castling, capture or disambiguating information. If a promotion letter is provided, it will only be used for pawn moves to the corresponding promotion rank.
 
 ### toNthPosition(n: number): Chess
 
