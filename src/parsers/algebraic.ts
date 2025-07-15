@@ -26,7 +26,6 @@ export function toFullAlgebraicMove(
 ): [boolean, string] {
     const [fromRank, fromFile] = getCoordinate(from);
     const [toRank, toFile] = getCoordinate(to);
-    const isCapture = board.board[toRank][toFile] instanceof Piece;
 
     const pieceToMove = board.board[fromRank][fromFile];
     if (!pieceToMove) {
@@ -35,8 +34,15 @@ export function toFullAlgebraicMove(
 
     const pieceLetter = pieceToMove.letter.toUpperCase();
     const isWhite = pieceToMove.letter === pieceLetter;
+    let isCapture = board.board[toRank][toFile] instanceof Piece;
 
     if (pieceLetter === 'P') {
+        // check for valid en passant capture since the target square will be empty
+        if (!isCapture && board.enPassant) {
+            const [enPassantRank, enPassantFile] = board.enPassant;
+            isCapture = enPassantRank === toRank && enPassantFile === toFile;
+        }
+
         const promotionRank = isWhite ? RANK[8] : RANK[1];
         let destination = isCapture ? `${from[0]}x${to}` : to;
 

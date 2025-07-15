@@ -47,7 +47,10 @@ it('Continues from a game midway', () => {
     const chess = new Chess(
         'rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6'
     );
+
     chess.playMove({ from: 'd2', to: 'b4' });
+    chess.playMove({ from: 'f7', to: 'f5' }); // test en passant
+    chess.playMove({ from: 'e5', to: 'f6' });
     chess.playMove({ from: 'e3', to: 'f2' });
     chess.playMove('Ke2');
     chess.playMove({ from: 'f2', to: 'g1', promoteTo: 'N' });
@@ -57,9 +60,9 @@ it('Continues from a game midway', () => {
     chess.playMove({ from: 'd1', to: 'd4' }); // checkmate, black wins
 
     expect(chess.toPGN()).toBe(
-        '[SetUp "1"]\n[FEN "rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6"]\n\n6. Bxb4 exf2+ 7. Ke2 fxg1=N+ 8. Kf2 Qxd1 9. Kxg1 Qd4# 0-1'
+        '[SetUp "1"]\n[FEN "rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6"]\n\n6. Bxb4 f5 7. exf6 exf2+ 8. Ke2 fxg1=N+ 9. Kf2 Qxd1 10. Kxg1 Qd4# 0-1'
     );
     expect(chess.toFEN()).toBe(
-        'rnb1k1nr/ppp2ppp/8/4P3/1BPq4/8/PP4PP/RN3BKR w kq - 1 10'
+        'rnb1k1nr/ppp3pp/5P2/8/1BPq4/8/PP4PP/RN3BKR w kq - 1 11'
     );
 });

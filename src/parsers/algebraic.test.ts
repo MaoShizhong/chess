@@ -301,6 +301,10 @@ describe('Converting to algebraic notation', () => {
             ),
             // https://lichess.org/analysis/8/PPP4R/3P4/5k2/8/8/8/3K4_w_-_-_0_1
             'promotion board': new Chessboard('8/PPP4R/3P4/5k2/8/8/8/3K4'),
+            // https://lichess.org/analysis/standard/rnbqkbnr/p1p1pppp/1p6/3pP3/8/8/PPPP1PPP/RNBQKBNR_w_KQkq_d6_0_3
+            'en passant board': new Chessboard(
+                'rnbqkbnr/p1p1pppp/1p6/3pP3/8/8/PPPP1PPP/RNBQKBNR'
+            ),
         };
 
         it.each([
@@ -378,6 +382,18 @@ describe('Converting to algebraic notation', () => {
                     boards['promotion board']
                 )
             ).toEqual([true, 'd7']);
+        });
+
+        it('Recognises en passant capture', () => {
+            // d6 capturable
+            boards['en passant board'].enPassant = [2, 3];
+
+            expect(
+                algebraic.toFullAlgebraicMove(
+                    { from: 'e5', to: 'd6' },
+                    boards['en passant board']
+                )
+            ).toEqual([true, 'exd6']);
         });
     });
 });
