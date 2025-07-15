@@ -43,23 +43,23 @@ it('Prevents post-game-end moves being played', () => {
 });
 
 it('Continues from a game midway', () => {
-    // https://lichess.org/analysis/standard/r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR_b_KQkq_-_3_3
+    // https://lichess.org/analysis/fromPosition/rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR_w_KQkq_-_0_6
     const chess = new Chess(
-        'r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3'
+        'rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6'
     );
-    chess.playMove({ from: 'g7', to: 'g6' });
-    chess.playMove({ from: 'h5', to: 'f3' });
-    chess.playMove('Nf6');
-    chess.playMove('Ne2');
-    chess.playMove('Bc5');
-    chess.playMove({ from: 'e1', to: 'g1' });
-    chess.playMove({ from: 'f6', to: 'e4' });
-    chess.playMove({ from: 'f3', to: 'f7' }); // checkmate, white wins
+    chess.playMove({ from: 'd2', to: 'b4' });
+    chess.playMove({ from: 'e3', to: 'f2' });
+    chess.playMove('Ke2');
+    chess.playMove({ from: 'f2', to: 'g1', promoteTo: 'N' });
+    chess.playMove('Kf2');
+    chess.playMove({ from: 'd8', to: 'd1' });
+    chess.playMove('Kxg1');
+    chess.playMove({ from: 'd1', to: 'd4' }); // checkmate, black wins
 
     expect(chess.toPGN()).toBe(
-        '[SetUp "1"]\n[FEN "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3"]\n\n3... g6 4. Qf3 Nf6 5. Ne2 Bc5 6. O-O Nxe4 7. Qxf7# 1-0'
+        '[SetUp "1"]\n[FEN "rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6"]\n\n6. Bxb4 exf2+ 7. Ke2 fxg1=N+ 8. Kf2 Qxd1 9. Kxg1 Qd4# 0-1'
     );
     expect(chess.toFEN()).toBe(
-        'r1bqk2r/pppp1Q1p/2n3p1/2b1p3/2B1n3/8/PPPPNPPP/RNB2RK1 b kq - 0 7'
+        'rnb1k1nr/ppp2ppp/8/4P3/1BPq4/8/PP4PP/RN3BKR w kq - 1 10'
     );
 });
