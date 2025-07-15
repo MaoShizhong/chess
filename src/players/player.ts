@@ -28,7 +28,6 @@ export class Player {
     move(
         destination: string
     ): [false] | [boolean, boolean, Coordinate | null, boolean] {
-        // console.log(destination)
         if (
             (destination === 'O-O' && !this.castlingRights.short) ||
             (destination === 'O-O-O' && !this.castlingRights.long)

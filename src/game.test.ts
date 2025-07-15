@@ -42,7 +42,6 @@ it('Prevents post-game-end moves being played', () => {
     );
 });
 
-
 it('Continues from a game midway', () => {
     // https://lichess.org/analysis/fromPosition/rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR_w_KQkq_-_0_6
     const chess = new Chess(
