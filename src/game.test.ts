@@ -66,3 +66,25 @@ it('Continues from a game midway', () => {
         'rnb1k1nr/ppp3pp/5P2/8/1BPq4/8/PP4PP/RN3BKR w kq - 1 11'
     );
 });
+
+it('Plays an amazing game', () => {
+    const chess = new Chess();
+    chess.playMove('e4');
+    chess.playMove('e5');
+    chess.playMove('Ke2');
+    chess.playMove('Ke7');
+    chess.playMove('Ke1');
+    chess.playMove('Ke8');
+    chess.playMove('Ke2');
+    chess.playMove('Ke7');
+    chess.playMove('Ke1');
+    chess.playMove('Ke8'); // threefold repetition!
+    chess.playMove('Ke2'); // threefold repetition!
+
+    expect(chess.toPGN()).toBe(
+        '1. e4 e5 2. Ke2 Ke7 3. Ke1 Ke8 4. Ke2 Ke7 5. Ke1 Ke8 1/2-1/2'
+    );
+    expect(chess.toFEN()).toBe(
+        'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w - - 8 6'
+    );
+});

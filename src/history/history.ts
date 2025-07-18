@@ -1,4 +1,10 @@
-import { History, HistorySegments, HistoryState, Result } from '../types';
+import {
+    History,
+    HistoryEntry,
+    HistorySegments,
+    HistoryState,
+    Result,
+} from '../types';
 import * as FEN from '../parsers/FEN';
 import * as PGN from '../parsers/PGN';
 import { Chessboard } from '../board/board';
@@ -90,6 +96,10 @@ export class ChessHistory {
             move: move,
             result: result,
         });
+    }
+
+    markAsDraw(): void {
+        (this.#history[this.length - 1] as HistoryEntry).result = '1/2-1/2';
     }
 
     isThreefoldRepetition(): boolean {
