@@ -85,6 +85,17 @@ const stalemate: History = [
     ...lastMovePosition,
     { FEN: '8/8/8/8/8/1Q6/2K5/k7 b - - 1 1', move: 'Kc2', result: '1/2-1/2' },
 ];
+const threefoldRepetition: History = [
+    ...lastMovePosition,
+    { FEN: '8/8/8/8/1Q6/2K5/8/k7 b - - 1 1', move: 'Qb4' },
+    { FEN: '8/8/8/8/1Q6/2K5/k7/8 w - - 2 2', move: 'Ka2' },
+    { FEN: '8/8/8/8/8/1QK5/k7/8 b - - 3 2', move: 'Qb3+' },
+    { FEN: '8/8/8/8/8/1QK5/8/k7 w - - 4 3', move: 'Ka1' },
+    { FEN: '8/8/8/8/1Q6/2K5/8/k7 b - - 5 3', move: 'Qb4' },
+    { FEN: '8/8/8/8/1Q6/2K5/k7/8 w - - 6 4', move: 'Ka2' },
+    { FEN: '8/8/8/8/8/1QK5/k7/8 b - - 7 4', move: 'Qb3+' },
+    { FEN: '8/8/8/8/8/1QK5/8/k7 w - - 8 5', move: 'Ka1', result: '1/2-1/2' },
+];
 
 describe('Serialising', () => {
     it('Serialises single move from white', () => {
@@ -146,6 +157,9 @@ describe('Serialising', () => {
     it('Appends result if game is over', () => {
         expect(PGN.serialise(checkmate).endsWith('1-0')).toBe(true);
         expect(PGN.serialise(stalemate).endsWith('1/2-1/2')).toBe(true);
+        expect(PGN.serialise(threefoldRepetition).endsWith('1/2-1/2')).toBe(
+            true
+        );
     });
 });
 

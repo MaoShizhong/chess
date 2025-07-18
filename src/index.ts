@@ -114,35 +114,29 @@ class Chess {
             this.#fullMoves,
         ];
 
-        let isThreefoldRepetition = false;
         const [canStillPlay, gameEndReason] = this.board.canPlayContinue(
             this.activePlayer.colour
         );
-        if (canStillPlay) {
-            this.history.record(
-                checksOpponent ? `${algebraicMove}+` : algebraicMove,
-                historyToSerialiseToFEN
-            );
 
-            isThreefoldRepetition = this.history.isThreefoldRepetition();
-            if (this.#halfMoves < 100 && !isThreefoldRepetition) {
-                return [null, algebraicMove];
-            }
-        }
-
-        this.isGameInPlay = false;
-        if (
-            gameEndReason === 'stalemate' ||
-            this.#halfMoves >= 100 ||
-            isThreefoldRepetition
-        ) {
+        if (gameEndReason === 'stalemate' || this.#halfMoves >= 100) {
             this.result = '1/2-1/2';
         } else if (gameEndReason === 'checkmate') {
             this.result = this.activePlayer.colour === 'w' ? '0-1' : '1-0';
         }
 
-        // Move that led to draw by 50-move rule or threefold rep already recorded
-        if (!canStillPlay) {
+        if (canStillPlay) {
+            this.history.record(
+                checksOpponent ? `${algebraicMove}+` : algebraicMove,
+                historyToSerialiseToFEN
+            );
+            // halfmoves not yet checked, hence game still thinks play can continue for now
+            if (this.history.isThreefoldRepetition()) {
+                this.isGameInPlay = false;
+                this.history.markAsDraw();
+                this.result = '1/2-1/2';
+            }
+        } else {
+            this.isGameInPlay = false;
             this.history.record(
                 gameEndReason === 'checkmate'
                     ? `${algebraicMove}#`
@@ -151,6 +145,7 @@ class Chess {
                 this.result
             );
         }
+
         return [null, algebraicMove];
     }
 
