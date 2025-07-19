@@ -43,32 +43,31 @@ it('Prevents post-game-end moves being played', () => {
 });
 
 it('Allows post-game-end moves to be played only if overwriting past moves', () => {
-    const chess = new Chess();
-    chess.playMove('e4');
-    chess.playMove('e5');
-    chess.playMove('Bc4');
-    chess.playMove({ from: 'b8', to: 'c6' });
-    chess.playMove('Qh5');
-    chess.playMove('a6');
-    chess.playMove('Qxf7'); // checkmate, white wins
-
-    chess.playMove('Ke7');
-    chess.playMove({ from: 'f2', to: 'f4' });
-
+    // https://lichess.org/analysis/8/7k/5KQ1/8/8/8/8/8_b_-_-_0_1
+    const chess = new Chess('8/7k/5KQ1/8/8/8/8/8 b - - 0 1');
+    chess.playMove('Kh8');
+    chess.playMove('Qg7'); // checkmate - white wins
     expect(chess.result).toBe('1-0');
-    expect(chess.toPGN()).toBe('1. e4 e5 2. Bc4 Nc6 3. Qh5 a6 4. Qxf7# 1-0');
-    expect(chess.toFEN()).toBe(
-        'r1bqkbnr/1ppp1Qpp/p1n5/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4'
+    expect(chess.toPGN()).toBe(
+        '[SetUp "1"]\n[FEN "8/7k/5KQ1/8/8/8/8/8 b - - 0 1"]\n\n1... Kh8 2. Qg7# 1-0'
     );
+    expect(chess.toFEN()).toBe('7k/6Q1/5K2/8/8/8/8/8 b - - 2 2');
 
     chess.toPreviousPosition();
-    chess.playMove({ from: 'f2', to: 'f4' });
-
-    expect(chess.result).not.toBeDefined();
-    expect(chess.toPGN()).toBe('1. e4 e5 2. Bc4 Nc6 3. Qh5 a6 4. f4');
-    expect(chess.toFEN()).toBe(
-        'r1bqkbnr/1ppp1ppp/p1n5/4p2Q/2B1PP2/8/PPPP2PP/RNB1K1NR b KQkq f3 0 4'
+    chess.playMove('Kf7'); // stalemate!
+    expect(chess.result).toBe('1/2-1/2');
+    expect(chess.toPGN()).toBe(
+        '[SetUp "1"]\n[FEN "8/7k/5KQ1/8/8/8/8/8 b - - 0 1"]\n\n1... Kh8 2. Kf7 1/2-1/2'
     );
+    expect(chess.toFEN()).toBe('7k/5K2/6Q1/8/8/8/8/8 b - - 2 2');
+
+    chess.toPreviousPosition();
+    chess.playMove('Qg5');
+    expect(chess.result).not.toBeDefined();
+    expect(chess.toPGN()).toBe(
+        '[SetUp "1"]\n[FEN "8/7k/5KQ1/8/8/8/8/8 b - - 0 1"]\n\n1... Kh8 2. Qg5'
+    );
+    expect(chess.toFEN()).toBe('7k/8/5K2/6Q1/8/8/8/8 b - - 2 2');
 });
 
 it('Continues from a game midway', () => {
