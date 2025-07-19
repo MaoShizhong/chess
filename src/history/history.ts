@@ -24,6 +24,10 @@ export class ChessHistory {
         return this.#history.length;
     }
 
+    get isAtLatest(): boolean {
+        return this.#currentIndex === this.length - 1;
+    }
+
     get currentState(): HistoryState {
         return this.getState(this.#currentIndex);
     }

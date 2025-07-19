@@ -42,6 +42,35 @@ it('Prevents post-game-end moves being played', () => {
     );
 });
 
+it('Allows post-game-end moves to be played only if overwriting past moves', () => {
+    const chess = new Chess();
+    chess.playMove('e4');
+    chess.playMove('e5');
+    chess.playMove('Bc4');
+    chess.playMove({ from: 'b8', to: 'c6' });
+    chess.playMove('Qh5');
+    chess.playMove('a6');
+    chess.playMove('Qxf7'); // checkmate, white wins
+
+    chess.playMove('Ke7');
+    chess.playMove({ from: 'f2', to: 'f4' });
+
+    expect(chess.result).toBe('1-0');
+    expect(chess.toPGN()).toBe('1. e4 e5 2. Bc4 Nc6 3. Qh5 a6 4. Qxf7# 1-0');
+    expect(chess.toFEN()).toBe(
+        'r1bqkbnr/1ppp1Qpp/p1n5/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4'
+    );
+
+    chess.toPreviousPosition();
+    chess.playMove({ from: 'f2', to: 'f4' });
+
+    expect(chess.result).not.toBeDefined();
+    expect(chess.toPGN()).toBe('1. e4 e5 2. Bc4 Nc6 3. Qh5 a6 4. f4');
+    expect(chess.toFEN()).toBe(
+        'r1bqkbnr/1ppp1ppp/p1n5/4p2Q/2B1PP2/8/PPPP2PP/RNB1K1NR b KQkq f3 0 4'
+    );
+});
+
 it('Continues from a game midway', () => {
     // https://lichess.org/analysis/fromPosition/rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR_w_KQkq_-_0_6
     const chess = new Chess(

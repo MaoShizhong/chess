@@ -78,6 +78,10 @@ Returns full move count for current position.
 
 Returns current castling rights for each player.
 
+### result: '1-0' | '0-1' | '1/2-1/2' | undefined
+
+Returns the game's current result (based on the latest position).
+
 ### playMove(move: string | { from: string, to: string, promoteTo?: string }): \[Error | null, string\]
 
 Makes the active player play the provided move if possible. Returns an array with an Error object and empty string if unsuccessful, or null and played algebraic move if successful.
@@ -102,8 +106,8 @@ Serialises full game history to a string in PGN format.
 
 #### opts.movesOnly (optional; default: false)
 
-A boolean - if true, will omit tag pairs from the PGN.
+A boolean - if true, will omit tag pairs from the PGN. If there is a game result, it will not be omitted.
 
 ### toFEN(): string
 
-Serialises current position to a string in FEN format.
+Serialises current (not necessarily latest) position to a string in FEN format.

@@ -86,9 +86,16 @@ class Chess {
             `${couldConvertToAlgebraic ? algebraicMove : move} is not a valid move`
         );
 
+        // even if game has ended, allow going to previous moves and overwriting them
+        // only prevent recording beyond a result
+        this.isGameInPlay = !this.history.isAtLatest || this.isGameInPlay;
+
         if (!couldConvertToAlgebraic || !this.isGameInPlay) {
             return [invalidMoveError, ''];
         }
+
+        // reset result in case game end has been overwritten with new moves
+        this.result = undefined;
 
         const [
             moveWasPlayed,
