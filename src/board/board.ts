@@ -13,8 +13,7 @@ import { Pawn } from '../pieces/pawn';
 import { King } from '../pieces/king';
 import { Rook } from '../pieces/rook';
 
-// Infinity to make ranks 1-indexed
-export const RANK = [Infinity, 7, 6, 5, 4, 3, 2, 1, 0];
+export const RANK = [8, 7, 6, 5, 4, 3, 2, 1, 0];
 export const FILE: {
     [key: string]: number;
 } = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };

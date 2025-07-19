@@ -88,6 +88,12 @@ Makes the active player play the provided move if possible. Returns an array wit
 
 Moves can be provided as a full algebraic move as a string (e.g. 'e4' / 'Nf3' / 'Bxc6' / 'O-O') or as an object with a "from" coordinate and "to" coordinate, given in algebraic notation (e.g. { from: 'e1', to: 'g1' }), with an optional promotion letter (only Q/R/B/N are accepted). If given as an object, the resulting algebraic move will automatically include any castling, capture or disambiguating information. If a promotion letter is provided, it will only be used for pawn moves to the corresponding promotion rank.
 
+### getLegalMoves(square: string): string[]
+
+Returns an array containing all algebraic coordinates the selected piece can legally move to (piece/capture information omitted e.g. if `dxe6` is possible, `d6` will be included). Accounts for the game state (castling rights, castling through check, king in check etc.).
+
+Returns empty array if the selected square is empty or if the game has ended and you are viewing the latest position.
+
 ### toNthPosition(n: number): Chess
 
 Moves to specified history state (0-indexed) if available, and loads all position details (e.g. active player, half moves etc.) of that position. Sets latest position if n is greater or equal to the history length, and sets first position if n is less than 0. Mutates instance and returns `this`.
