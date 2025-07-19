@@ -1,5 +1,5 @@
 import { Player } from './players/player';
-import {
+import type {
     CastlingRights,
     HistorySegments,
     HistoryState,
@@ -7,7 +7,7 @@ import {
     Players,
     Result,
 } from './types';
-import { Chessboard } from './board/board';
+import { Chessboard, FILE, RANK } from './board/board';
 import { ChessHistory } from './history/history';
 import * as FEN from './parsers/FEN';
 import * as PGN from './parsers/PGN';
@@ -154,6 +154,33 @@ class Chess {
         }
 
         return [null, algebraicMove];
+    }
+
+    getLegalMoves(square: string): string[] {
+        const fromRank = RANK[Number(square[1])];
+        const fromFile = FILE[square[0]];
+        const piece = this.board.board[fromRank][fromFile];
+        const gameEnded = !this.isGameInPlay && this.history.isAtLatest;
+        if (!piece || gameEnded) {
+            return [];
+        }
+
+        const naiveLegalMoves =
+            this.board.getValidMoves({
+                rank: fromRank,
+                file: fromFile,
+            }) ?? [];
+        const legalMoves = naiveLegalMoves.filter((move) => {
+            const boardAfterMove = this.board.simulateMove({
+                from: [fromRank, fromFile],
+                to: move,
+            });
+            return !boardAfterMove.isKingInCheck(piece.colour);
+        });
+
+        return legalMoves.map((coordinate) => {
+            return algebraic.toAlgebraic(coordinate);
+        });
     }
 
     toPreviousPosition(): Chess {
