@@ -443,3 +443,62 @@ describe('Error reporting', () => {
         expect(Kb1Error?.message).toBe('Kb1 is not a valid move');
     });
 });
+
+describe('Showing legal moves', () => {
+    const boards = {
+        starting: STARTING_POSITION,
+        open: 'rnbqkbnr/4pp1p/pp1p2p1/2p4P/4P3/1P6/P1PP1PP1/RNBQKBNR w KQkq - 0 2',
+        enPassant:
+            'rnbqkbnr/2p1p1p1/p2p3p/1pP1Pp2/8/7P/PP1P1PP1/RNBQKBNR w KQkq f6 0 6',
+        check: 'rnb1kbnr/pppp1ppp/8/4p3/4P2q/5P2/PPPP2PP/RNBQKBNR w KQkq - 1 3',
+        castle: '5k2/8/8/8/8/8/8/4K2R w K - 0 1',
+        noCastle: '5k2/8/8/8/8/8/8/4K2R w - - 0 1',
+        castleThroughCheck: '5k2/8/8/8/2b5/8/8/4K2R w K - 0 1',
+        blackMove:
+            'r3k2r/pppp1ppp/6n1/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2',
+    };
+
+    it.each([
+        ['e2', boards.starting, ['e3', 'e4']],
+        ['c2', boards.starting, ['c3', 'c4']],
+        ['b3', boards.open, ['b4']],
+        ['h5', boards.open, ['h6', 'g6']],
+        ['f1', boards.open, ['e2', 'd3', 'c4', 'b5', 'a6']],
+        ['h1', boards.open, ['h2', 'h3', 'h4']],
+        ['e5', boards.enPassant, ['e6', 'f6', 'd6']],
+        ['c5', boards.enPassant, ['c6', 'd6']],
+        ['g1', boards.check, []],
+        ['a2', boards.check, []],
+        ['e1', boards.check, ['e2']],
+        ['g2', boards.check, ['g3']],
+        ['e1', boards.castle, ['d1', 'd2', 'e2', 'f2', 'f1', 'g1']],
+        ['e1', boards.noCastle, ['d1', 'd2', 'e2', 'f2', 'f1']],
+        ['e1', boards.castleThroughCheck, ['d1', 'd2', 'f2']],
+        ['d7', boards.blackMove, ['d6', 'd5']],
+        ['g6', boards.blackMove, ['e7', 'f4', 'h4', 'f8']],
+        ['e8', boards.blackMove, ['c8', 'd8', 'e7', 'f8', 'g8']],
+    ])(
+        'Returns all legal moves for a piece given a board position',
+        (square, startingFEN, validMoves) => {
+            const chess = new Chess(startingFEN);
+            expect(chess.getLegalMoves(square).sort()).toEqual(
+                validMoves.sort()
+            );
+        }
+    );
+
+    it('Does not show possible moves after game has ended', () => {
+        const chess = new Chess('7k/8/5K2/6Q1/8/8/8/8 w - - 0 1');
+
+        chess.playMove('Qg7');
+        expect(chess.getLegalMoves('h8')).toEqual([]);
+    });
+
+    it('Shows legal moves after game has ended if not viewing latest position', () => {
+        const chess = new Chess('7k/8/5K2/6Q1/8/8/8/8 w - - 0 1');
+
+        chess.playMove('Qg7');
+        chess.toPreviousPosition();
+        expect(chess.getLegalMoves('h8')).toEqual(['h7']);
+    });
+});
